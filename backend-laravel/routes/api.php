@@ -151,54 +151,53 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
         $token = $users->createToken($users->username)->plainTextToken;
 
         $users =  [
-            'id' => $users->id,
-            'name' => $users->name,
-            'email' => $users->email,
-            'username' => $users->username,
-            'status_id' => $users->status_id,
-            'created_at' => $users->created_at,
-            'updated_at' => $users->updated_at,
+            'id' => optional($users)->id,
+            'name' => optional($users)->name,
+            'email' => optional($users)->email,
+            'username' => optional($users)->username,
+            'status_id' => optional($users)->status_id,
+            'created_at' => optional($users)->created_at,
+            'updated_at' => optional($users)->updated_at,
 
             'userStatus' => $users->user_status ? [
-                'id' => $users->user_status->id,
-                'name' => $users->user_status->name,
-                'code' => $users->user_status->code,
+                'id' => optional($users->user_status)->id,
+                'name' => optional($users->user_status)->name,
+                'code' => optional($users->user_status)->code,
             ] : null,
 
             'userProfile' => $users->user_profile ? [
-                'id' => $users->user_profile->id,
-                'titleName' => $users->user_profile->title_name,
-                'firstName' => $users->user_profile->first_name,
-                'lastName' => $users->user_profile->last_name,
-                'nickName' => $users->user_profile->nick_name,
-                'birthDay' => $users->user_profile->birth_day,
+                'id' => optional($users->user_profile)->id,
+                'titleName' => optional($users->user_profile)->title_name,
+                'firstName' => optional($users->user_profile)->first_name,
+                'lastName' => optional($users->user_profile)->last_name,
+                'nickName' => optional($users->user_profile)->nick_name,
+                'birthDay' => optional($users->user_profile)->birth_day,
             ] : null,
 
             'profileImage' => $users->user_profile && $users->user_profile->profile_image ? [
-                'id' => $users->user_profile->profile_image->id,
-                'profile_id' => $users->user_profile->profile_image->profile_id,
-                'imageData' => $users->user_profile->profile_image->image_data ?
-                    base64_encode($users->user_profile->profile_image->image_data) : null,
+                'id' => optional($users->user_profile->profile_image)->id,
+                'profile_id' => optional($users->user_profile->profile_image)->profile_id,
+                'imageData' => optional($users->user_profile->profile_image)->image_data,
             ] : null,
 
             'wallet' => $users->user_wallet ? [
-                'id' => $users->user_wallet->id,
-                'userID' => $users->user_wallet->user_id,
-                'point' => $users->user_wallet->point,
-                'status' => $users->user_wallet->status,
+                'id' => optional($users->user_wallet)->id,
+                'userID' => optional($users->user_wallet)->user_id,
+                'point' => optional($users->user_wallet)->point,
+                'status' => optional($users->user_wallet)->status,
             ] : null,
 
             'walletCounters' => $users->user_wallet->wallet_counters ?
                 $users->user_wallet->wallet_counters->map(function ($counter) {
                     return [
-                        'id' => $counter->id,
-                        'walletID' => $counter->wallet_id,
-                        'rewardID' => $counter->reward_id,
-                        'point' => $counter->point,
-                        'status' => $counter->reward_id,
-                        'detail' => $counter->detail,
-                        'createdAt' => $counter->created_at,
-                        'updatedAt' => $counter->updated_at,
+                        'id' => optional($counter)->id,
+                        'walletID' => optional($counter)->wallet_id,
+                        'rewardID' => optional($counter)->reward_id,
+                        'point' => optional($counter)->point,
+                        'status' => optional($counter)->reward_id,
+                        'detail' => optional($counter)->detail,
+                        'createdAt' => optional($counter)->created_at,
+                        'updatedAt' => optional($counter)->updated_at,
                     ];
                 }) : null,
         ];

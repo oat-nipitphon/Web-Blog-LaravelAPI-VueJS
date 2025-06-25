@@ -8,12 +8,9 @@
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <div class="flex h-16 items-center justify-between">
         <div class="flex items-center">
+          <!-- Logo -->
           <div class="shrink-0">
-            <RouterLink
-              :to="{
-                name: 'HomeView',
-              }"
-            >
+            <RouterLink :to="{ name: 'HomeView' }">
               <img
                 class="size-8"
                 src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=500"
@@ -21,59 +18,71 @@
               />
             </RouterLink>
           </div>
+
+          <!-- Desktop Menu -->
           <div class="hidden md:block">
             <div class="ml-10 flex items-baseline space-x-4">
-              <a
+              <RouterLink
                 v-for="item in navigation"
                 :key="item.name"
-                :href="item.href"
+                :to="item.to"
+                @click="setActive(item)"
                 :class="[
                   item.current
                     ? 'bg-gray-900 text-white'
                     : 'text-gray-300 hover:bg-gray-700 hover:text-white',
                   'rounded-md px-3 py-2 text-sm font-medium',
                 ]"
-                :aria-current="item.current ? 'page' : undefined"
               >
-                <button @click="() => headleUserNavigation(item)">
-                  {{ item.name }}
-                </button>
-              </a>
+                {{ item.name }}
+              </RouterLink>
             </div>
           </div>
         </div>
+
+        <!-- Profile Menu -->
         <div class="hidden md:block">
           <div class="ml-4 flex items-center md:ml-6">
+            <!-- Notification -->
             <button
               type="button"
-              class="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 focus:outline-hidden"
+              class="relative rounded-full bg-white p-1 text-gray-900 hover:text-gray-900 focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 focus:outline-hidden"
             >
-              <span class="absolute -inset-1.5" />
               <span class="sr-only">View notifications</span>
-              <img
+              <!-- 
+                Icon or Image Notification
+              -->
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
                 class="size-6"
-                aria-hidden="true"
-                src="../assets/images/keyboard.jpg"
-                alt=""
-              />
-              <!-- <BellIcon class="size-6" aria-hidden="true" /> -->
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0M3.124 7.5A8.969 8.969 0 0 1 5.292 3m13.416 0a8.969 8.969 0 0 1 2.168 4.5"
+                />
+              </svg>
             </button>
 
-            <!-- Profile Image dropdown -->
+            <!-- Profile Dropdown -->
             <Menu as="div" class="relative ml-3">
-              <div>
-                <MenuButton
-                  class="relative flex max-w-xs items-center rounded-full bg-gray-800 text-sm focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 focus:outline-hidden"
-                >
-                  <span class="absolute -inset-1.5" />
-                  <span class="sr-only">Open user menu</span>
-                  <img
-                    class="size-8 rounded-full"
-                    src="../assets/images/keyboard.jpg"
-                    alt=""
-                  />
-                </MenuButton>
-              </div>
+              <MenuButton
+                class="relative flex max-w-xs items-center rounded-full bg-white text-sm focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-white"
+              >
+                <span class="sr-only">Open user menu</span>
+                <img
+                  class="size-8 rounded-full"
+                  :src="
+                    'data:image/png;base64,' +
+                    authStore.users?.profileImage?.imageData || imageDefault
+                  "
+                  alt=""
+                />
+              </MenuButton>
               <transition
                 enter-active-class="transition ease-out duration-100"
                 enter-from-class="transform opacity-0 scale-95"
@@ -83,7 +92,7 @@
                 leave-to-class="transform opacity-0 scale-95"
               >
                 <MenuItems
-                  class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black/5 focus:outline-hidden"
+                  class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black/5 focus:outline-none"
                 >
                   <MenuItem
                     v-for="item in userNavigation"
@@ -91,121 +100,59 @@
                     v-slot="{ active }"
                   >
                     <button
-                      @click="() => handleUserNavigation(item)"
+                      @click="handleUserNavigation(item)"
                       class="block w-full text-left px-4 py-2 text-sm text-gray-700"
                     >
                       {{ item.name }}
                     </button>
                   </MenuItem>
-                  <!-- <form method="POST" @submit.prevent="storeLogout()">
-                    <MenuItem v-slot="{ active }">
-                      <button
-                        type="submit"
-                        :class="[
-                          active
-                            ? 'bg-gray-100 text-gray-900 outline-hidden'
-                            : 'text-gray-700',
-                          'block w-full px-4 py-2 text-left text-sm',
-                        ]"
-                      >
-                        Sign out
-                      </button>
-                    </MenuItem>
-                  </form> -->
                 </MenuItems>
               </transition>
             </Menu>
           </div>
         </div>
+
+        <!-- Mobile Menu Button -->
         <div class="-mr-2 flex md:hidden">
-          <!-- Mobile menu button -->
           <DisclosureButton
-            class="relative inline-flex items-center justify-center rounded-md bg-gray-800 p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 focus:outline-hidden"
+            class="relative inline-flex items-center justify-center rounded-md bg-white p-2 text-gray-700 hover:bg-white hover:text-white focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-white"
           >
-            <span class="absolute -inset-0.5" />
             <span class="sr-only">Open main menu</span>
             <img
-              class="block size-6"
-              aria-hidden="true"
-              src="../assets/images/keyboard.jpg"
+              class="size-8 rounded-full"
+              :src="
+                'data:image/png;base64,' +
+                authStore.users?.profileImage?.imageData || imageDefault
+              "
               alt=""
             />
-            <!-- <Bars3Icon v-if="!open" class="block size-6" aria-hidden="true" /> -->
-            <!-- <XMarkIcon v-else class="block size-6" aria-hidden="true" /> -->
           </DisclosureButton>
         </div>
       </div>
     </div>
 
+    <!-- Mobile Panel -->
     <DisclosurePanel class="md:hidden">
       <div class="space-y-1 px-2 pt-2 pb-3 sm:px-3">
-        <DisclosureButton
+        <RouterLink
           v-for="item in navigation"
           :key="item.name"
-          as="a"
-          :href="item.href"
+          :to="item.to"
+          @click="setActive(item)"
           :class="[
             item.current
               ? 'bg-gray-900 text-white'
               : 'text-gray-300 hover:bg-gray-700 hover:text-white',
             'block rounded-md px-3 py-2 text-base font-medium',
           ]"
-          :aria-current="item.current ? 'page' : undefined"
-          >{{ item.name }}</DisclosureButton
         >
-      </div>
-      <div class="border-t border-gray-700 pt-4 pb-3">
-        <div class="flex items-center px-5">
-          <div class="shrink-0">
-            <img
-              class="size-10 rounded-full"
-              src="../assets/images/keyboard.jpg"
-              alt=""
-            />
-          </div>
-          <div class="ml-3">
-            <div class="text-base/5 font-medium text-white">
-              {{ user.name }}
-            </div>
-            <div class="text-sm font-medium text-gray-400">
-              {{ user.email }}
-            </div>
-          </div>
-          <button
-            type="button"
-            class="relative ml-auto shrink-0 rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 focus:outline-hidden"
-          >
-            <span class="absolute -inset-1.5" />
-            <span class="sr-only">View notifications</span>
-            <img
-              class="size-6"
-              aria-hidden="true"
-              src="../assets/images/keyboard.jpg"
-              alt=""
-            />
-            <!-- <BellIcon class="size-6" aria-hidden="true" /> -->
-          </button>
-        </div>
-        <div class="mt-3 space-y-1 px-2">
-          <DisclosureButton
-            v-for="item in userNavigation"
-            :key="item.name"
-            as="a"
-            :href="item.href"
-            class="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
-          >
-            {{ item.name }}
-          </DisclosureButton>
-        </div>
+          {{ item.name }}
+        </RouterLink>
       </div>
     </DisclosurePanel>
   </Disclosure>
-  <!-- <header class="bg-white shadow-sm">
-        <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-            <h1 class="text-3xl font-bold tracking-tight text-gray-900">Dashboard</h1>
-        </div>
-    </header> -->
 </template>
+
 <script setup>
 import {
   Disclosure,
@@ -216,81 +163,55 @@ import {
   MenuItem,
   MenuItems,
 } from "@headlessui/vue";
-
 import { ref } from "vue";
-import { useRouter, useRoute, RouterLink } from "vue-router";
-import { storeToRefs } from "pinia";
+import { useRouter, RouterLink } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
-
-const authStore = useAuthStore();
-const { users } = storeToRefs(authStore);
-const { storeLogout } = useAuthStore();
+import { storeToRefs } from "pinia";
+import imageDefault from "@/assets/images/account-profile.png";
 
 const router = useRouter();
+const authStore = useAuthStore();
 
-const navigation = [
-  { name: "Home", href: "/HomeView", current: true },
-  { name: "Create Post", href: "/CreatePostView", current: false },
-  {
-    name: "Store Post",
-    href: "#",
-    current: false,
-  },
-  { name: "Reward Shop", href: "#", current: false },
-  { name: "Admin Manager", href: "#", current: false },
-  { name: "Manager Reward", href: "/ManagerReportRewardView", current: false },
-];
+const { users } = storeToRefs(authStore);
+const { storeLogout } = authStore;
+
+const navigation = ref([
+  { name: "Home", to: "/HomeView", current: true },
+  { name: "Create Post", to: "/CreatePostView", current: false },
+  { name: "Store Post", to: "/StorePostsView", current: false },
+  { name: "Reward Shop", to: "/RewardShopView", current: false },
+  { name: "Admin Manager", to: "/AdminManagerView", current: false },
+  { name: "Manager Reward", to: "/ManagerReportRewardView", current: false },
+]);
 
 const userNavigation = [
-  { name: "Dashboard Profile", href: "#" },
-  { name: "Store Post", href: "#" },
-  { name: "Sign out", href: "#" },
+  { name: "Dashboard Profile", to: "/DashboardProfileView" },
+  { name: "Store Post", to: "/StorePostsView" },
+  { name: "Sign out", to: "#" },
 ];
 
-const headleUserNavigation = (item) => {
-  if (item.name === "Dashboard Profile") {
-    router.push({
-      name: "DashboardProfileView",
-      params: {
-        id: authStore.users.userProfile?.id,
-      },
-    });
-  } else if (item.name === "Store Post") {
-    router.push({
-      name: "StorePostsView",
-      params: {
-        profileID: authStore.users.userProfile?.id,
-      },
-    });
-  } else if (item.name === "Sign out") {
-    onLogout();
-  }
-};
+function setActive(clickedItem) {
+  navigation.value.forEach((item) => {
+    item.current = item.name === clickedItem.name;
+  });
+}
 
-const handleUserNavigation = (item) => {
+function handleUserNavigation(item) {
   if (item.name === "Sign out") {
     onLogout();
-  } else if (item.name === "Store Post") {
+  } else {
     router.push({
-      name: "StorePostsView",
+      name: item.name.replace(/\s/g, "") + "View", // e.g., DashboardProfileView
       params: {
+        id: authStore.users.userProfile?.id,
         profileID: authStore.users.userProfile?.id,
       },
     });
-  } else if (item.name === "Dashboard Profile") {
-    router.push({
-      name: "DashboardProfileView",
-      params: {
-        id: authStore.users.userProfile?.id,
-      },
-    });
-  } else {
-    // ทำอย่างอื่น เช่น router.push(item.href)
   }
-};
+}
 
-const onLogout = async () => {
-  console.log("on logout");
+async function onLogout() {
+  console.log("Logging out...");
   await storeLogout();
-};
+}
 </script>
