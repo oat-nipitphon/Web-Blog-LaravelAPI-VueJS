@@ -73,12 +73,16 @@ Route::prefix('/')->group(function () {
         return response()->json($postTypes, 200);
     });
     Route::apiResource('/posts', PostController::class);
+
     Route::prefix('/posts')->group(function () {
         Route::apiResource('/stores', PostStoreController::class);
+
+        Route::get('/stores_report/{profileID}', [PostStoreController::class, 'storeReportPosts']);
         Route::post('/confirm_store/{postID}', [PostStoreController::class, 'confirmStorePost']);
         Route::post('/recover/{postID}', [PostStoreController::class, 'recoverPost']);
-        Route::post('/recoverSelected', [PostStoreController::class, 'recoverSelected']);
-        Route::post('/deleteSelected', [PostStoreController::class, 'deleteSelected']);
+        Route::post('/recoverSelected', [PostStoreController::class, 'recoverPostSelectd']);
+        Route::post('/deleteSelected', [PostStoreController::class, 'destroyPosts']);
+
         Route::post('/event_pop/{postID}/{profileID}/{status}', [PostPopController::class, 'postPop']);
     });
 

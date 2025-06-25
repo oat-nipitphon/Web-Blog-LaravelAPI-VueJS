@@ -280,21 +280,22 @@ export const usePostStore = defineStore("postStore", {
     },
 
     //
-    async storeGetPostsRecover(profileID) {
+    async storeGetPostStores(profileID) {
       try {
-        const response = await fetch(`/api/posts/store_report/${profileID}}`, {
-          method: "POST",
+        const response = await fetch(`/api/posts/stores_report/${profileID}}`, {
+          method: "GET",
           headers: {
             authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
         console.log(response);
-        if (!response.status === 200) {
+        if (response.status !== 200) {
           console.log("store get report posts store ", response.error);
           return;
         }
 
         const data = await response.json();
+        console.log('store get post', data);
         return data.posts;
       } catch (error) {
         console.error("store get posts recover function api error ", error);
@@ -315,22 +316,22 @@ export const usePostStore = defineStore("postStore", {
 
       if (result.isConfirmed) {
         try {
-          const res = await fetch(`/api/posts/recover/${postID}`, {
+          const response = await fetch(`/api/posts/recover/${postID}`, {
             method: "POST",
             headers: {
-              "Content-Type": "application/json",
               authorization: `Bearer ${localStorage.getItem("token")}`,
             },
           });
 
-          const data = await res.json();
-
-          if (res.ok) {
-            console.log("store confirm recover post success ", res);
-            console.log("store confirm recover post success ", data);
-          } else {
-            console.log("store confirm recover post false ", res);
+          if (response.status !== 200 || response.status !== 201) {
+            console.error('storeConfirmRecoverPost false ', response.error);
           }
+
+          const data = await res.json();
+          
+          console.log('store confirm recover post success ', data.posts);
+
+
         } catch (error) {
           console.error(
             "store confirm recover post function api error ",
@@ -365,5 +366,6 @@ export const usePostStore = defineStore("postStore", {
         console.error("store post recover delete function api error ", error);
       }
     },
+
   },
 });
