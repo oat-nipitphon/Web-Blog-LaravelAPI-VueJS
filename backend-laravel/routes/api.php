@@ -24,7 +24,7 @@ use App\Http\Controllers\AdminPostController;
 use App\Http\Controllers\AdminRewardController;
 use App\Http\Controllers\AdminUserProfileController;
 use App\Http\Controllers\AdminWalletController;
-
+use App\Http\Controllers\UserProfileContactController;
 use App\Models\UserStatus;
 use App\Models\PostType;
 use App\Models\RewardStatus;
@@ -60,6 +60,7 @@ Route::prefix('/')->group(function () {
     // --------------------------------------- User Profile ------------------------------------------------ //
     Route::apiResource('/users', UserController::class);
     Route::apiResource('/user_profiles', UserProfileController::class);
+    Route::apiResource('/user_profile_contacts', UserProfileContactController::class);
     Route::post('/user_profiles/upload_image', [UserProfileController::class, 'uploadImageProfile']);
     Route::apiResource('/user_profile_pops', UserProfilePopController::class);
     Route::post('/pop_like/{postUserID}/{authUserID}', [UserProfilePopController::class, 'popLikeProfile']);

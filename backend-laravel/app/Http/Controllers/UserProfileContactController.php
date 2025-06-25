@@ -130,6 +130,20 @@ class UserProfileContactController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        try {
+            $contact = UserProfileContact::findOrFail($id);
+            $contact->delete();
+
+            return response()->json([
+                'message' => 'Contact deleted successfully.',
+                'id' => $id
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to delete contact.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
+
 }

@@ -16,6 +16,26 @@ const props = defineProps({
     required: true,
   },
 });
+
+const onDelete = async $id => {
+  console.log('on delete ', $id);
+  const response = await fetch(`/api/user_profile_contacts/${id}`, {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('token')}`,
+      'Content-Type': 'application/json', // (ถ้าต้องการ)
+    },
+  })
+
+  if (response.status !== 200) {
+    console.error('delete contacts false', response.error)
+  }
+
+  console.log('delete contacts success ')
+
+  window.location.reload()
+}
+
 </script>
 
 <template>
@@ -56,6 +76,28 @@ const props = defineProps({
             </span>
           </div>
         </a>
+                <!-- Delete Button -->
+        <button
+          @click="onDelete(contact.id)"
+          class="text-red-500 hover:text-red-600 transition"
+          title="Delete"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="w-5 h-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.5"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+          {{ contact.id }}
+        </button>
       </li>
     </ul>
 

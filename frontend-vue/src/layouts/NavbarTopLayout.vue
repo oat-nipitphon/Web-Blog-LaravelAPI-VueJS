@@ -152,7 +152,6 @@
     </DisclosurePanel>
   </Disclosure>
 </template>
-
 <script setup>
 import {
   Disclosure,
@@ -163,55 +162,81 @@ import {
   MenuItem,
   MenuItems,
 } from "@headlessui/vue";
+
 import { ref } from "vue";
-import { useRouter, RouterLink } from "vue-router";
-import { useAuthStore } from "@/stores/auth";
+import { useRouter, useRoute, RouterLink } from "vue-router";
 import { storeToRefs } from "pinia";
-import imageDefault from "@/assets/images/account-profile.png";
+import { useAuthStore } from "@/stores/auth";
+
+const authStore = useAuthStore();
+const { users } = storeToRefs(authStore);
+const { storeLogout } = useAuthStore();
 
 const router = useRouter();
-const authStore = useAuthStore();
 
-const { users } = storeToRefs(authStore);
-const { storeLogout } = authStore;
-
-const navigation = ref([
-  { name: "Home", to: "/HomeView", current: true },
-  { name: "Create Post", to: "/CreatePostView", current: false },
-  { name: "Store Post", to: "/StorePostsView", current: false },
-  { name: "Reward Shop", to: "/RewardShopView", current: false },
-  { name: "Admin Manager", to: "/AdminManagerView", current: false },
-  { name: "Manager Reward", to: "/ManagerReportRewardView", current: false },
-]);
-
-const userNavigation = [
-  { name: "Dashboard Profile", to: "/DashboardProfileView" },
-  { name: "Store Post", to: "/StorePostsView" },
-  { name: "Sign out", to: "#" },
+const navigation = [
+  { name: "Home", href: "/HomeView", current: true },
+  { name: "Create Post", href: "/CreatePostView", current: false },
+  {
+    name: "Store Post",
+    href: "#",
+    current: false,
+  },
+  { name: "Reward Shop", href: "#", current: false },
+  { name: "Admin Manager", href: "#", current: false },
+  { name: "Manager Reward", href: "/ManagerReportRewardView", current: false },
 ];
 
-function setActive(clickedItem) {
-  navigation.value.forEach((item) => {
-    item.current = item.name === clickedItem.name;
-  });
-}
+const userNavigation = [
+  { name: "Dashboard Profile", href: "#" },
+  { name: "Store Post", href: "#" },
+  { name: "Sign out", href: "#" },
+];
 
-function handleUserNavigation(item) {
-  if (item.name === "Sign out") {
-    onLogout();
-  } else {
+const headleUserNavigation = (item) => {
+  if (item.name === "Dashboard Profile") {
     router.push({
-      name: item.name.replace(/\s/g, "") + "View", // e.g., DashboardProfileView
+      name: "DashboardProfileView",
       params: {
         id: authStore.users.userProfile?.id,
+      },
+    });
+  } else if (item.name === "Store Post") {
+    router.push({
+      name: "StorePostsView",
+      params: {
         profileID: authStore.users.userProfile?.id,
       },
     });
+  } else if (item.name === "Sign out") {
+    onLogout();
   }
-}
+};
 
-async function onLogout() {
-  console.log("Logging out...");
+const handleUserNavigation = (item) => {
+  if (item.name === "Sign out") {
+    onLogout();
+  } else if (item.name === "Store Post") {
+    router.push({
+      name: "StorePostsView",
+      params: {
+        profileID: authStore.users.userProfile?.id,
+      },
+    });
+  } else if (item.name === "Dashboard Profile") {
+    router.push({
+      name: "DashboardProfileView",
+      params: {
+        id: authStore.users.userProfile?.id,
+      },
+    });
+  } else {
+    // ทำอย่างอื่น เช่น router.push(item.href)
+  }
+};
+
+const onLogout = async () => {
+  console.log("on logout");
   await storeLogout();
-}
+};
 </script>

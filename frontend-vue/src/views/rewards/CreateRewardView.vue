@@ -51,7 +51,11 @@
         </div>
 
         <div class="mt-2">
-          <BaseSelect> </BaseSelect>
+          <BaseSelect
+          
+          > 
+        
+        </BaseSelect>
         </div>
 
         <div class="flex justify-end mt-5">
