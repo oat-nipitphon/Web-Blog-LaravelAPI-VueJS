@@ -26,6 +26,7 @@ const {
 
 const onStorePost = async (postID) => {
   await storeConfirmStorePost(postID);
+  await storeGetPosts();
 };
 
 const onEditPost = (postID) => {

@@ -57,7 +57,7 @@
             </td>
             <td class="p-3 text-center">
               <button
-                @click="onDelete(post.id)"
+                @click="onDelete(post.posts.id)"
                 class="bg-red-500 hover:bg-red-600 text-white text-sm font-medium py-1.5 px-3 rounded-lg shadow-md transition duration-300"
               >
                 ลบถาวร
@@ -151,6 +151,7 @@ const onDelete = async (id) => {
 
   if (result.isConfirmed) {
     try {
+
       await storeDeletePost(id);
       posts.value = posts.value.filter((post) => post.id !== id);
     } catch (error) {
@@ -160,10 +161,9 @@ const onDelete = async (id) => {
 };
 
 const onRecoverPost = async (postID) => {
-  console.log('on recover post ', postID);
+  console.log("on recover post ", postID);
 
   await storeConfirmRecoverPost(postID);
-
 };
 
 const onRecoverSelected = async () => {

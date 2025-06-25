@@ -142,80 +142,97 @@ class PostStoreController extends Controller
     public function recoverPostSelectd(Request $request)
     {
         try {
+            // Validate input
+            $request->validate([
+                'ids' => 'required|array',
+                'ids.*' => 'integer|exists:post_stores,id',
+            ]);
 
-            // $request->validate([
-            //     'ids' => 'required|array',
-            //     'ids.*' => 'integer|exists:posts,id',
-            // ]);
+            $ids = $request->input('ids');
 
-            $ids = $request->ids;
-
-            if (!is_array($ids) || empty($ids)) {
+            if (empty($ids)) {
                 return response()->json([
-                    'message' => 'controller recoverPostSelectd() check array ids false',
-                    'ids' => $request->ids
+                    'message' => 'ไม่มีรายการ ID ที่ส่งมา',
+                    'ids' => $ids
                 ], 404);
             }
 
-            $posts = Post::whereIn('id', $ids)->get();
-            $counter_check = [];
+            // ดึงรายการ PostStore
+            $post_stores = PostStore::whereIn('id', $ids)->get();
+            $recovered_posts = [];
 
-            $post_stores = PostStore::whereIn('post_id', $ids);
-
-            foreach ($posts as $post) {
-
-                $post->update([
-                    'status' => 'active'
-                ]);
-
-                $post_stores->delete();
-
-                $counter_check[] = $post;
+            foreach ($post_stores as $store) {
+                $post = Post::find($store->post_id);
+                if ($post) {
+                    $post->status = 'active';
+                    $post->save();
+                    $recovered_posts[] = $post;
+                    $store->delete();
+                }
             }
 
             return response()->json([
-                'message' => 'update status recover success',
-                'posts' => $posts,
-                'counters' => $counter_check,
-            ], 201);
+                'message' => 'กู้คืนบทความที่เลือกเรียบร้อยแล้ว',
+                'recovered' => $recovered_posts
+            ], 200);
         } catch (\Exception $error) {
             return response()->json([
-                'message' => 'laravel update posts selected function error',
+                'message' => 'เกิดข้อผิดพลาดในการกู้คืนบทความ',
                 'error' => $error->getMessage()
-            ]);
+            ], 500);
         }
     }
 
 
-    public function destroyPosts(Request $request)
-    {
-        $request->validate([
-            'ids' => 'required|array',
-            'ids.*' => 'integer|exists:posts,id',
-        ]);
 
+    public function deletePostsSelectd(Request $request)
+    {
         try {
+            $request->validate([
+                'ids' => 'required|array',
+                'ids.*' => 'integer|exists:post_stores,id',
+            ]);
+
+            $ids = $request->input('ids');
+
+            if (empty($ids)) {
+                return response()->json([
+                    'message' => 'ไม่มีรายการ ID ที่ส่งมา',
+                    'ids' => $ids
+                ], 404);
+            }
+
             DB::beginTransaction();
 
-            // ถ้าคุณมีข้อมูลเกี่ยวข้องให้ลบด้วย เช่น PostImage, PostComment
-            // PostImage::whereIn('post_id', $request->ids)->delete();
+            $post_stores = PostStore::whereIn('id', $ids)->get();
+            $deleted_posts = [];
 
-            Post::whereIn('id', $request->ids)->delete();
+            foreach ($post_stores as $store) {
+                $post = Post::find($store->post_id);
+                if ($post) {
+                    $post->delete(); // soft delete หรือ hard delete ตามที่ Model ตั้งไว้
+                    $deleted_posts[] = $post;
+                }
+
+                $store->delete();
+            }
 
             DB::commit();
 
             return response()->json([
-                'message' => "ลบบทความที่เลือกเรียบร้อยแล้ว",
+                'message' => 'ลบบทความและ post_stores ที่เลือกสำเร็จ',
+                'deleted_posts' => $deleted_posts
             ], 200);
         } catch (\Exception $error) {
             DB::rollBack();
 
             return response()->json([
-                'message' => "เกิดข้อผิดพลาดในการลบข้อมูล",
+                'message' => "เกิดข้อผิดพลาดในการลบโพสต์",
                 'error' => $error->getMessage(),
             ], 500);
         }
     }
+
 
 
     /**

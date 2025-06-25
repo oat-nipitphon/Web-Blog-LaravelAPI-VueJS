@@ -81,7 +81,7 @@ Route::prefix('/')->group(function () {
         Route::post('/confirm_store/{postID}', [PostStoreController::class, 'confirmStorePost']);
         Route::post('/recover/{postID}', [PostStoreController::class, 'recoverPost']);
         Route::post('/recoverSelected', [PostStoreController::class, 'recoverPostSelectd']);
-        Route::post('/deleteSelected', [PostStoreController::class, 'destroyPosts']);
+        Route::post('/deleteSelected', [PostStoreController::class, 'deletePostsSelectd']);
 
         Route::post('/event_pop/{postID}/{profileID}/{status}', [PostPopController::class, 'postPop']);
     });
