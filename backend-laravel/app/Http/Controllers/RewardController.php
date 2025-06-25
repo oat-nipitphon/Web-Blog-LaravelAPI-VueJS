@@ -20,41 +20,22 @@ class RewardController extends Controller
     {
         try {
 
-        $rewards = Reward::with('rewardImage')->get();
-        // ->map(function ($reward) {
-        //     return $reward ? [
-        //         'id' => $reward->id,
-        //         'name' => $reward->name,
-        //         'point' => $reward->point,
-        //         'amount' => $reward->amount,
-        //         'status' => $reward->status,
-        //         'created_at' => $reward->created_at,
-        //         'updated_at' => $reward->updated_at,
-        //         'rewardImage' => $reward->rewardImage->map(function ($image) {
-        //             return $image ? [
-        //                 'id' => $image->id,
-        //                 'reward_id' => $image->reward_id,
-        //                 'image_path' => $image->image_path,
-        //                 'image_name' => $image->image_name,
-        //                 'image_data' => $image->image_data ? 'data:image/png;base64,' . $image->image_data : null,
-        //                 'created_at' => $image->created_at,
-        //                 'updated_at' => $image->updated_at,
-        //             ] : null;
-        //         })
-        //     ] : null;
-        // });
+            $rewards = Reward::with([
+                'reward_status',
+                'reward_image'
+            ])->get();
 
-        if (empty($rewards)) {
+
+            if (!$rewards) {
+                return response()->json([
+                    'message' => 'reward index() get false ',
+                ], 400);
+            }
+
             return response()->json([
-                'message' => 'controller reward index false',
-            ], 400);
-        }
-
-        return response()->json([
-            'message' => 'controller reward index',
-            'rewards' => $rewards,
-        ], 200);
-
+                'message' => 'controller reward index',
+                'rewards' => $rewards,
+            ], 200);
         } catch (\Exception $error) {
             return response()->json([
                 'message' => 'controller reward index function error',
@@ -71,48 +52,51 @@ class RewardController extends Controller
         try {
 
             $validated = $request->validate([
-                'statusID' => 'required|string',
                 'name' => 'required|string',
                 'point' => 'required|numeric',
                 'amount' => 'required|integer',
-                'imageFile' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'status_id' => 'nullable|string',
+                'image_file' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             ]);
 
             $reward = Reward::create([
-                'status_id' => $validated['statusID'],
                 'name' => $validated['name'],
                 'point' => $validated['point'],
                 'amount' => $validated['amount'],
+                'status_id' => $validated['status_id'],
             ]);
 
-            if (!empty($reward)) {
-                $imageDataBase64 = null;
-                if ($request->hasFile('imageFile')) {
-                    $imageFile = $request->file('imageFile');
-                    $imageData = file_get_contents($imageFile->getRealPath());
-                    $imageDataBase64 = base64_encode($imageData);
-                }
-
-                RewardImage::create([
-                    'reward_id' => $reward->id,
-                    'image_data' => $imageDataBase64,
-                    'created_at' => now(),
-                ]);
-
-
+            if (empty($reward->id)) {
                 return response()->json([
-                    'message' => 'reward created success',
-                    'reward' => $reward,
-                ], 201);
+                    'message' => 'reward create new false',
+                    'reward' => $reward
+                ], 400);
             }
 
+
+
+            if ($request->hasFile('image_file')) {
+                $image_file = $request->file('image_file');
+                $image_data = file_get_contents($image_file->getRealPath());
+                $image_data_base64 = base64_encode($image_data);
+            } else {
+                $image_data_base64 = null;
+            }
+
+            RewardImage::create([
+                'reward_id' => $reward->id,
+                'image_data' => $image_data_base64,
+                'created_at' => now(),
+            ]);
+
             return response()->json([
-                'message' => 'laravel create reward false',
-                'reward' => $reward
-            ], 404);
+                'message' => 'reward create new success',
+                'reward' => $reward,
+                'imageDataBase64' => $image_data_base64,
+            ], 201);
         } catch (\Exception $error) {
             return response()->json([
-                'message' => 'api function store create reward error',
+                'message' => 'reward create new function error',
                 'error' => $error->getMessage()
             ]);
         }
@@ -124,46 +108,27 @@ class RewardController extends Controller
      */
     public function show(string $id)
     {
-try {
+        try {
 
-            $rewards = Reward::with('rewardImage')->findOrFail($id);
+            $reward = Reward::with([
+                'reward_status',
+                'reward_image'
+            ])->findOrFail($id);
 
-            // $rewards = [
-            //     'id' => $rewards->id,
-            //     'name' => $rewards->name,
-            //     'point' => $rewards->point,
-            //     'amount' => $rewards->amount,
-            //     'status' => $rewards->status,
-            //     'created_at' => $rewards->created_at,
-            //     'updated_at' => $rewards->updated_at,
-            //     'rewardImage' => $rewards->rewardImage->map(function ($image) {
-            //         return $image ? [
-            //             'id' => $image->id,
-            //             'reward_id' => $image->reward_id,
-            //             'image_path' => $image->image_path,
-            //             'image_name' => $image->image_name,
-            //             'image_data' => $image->image_data ? 'data:image/png;base64,' . $image->image_data : null,
-            //             'created_at' => $image->created_at,
-            //             'updated_at' => $image->updated_at,
-            //         ] : null;
-            //     })
-            // ];
-
-            if (empty($rewards)) {
+            if (empty($reward)) {
                 return response()->json([
-                    'message' => 'controller reward show false',
+                    'message' => 'reward show() get false',
                     'id' => $id
                 ], 400);
             }
 
             return response()->json([
-                'message' => 'controller reward show success',
-                'rewards' => $rewards
+                'message' => 'reward show() get success',
+                'rewards' => $reward
             ], 200);
-
         } catch (\Exception $error) {
             return response()->json([
-                'message' => 'controller reward show function error',
+                'message' => 'reward show() get function error',
                 'error' => $error->getMessage()
             ]);
         }
@@ -178,61 +143,61 @@ try {
         try {
 
             $validated = $request->validate([
-                'statusID' => 'required|string',
+                'reward_id' => 'required|integer|exists:rewards,id',
                 'name' => 'required|string',
                 'point' => 'required|numeric',
                 'amount' => 'required|integer',
-                'imageFile' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'status_id' => 'nullable|string',
+                'image_file' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             ]);
 
 
-            $reward = Reward::with([
-                'reward_images'
-            ])->findOrFail($request->rewardID);
+            $reward = Reward::findOrFail($id);
 
-            if (!empty($reward)) {
-                $reward->updateOrCreate(
-                    ['id' => $reward->id],
-                    [
-                        'status_id' => $validated['statusID'],
-                        'name' => $validated['name'],
-                        'point' => $validated['point'],
-                        'amount' => $validated['amount'],
-                        'updated_at' => now()
-                    ]
-                );
-                $imageDataBase64 = null;
-                if ($request->hasFile('imageFile')) {
-                    $imageFile = $request->file('imageFile');
-                    $imageData = file_get_contents($imageFile->getRealPath());
-                    $imageDataBase64 = base64_encode($imageData);
-                }
-
-                $reward->reward_images->updateOfCreate(
-                    ['reward_id' => $reward->id],
-                    [
-                        'image_data' => $imageDataBase64,
-                        'updated_at' => now(),
-                    ]
-                );
-
-
-
+            if (empty($reward)) {
                 return response()->json([
-                    'message' => 'laravel update reward and image success',
-                    'reward' => $reward,
-                ], 201);
+                    'message' => 'reward update() false',
+                    'id' => $id
+                ], 400);
             }
 
+            $reward->updateOrCreate(
+                ['id' => $id],
+                [
+                    'name' => $validated['name'],
+                    'point' => $validated['point'],
+                    'amount' => $validated['amount'],
+                    'status_id' => $validated['status_id'],
+                    'updated_at' => now()
+                ]
+            );
+
+            if ($request->hasFile('image_file')) {
+                $image_file = $request->file('image_file');
+                $image_data = file_get_contents($image_file->getRealPath());
+                $image_data_base64 = base64_encode($image_data);
+            } else {
+                $image_data_base64 = null;
+            }
+
+            $reward->reward_images->updateOfCreate(
+                ['reward_id' => $reward->id],
+                [
+                    'image_data' => $image_data_base64,
+                    'updated_at' => now(),
+                ]
+            );
+
             return response()->json([
-                'message' => 'api update reward response false',
-                'rewardID' => $request->rewardID
-            ], 404);
+                'message' => 'reward update() success',
+                'reward' => $reward,
+                'imageDataBase64' => $image_data_base64
+            ], 201);
         } catch (\Exception $error) {
             return response()->json([
-                'message' => 'laravel update reward and image function error',
+                'message' => 'reward update() function error',
                 'error' => $error->getMessage()
-            ]);
+            ], 500);
         }
     }
 
@@ -243,26 +208,29 @@ try {
     {
         //
         try {
+
             DB::beginTransaction();
             $reward = Reward::findOrFail($id);
 
             if (empty($reward)) {
                 return response()->json([
-                    'message' => 'laravel delete reward where id false',
+                    'message' => 'reward delete() where id false',
                     'rewardID' => $id
-                ], 404);
+                ], 400);
             }
 
+            $reward->reward_images->delete();
             $reward->delete();
+
 
             DB::commit();
 
             return response()->json([
-                'message' => 'laravel delete reward success',
+                'message' => 'reward delete() success',
             ], 200);
         } catch (\Exception $error) {
             return response()->json([
-                'message' => 'laravel delete reward function error',
+                'message' => 'reward delete() function error',
                 'error' => $error->getMessage()
             ]);
         }

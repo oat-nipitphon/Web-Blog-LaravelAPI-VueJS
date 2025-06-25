@@ -14,6 +14,7 @@ import HomeRewardView from "@/views/rewards/HomeRewardView.vue";
 import ReportCardItemsView from "@/views/rewards/ReportCardItemsView.vue";
 import CreateRewardView from "@/views/rewards/CreateRewardView.vue";
 import EditRewardView from "@/views/rewards/EditRewardView.vue";
+import ManagerReportRewardsView from "@/views/rewards/Manager-ReportRewardsView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -76,6 +77,20 @@ const router = createRouter({
       meta: { auth: true }
     },
     {
+      path: '/report_card_items/:{profileID}',
+      name: 'ReportCardItemsView',
+      component: ReportCardItemsView,
+      meta: { auth: true }
+    },
+
+    //----------- Manager Rewards ----------------// 
+    {
+      path: '/ManagerRewardView',
+      name: 'ManagerRewardView',
+      component: ManagerReportRewardsView,
+      meta: { auth: true }
+    },
+    {
       path: '/CreateRewardView',
       name: 'CreateRewardView',
       component: CreateRewardView,
@@ -87,12 +102,7 @@ const router = createRouter({
       component: EditRewardView,
       meta: { auth: true }
     },
-    {
-      path: '/report_card_items/:{profileID}',
-      name: 'ReportCardItemsView',
-      component: ReportCardItemsView,
-      meta: { auth: true }
-    },
+
 
   ],
 });

@@ -1,7 +1,7 @@
 <template>
   <Disclosure
     as="nav"
-    class="bg-gray-800"
+    class="bg-white"
     v-slot="{ open }"
     v-if="authStore.users"
   >
@@ -238,6 +238,7 @@ const navigation = [
   },
   { name: "Reward Shop", href: "#", current: false },
   { name: "Admin Manager", href: "#", current: false },
+  { name: "Manager Reward", href: "/ManagerReportRewardView", current: false },
 ];
 
 const userNavigation = [

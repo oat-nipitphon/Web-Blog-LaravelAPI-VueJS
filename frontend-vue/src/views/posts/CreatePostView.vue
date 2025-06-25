@@ -1,108 +1,3 @@
-<script setup>
-import { ref, onMounted, reactive } from "vue";
-import { useRouter } from "vue-router";
-import { storeToRefs } from "pinia";
-import { useAuthStore } from "@/stores/auth";
-import { usePostStore } from "@/stores/post";
-
-import Swal from "sweetalert2";
-import axiosAPI from "@/services/axiosAPI";
-import imageDefault from "@/assets/images/keyboard.jpg";
-import PageHeader from "@/components/PageHeader.vue";
-import BaseLabel from "@/components/BaseLabel.vue";
-import BaseInput from "@/components/BaseInput.vue";
-import BaseSelect from "@/components/BaseSelect.vue";
-import BaseTextArea from "@/components/BaseTextArea.vue";
-import BaseInputFileImageCover from "@/components/FileImageUploadCover.vue";
-
-const router = useRouter();
-const authAuth = useAuthStore();
-const postStore = usePostStore();
-const postTypes = ref([]);
-const isSelectType = ref(true);
-const isButtonSelect = ref(false);
-const isNewType = ref(false);
-
-// input require file value
-const FileImageUploadCover = ref(null);
-
-const form = ref({
-  title: "",
-  content: "",
-  refer: "",
-  typeID: "",
-  newType: "",
-});
-
-const { storeCreatePost } = usePostStore();
-
-const onSelectType = () => {
-  if (form.value.typeID === "new") {
-    isSelectType.value = false;
-    isNewType.value = true;
-    isButtonSelect.value = true;
-    form.value.typeID = 0;
-  } else {
-    form.value.newType = 0;
-  }
-};
-
-const onSelectAgain = () => {
-  isSelectType.value = true;
-  isNewType.value = false;
-  isButtonSelect.value = false;
-};
-
-const onCreatePost = async () => {
-  const formData = new FormData();
-
-  formData.append("profile_id", authAuth.users.userProfile.id);
-  formData.append("type_id", form.value.typeID);
-  formData.append("new_type", form.value.newType);
-  formData.append("title", form.value.title);
-  formData.append("content", form.value.content);
-  formData.append("refer", form.value.refer);
-
-  if (FileImageUploadCover.value) {
-    formData.append("image_file", FileImageUploadCover.value);
-  } else {
-    const response = await fetch(imageDefault);
-    const blob = await response.blob();
-    const file = new File([blob], "default-image.jpg", { type: "image/jpeg" });
-    formData.append("image_file", file);
-  }
-
-  // Check data require form data
-  // for (const [key, value] of formData.entries()) {
-  //   console.log(`${key}:`, value);
-  // }
-
-  await storeCreatePost(formData);
-};
-
-const onCancel = () => {
-  router.push({ name: "HomeView" });
-};
-
-const getPostTypes = async () => {
-  try {
-    const res = await axiosAPI.get("/api/get_post_types");
-
-    if (!res.ok) {
-      console.log("get post type false", res);
-    }
-    console.log("get post type success", res.postTypes);
-    return res.data;
-  } catch (error) {
-    console.error("get post type function error ", error);
-  }
-};
-
-onMounted(async () => {
-  postTypes.value = await getPostTypes();
-  console.log("post type create post view ", postTypes.value);
-});
-</script>
 <template>
   <div class="bg-white rounded-xl shadow-lg mt-5 max-w-5xl m-auto p-10">
     <!-- Page Header -->
@@ -236,7 +131,111 @@ onMounted(async () => {
     </div>
   </div>
 </template>
+<script setup>
+import { ref, onMounted, reactive } from "vue";
+import { useRouter } from "vue-router";
+import { storeToRefs } from "pinia";
+import { useAuthStore } from "@/stores/auth";
+import { usePostStore } from "@/stores/post";
 
+import Swal from "sweetalert2";
+import axiosAPI from "@/services/axiosAPI";
+import imageDefault from "@/assets/images/keyboard.jpg";
+import PageHeader from "@/components/PageHeader.vue";
+import BaseLabel from "@/components/BaseLabel.vue";
+import BaseInput from "@/components/BaseInput.vue";
+import BaseSelect from "@/components/BaseSelect.vue";
+import BaseTextArea from "@/components/BaseTextArea.vue";
+import BaseInputFileImageCover from "@/components/FileImageUploadCover.vue";
+
+const router = useRouter();
+const authAuth = useAuthStore();
+const postStore = usePostStore();
+const postTypes = ref([]);
+const isSelectType = ref(true);
+const isButtonSelect = ref(false);
+const isNewType = ref(false);
+
+// input require file value
+const FileImageUploadCover = ref(null);
+
+const form = ref({
+  title: "",
+  content: "",
+  refer: "",
+  typeID: "",
+  newType: "",
+});
+
+const { storeCreatePost } = usePostStore();
+
+const onSelectType = () => {
+  if (form.value.typeID === "new") {
+    isSelectType.value = false;
+    isNewType.value = true;
+    isButtonSelect.value = true;
+    form.value.typeID = 0;
+  } else {
+    form.value.newType = 0;
+  }
+};
+
+const onSelectAgain = () => {
+  isSelectType.value = true;
+  isNewType.value = false;
+  isButtonSelect.value = false;
+};
+
+const onCreatePost = async () => {
+  const formData = new FormData();
+
+  formData.append("profile_id", authAuth.users.userProfile.id);
+  formData.append("type_id", form.value.typeID);
+  formData.append("new_type", form.value.newType);
+  formData.append("title", form.value.title);
+  formData.append("content", form.value.content);
+  formData.append("refer", form.value.refer);
+
+  if (FileImageUploadCover.value) {
+    formData.append("image_file", FileImageUploadCover.value);
+  } else {
+    const response = await fetch(imageDefault);
+    const blob = await response.blob();
+    const file = new File([blob], "default-image.jpg", { type: "image/jpeg" });
+    formData.append("image_file", file);
+  }
+
+  // Check data require form data
+  // for (const [key, value] of formData.entries()) {
+  //   console.log(`${key}:`, value);
+  // }
+
+  await storeCreatePost(formData);
+};
+
+const onCancel = () => {
+  router.push({ name: "HomeView" });
+};
+
+const getPostTypes = async () => {
+  try {
+    const res = await axiosAPI.get("/api/get_post_types");
+
+    if (!res.ok) {
+      console.log("get post type false", res);
+    }
+    console.log("get post type success", res.postTypes);
+    return res.data;
+  } catch (error) {
+    console.error("get post type function error ", error);
+  }
+};
+
+onMounted(async () => {
+  postTypes.value = await getPostTypes();
+  console.log("post type create post view ", postTypes.value);
+});
+</script>
 <style scoped>
 /* Image Preview Styles */
 .ibox-image-post {

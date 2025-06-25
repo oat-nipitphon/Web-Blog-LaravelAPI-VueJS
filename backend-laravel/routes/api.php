@@ -57,41 +57,47 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanc
 
 Route::prefix('/')->group(function () {
 
-
+    // --------------------------------------- User Profile ------------------------------------------------ //
     Route::apiResource('/users', UserController::class);
     Route::apiResource('/user_profiles', UserProfileController::class);
     Route::post('/user_profiles/upload_image', [UserProfileController::class, 'uploadImageProfile']);
-
     Route::apiResource('/user_profile_pops', UserProfilePopController::class);
     Route::post('/pop_like/{postUserID}/{authUserID}', [UserProfilePopController::class, 'popLikeProfile']);
     Route::apiResource('/user_profile_followers', UserProfileFollowersController::class);
     Route::post('/followers/{postUserID}/{authUserID}', [UserProfileFollowersController::class, 'followersProfile']);
+    // --------------------------------------- User Profile ------------------------------------------------ //
 
-
+    // --------------------------------------- Post ------------------------------------------------ //
     Route::get('/get_post_types', function () {
         $postTypes = PostType::all();
         return response()->json($postTypes, 200);
     });
     Route::apiResource('/posts', PostController::class);
-
     Route::prefix('/posts')->group(function () {
         Route::apiResource('/stores', PostStoreController::class);
-
         Route::get('/stores_report/{profileID}', [PostStoreController::class, 'storeReportPosts']);
         Route::post('/confirm_store/{postID}', [PostStoreController::class, 'confirmStorePost']);
         Route::post('/recover/{postID}', [PostStoreController::class, 'recoverPost']);
         Route::post('/recoverSelected', [PostStoreController::class, 'recoverPostSelectd']);
         Route::post('/deleteSelected', [PostStoreController::class, 'deletePostsSelectd']);
-
         Route::post('/event_pop/{postID}/{profileID}/{status}', [PostPopController::class, 'postPop']);
     });
+    // --------------------------------------- Post ------------------------------------------------ //
 
-
+    // --------------------------------------- Reward ------------------------------------------------ //
     Route::apiResource('/rewards', RewardController::class);
     Route::prefix('/rewards')->group(function () {
+        Route::get('/get_status', function () {
+            $reward_status = RewardStatus::all();
+            return response()->json([
+                'rewardStatus' => $reward_status
+            ], 200);
+        });
         Route::get('/report_card_items/{profileID}', [RewardController::class,]);
     });
+    // --------------------------------------- Reward ------------------------------------------------ //
 
+    // --------------------------------------- Wellet ------------------------------------------------ //
     Route::apiResource('/wellets', WalletController::class);
     Route::prefix('/wellets')->group(function () {
         Route::apiResource('/counters', WalletCounterController::class);
@@ -101,7 +107,11 @@ Route::prefix('/')->group(function () {
             Route::post('/cancel_reward/{itemID}', [WalletCounterController::class, 'cancelReward']);
         });
     });
+    // --------------------------------------- Wellet ------------------------------------------------ //
 
+
+    // ***************************************************************************************************** //
+    // --------------------------------------- Manager Blog ------------------------------------------------ //
     Route::prefix('/manager')->group(function () {
 
         Route::apiResource('/user_profiles', AdminUserProfileController::class);
@@ -118,9 +128,13 @@ Route::prefix('/')->group(function () {
 
         Route::apiResource('/wellets', AdminWalletController::class);
     });
+    // --------------------------------------- Manager Blog ------------------------------------------------ //
+    // ***************************************************************************************************** //
+
+
 })->middleware('auth:sanctum');
 
-// Auth Login Get Data Account
+// --------------------------------------- Authorization ------------------------------------------------ //
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     try {
 
@@ -151,7 +165,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
                 'code' => $users->user_status->code,
             ] : null,
 
-
             'userProfile' => $users->user_profile ? [
                 'id' => $users->user_profile->id,
                 'titleName' => $users->user_profile->title_name,
@@ -160,7 +173,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
                 'nickName' => $users->user_profile->nick_name,
                 'birthDay' => $users->user_profile->birth_day,
             ] : null,
-
 
             'profileImage' => $users->user_profile && $users->user_profile->profile_image ? [
                 'id' => $users->user_profile->profile_image->id,
@@ -175,7 +187,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
                 'point' => $users->user_wallet->point,
                 'status' => $users->user_wallet->status,
             ] : null,
-
 
             'walletCounters' => $users->user_wallet->wallet_counters ?
                 $users->user_wallet->wallet_counters->map(function ($counter) {
@@ -212,8 +223,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
         ], 500);
     }
 });
+// --------------------------------------- Authorization ------------------------------------------------ //
 
-// Reset Password
+// --------------------------------------- Test Reset Password ------------------------------------------------ //
 Route::post('/reset-password', function (Request $request) {
 
     $request->validate([
@@ -254,3 +266,4 @@ Route::post('/reset-password', function (Request $request) {
     ], 200);
 });
 // ->middleware('guest')->name('password.update');
+// --------------------------------------- Test Reset Password ------------------------------------------------ //

@@ -1,83 +1,3 @@
-<script setup>
-import { ref } from 'vue'
-import { RouterLink } from 'vue-router'
-</script>
-<template>
-  <div class="m-auto">
-    <h1>Home Reward View</h1>
-  </div>
-</template>
-<!-- <script setup>
-// import { MagnifyingGlassIcon, ShoppingBagIcon } from '@heroicons/vue/24/outline'
-// import { ref, reactive, computed, onMounted } from 'vue'
-// import { useRouter, RouterLink } from 'vue-router'
-// import { storeToRefs } from 'pinia'
-
-// import axiosAPI from '@/services/axiosAPI'
-// import { useAuthStore } from '@/stores/auth'
-// import { useRewardStore } from '@/stores/reward'
-// import { useRewardCartStore } from '@/stores/reward.cart'
-
-// import CardReward from '@/components/Reward/CardReward.vue'
-// import ReportCounterItems from '@/views/Reward/ReportCounterItems.vue'
-
-// const authStore = useAuthStore()
-// const rewardStore = useRewardStore()
-// const rewardCartStore = useRewardCartStore()
-
-// const { storeUser } = storeToRefs(authStore)
-// const { storeRewards } = storeToRefs(rewardStore)
-// const { counterItems, cartItemCounters, totalPoint } = storeToRefs(rewardCartStore)
-
-// const userPoint = ref(storeUser.value?.user_login?.userPoint?.point || 0)
-
-// const onUserAmount = computed(() => {
-//   return userPoint.value - totalPoint.value
-// })
-
-// const form = reactive({
-//   userID: storeUser.value?.user_login?.id || '',
-//   userAmount: '',
-//   counterItems: '',
-// })
-
-
-// const onSave = async () => {
-//   const formData = new FormData()
-//   formData.append('userID', storeUser.value?.user_login?.id)
-//   formData.append('userAmount', onUserAmount.value)
-//   formData.append('counterItems', JSON.stringify(counterItems.value))
-
-//   try {
-    
-//     const res = await axiosAPI.post(`/api/cartItems/userConfirmSelectReward`, formData, {
-//       headers: {
-//         authorization: `Bearer ${localStorage.getItem('token')}`
-//       }
-//     })
-
-//     if (res.status === 201) {
-//       window.location.reload()
-//     } else {
-//       console.log('confirm selected reward false', res.data);
-//     }
-
-//   } catch (error) {
-//     console.error('Request failed:', error)
-//   }
-// }
-
-
-// const onResetItemsCart = () => {
-//   rewardCartStore.resetCart()
-// }
-
-// onMounted(async () => {
-//   await rewardStore.getRewards()
-// })
-
-// </script>
-
 <template>
   <div class="bg-white rounded-2xl shadow-xl p-8 max-w-6xl mx-auto mt-10">
     <div class="grid gap-6 border-b border-gray-200 pb-6 mb-6">
@@ -90,7 +10,7 @@ import { RouterLink } from 'vue-router'
         </div>
         <div class="flex justify-between items-center">
           <p>จำนวนรางวัล:</p>
-          <ReportCounterItems :counterItems="counterItems" />
+          <CardReportCounterItems :counterItems="counterItems" />
         </div>
       </div>
 
@@ -149,6 +69,85 @@ import { RouterLink } from 'vue-router'
     </div>
   </div>
   <div class="mt-10">
-    <CardReward :rewards="storeRewards" />
+    {/* 
+      
+      Card Reward ?
+
+     */}
   </div>
-</template> -->
+</template>
+<script setup>
+import axiosAPI from '@/services/axiosAPI'
+import { ref, reactive, computed, onMounted } from 'vue'
+import { RouterLink } from 'vue-router'
+import { storeToRefs } from 'pinia'
+
+import { useAuthStore } from '@/stores/auth'
+import { useRewardStore } from '@/stores/reward'
+import { useRewardCartStore } from '@/stores/reward-card';
+
+import CardReportCounterItems from '@/components/rewards/CardReportCounterItems.vue'
+
+const authStore = useAuthStore()
+const rewardStore = useRewardStore()
+const rewardCartStore = useRewardCartStore()
+
+const { users } = storeToRefs(authStore)
+const { storeRewards } = storeToRefs(rewardStore)
+
+const { counterItems, cartItemCounters, totalPoint } 
+= storeToRefs(rewardCartStore)
+
+const { storeGetRewards } = useRewardStore();
+
+
+onMounted(async () => {
+  await rewardStore.storeGetRewards()
+})
+
+// const userPoint = ref(users.value?.user_login?.userPoint?.point || 0)
+
+// const onUserAmount = computed(() => {
+//   return userPoint.value - totalPoint.value
+// })
+
+const form = reactive({
+  userID: storeUser.value?.user_login?.id || '',
+  userAmount: '',
+  counterItems: '',
+})
+
+
+const onSave = async () => {
+  const formData = new FormData()
+  // formData.append('userID', storeUser.value?.user_login?.id)
+  // formData.append('userAmount', onUserAmount.value)
+  // formData.append('counterItems', JSON.stringify(counterItems.value))
+
+  // try {
+    
+  //   const res = await axiosAPI.post(`/api/cartItems/userConfirmSelectReward`, formData, {
+  //     headers: {
+  //       authorization: `Bearer ${localStorage.getItem('token')}`
+  //     }
+  //   })
+
+  //   if (res.status === 201) {
+  //     window.location.reload()
+  //   } else {
+  //     console.log('confirm selected reward false', res.data);
+  //   }
+
+  // } catch (error) {
+  //   console.error('Request failed:', error)
+  // }
+}
+
+
+const onResetItemsCart = () => {
+  rewardCartStore.resetCart()
+}
+
+
+
+</script>
