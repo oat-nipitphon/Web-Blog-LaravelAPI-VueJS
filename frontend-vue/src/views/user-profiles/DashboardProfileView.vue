@@ -14,9 +14,17 @@
             class="w-40 h-40 overflow-hidden rounded-full shadow-md border border-gray-300"
           >
             <img
+              v-if="profileDetails?.profileImage?.imageData"
               :src="
-                'data:image/png;base64,' + profileDetails.profileImage.imageData
+                'data:image/png;base64,' +
+                profileDetails?.profileImage?.imageData
               "
+              alt="ProfileImage"
+              class="w-full h-full object-cover"
+            />
+            <img
+              v-else
+              src="../../assets/images/account-profile.png"
               alt="ProfileImage"
               class="w-full h-full object-cover"
             />

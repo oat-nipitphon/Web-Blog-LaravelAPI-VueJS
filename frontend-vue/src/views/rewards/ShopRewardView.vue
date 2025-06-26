@@ -8,7 +8,7 @@
         <div class="flex justify-between items-center">
           <p>แต้มสมาชิก:</p>
           <p class="font-semibold text-right">
-            {{ userPoint.toLocaleString() }}
+            {{ form.point }}
             <span class="text-sm font-normal text-gray-500">Point</span>
           </p>
         </div>
@@ -27,14 +27,14 @@
         <div class="flex justify-between items-center">
           <p>จำนวนแต้ม:</p>
           <p class="text-rose-600 font-bold text-right">
-            {{ totalPoint.toLocaleString() }}
+            {{ totalPoint }}
             <span class="text-sm font-normal text-gray-500">Point</span>
           </p>
         </div>
         <div class="flex justify-between items-center">
           <p>แต้มคงเหลือ:</p>
           <p class="text-green-600 font-bold text-right">
-            {{ checkPointSelectd.toLocaleString() }}
+            {{ checkPointSelectd }}
             <span class="text-sm font-normal text-gray-500">Point</span>
           </p>
         </div>

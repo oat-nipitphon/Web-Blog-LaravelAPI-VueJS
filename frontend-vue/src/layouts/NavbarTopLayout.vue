@@ -95,12 +95,17 @@
                 >
                   <MenuItem
                     v-for="item in userNavigation"
-                    :key="item.title"
+                    :key="item.name"
                     v-slot="{ active }"
                   >
                     <button
                       @click="handleNavigation(item)"
-                      class="block w-full text-left px-4 py-2 text-sm text-gray-700"
+                      :class="[
+                        item.current
+                          ? 'bg-gray-900 text-white'
+                          : 'text-gray-700 hover:bg-gray-700 hover:text-white',
+                        'block rounded-md px-3 py-2 text-base font-medium',
+                      ]"
                     >
                       {{ item.title }}
                     </button>
@@ -142,7 +147,7 @@
       <div class="space-y-1 px-2 pt-2 pb-3 sm:px-3">
         <button
           v-for="item in navigation"
-          :key="item.title"
+          :key="item.name"
           @click="handleNavigation(item)"
           :class="[
             item.current
@@ -159,6 +164,7 @@
 </template>
 
 <script setup>
+import Swal from 'sweetalert2'
 import {
   Disclosure,
   DisclosureButton,
@@ -184,39 +190,76 @@ const imageDefault = "/default-profile.png";
 const navigation = [
   { title: "Home", name: "HomeView", current: true },
   { title: "Create Post", name: "CreatePostView", current: false },
-  { title: "Store Post", name: "StorePostsView", current: false },
   { title: "Shop Reward", name: "ShopRewardView", current: false },
-  { title: "Dashboard Manager", name: "DashboardManagerView", current: false },
 ];
 
 // Profile dropdown
 const userNavigation = [
-  { title: "Dashboard Profile", name: "DashboardProfileView" },
-  { title: "Store Post", name: "StorePostsView" },
+  { title: "Profile", name: "DashboardProfileView", current: false },
+  { title: "Store Post", name: "StorePostsView", current: false },
+  { title: "Manager", name: "DashboardManagerView", current: false },
   { title: "Sign out", name: "SignOut" },
 ];
 
 // Unified navigation handler
 const handleNavigation = (item) => {
   switch (item.name) {
+
     case "HomeView":
-    case "CreatePostView":
-    case "ShopRewardView":
-    case "DashboardManagerView":
-      router.push({ name: item.name });
+      router.push({
+        name: item.name,
+      });
+      item.current = true;
       break;
+
+    case "CreatePostView":
+      router.push({
+        name: item.name,
+      });
+      item.current = true;
+      break;
+
+    case "ShopRewardView":
+      router.push({
+        name: item.name,
+      });
+      item.current = true;
+      break;
+
     case "DashboardProfileView":
       router.push({
         name: item.name,
         params: { id: authStore.users?.userProfile?.id },
       });
       break;
+
     case "StorePostsView":
       router.push({
         name: item.name,
         params: { profileID: authStore.users?.userProfile?.id },
       });
       break;
+
+    case "DashboardManagerView":
+      if (authStore.users?.userStatus?.name === "admin") {
+        router.push({
+          name: item.name
+        });
+      } else {
+        Swal.fire({
+          title: 'This page is restricted',
+          text: 'This page is restricted and can only be accessed by the specified status.',
+          icon: 'error',
+          timer: true,
+        }).then(() => {
+          router.push({
+            name: 'HomeView'
+          });
+        });
+      }
+
+      break;
+
     case "SignOut":
       onLogout();
       break;
