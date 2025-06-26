@@ -25,6 +25,7 @@ export const useRewardStore = defineStore("rewardStore", {
 
         const data = await response.json();
         this.rewards = data.rewards;
+        
         console.log("store get rewards success", this.rewards);
       } catch (error) {
         console.error("store get rewards function error ", error);

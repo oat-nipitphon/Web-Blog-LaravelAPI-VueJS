@@ -3,6 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Auth\Events\Validated;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\UserWallet;
@@ -11,34 +16,40 @@ use App\Models\Reward;
 
 class WalletCounterController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        //
+    }
 
-    public function userConfirmSelectReward(Request $request)
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
     {
         try {
 
-            $user_wallets = new UserWallet();
-            $wallet_counters = new WalletCounter();
-            $reward = new Reward();
-
-            $request->validate([
-                'userID' => 'required|integer',
-                'userAmount' => 'required|integer',
-                'counterItems' => 'required|json',
+            $validated =  $request->validate([
+                'wallet_id' => 'required|integer',
+                'amount' => 'required|integer',
+                'items' => 'required|json',
             ]);
 
-            $counterItems = $request->input('counterItems');
+            $items = $request->input('items');
 
-            $user_wallets = UserWallet::where('user_id', $request->userID)->first();
+            $wallet = UserWallet::findOrFail($validated['wallet_id']);
 
-            if (!$user_wallets) {
+            if (!$wallet) {
 
                 return response()->json([
                     'message' => 'laravelapi user point request false',
-                    'userID' => $request->userID,
+                    'walletID' => $validated['wallet_id'],
                 ], 404);
             }
 
-            $user_wallets->update([
+            $wallet->update([
                 'point' => $request->userAmount,
                 'updated_at' => $this->dateTimeFormatTimeZone()
             ]);
@@ -97,11 +108,16 @@ class WalletCounterController extends Controller
         }
     }
 
-    public function getReportReward(Request $request, string $userID)
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
     {
+        // Card Report Items Selectd Wallet ID
         try {
             // ดึงข้อมูลเฉพาะผู้ใช้ พร้อม relation
-            $user = User::with('user_wallet', 'user_wallet.wallet_counters', 'user_wallet.wallet_counters.reward')->findOrFail($userID);
+            $user = User::with('user_wallet', 'user_wallet.wallet_counters', '
+            user_wallet.wallet_counters.reward')->findOrFail($$id);
 
             $userPointCounters = [
                 'id' => $user->id,
@@ -145,15 +161,27 @@ class WalletCounterController extends Controller
         }
     }
 
-    public function cancelReward (string $itemID) {
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
         try {
 
-            $cancelReward = WalletCounter::findOrFail($itemID);
+            $cancelReward = WalletCounter::findOrFail($id);
 
             if (empty($cancelReward)) {
                 return response()->json([
                     'message' => 'laravelapi reward false',
-                    'itemID' => $itemID
+                    'id' => $id
                 ], 404);
             }
 
@@ -171,44 +199,4 @@ class WalletCounterController extends Controller
             ], 404);
         }
     }
-
-    // /**
-    //  * Display a listing of the resource.
-    //  */
-    // public function index()
-    // {
-    //     //
-    // }
-
-    // /**
-    //  * Store a newly created resource in storage.
-    //  */
-    // public function store(Request $request)
-    // {
-    //     //
-    // }
-
-    // /**
-    //  * Display the specified resource.
-    //  */
-    // public function show(string $id)
-    // {
-    //     //
-    // }
-
-    // /**
-    //  * Update the specified resource in storage.
-    //  */
-    // public function update(Request $request, string $id)
-    // {
-    //     //
-    // }
-
-    // /**
-    //  * Remove the specified resource from storage.
-    //  */
-    // public function destroy(string $id)
-    // {
-    //     //
-    // }
 }
