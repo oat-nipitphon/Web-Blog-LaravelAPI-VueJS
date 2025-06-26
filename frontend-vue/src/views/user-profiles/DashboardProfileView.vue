@@ -24,14 +24,14 @@
 
           <!-- Upload Image -->
           <div class="mt-4 w-full">
-            <UploadImage :profileID="profileDetails?.profile?.id" />
+            <UploadImageProfileModal :profileID="profileDetails?.profile?.id" />
           </div>
 
           <!-- Contact Card -->
           <div
             class="mt-6 w-full bg-white p-6 rounded-xl border border-gray-200 shadow"
           >
-            <CardShowContacts
+            <CardReportProfileContacts
               :profileID="profileDetails?.profile?.id"
               :contacts="profileDetails?.profileContacts"
             />
@@ -42,7 +42,7 @@
         <div class="bg-gray-50 p-6 rounded-xl shadow-inner">
           <div class="flex justify-between items-center mb-6">
             <h3 class="text-xl font-semibold text-gray-800">รายละเอียด</h3>
-            <CardEditUserModal
+            <EditUserModal
               :user="profileDetails?.user"
               :userStatus="userStatus"
             />
@@ -83,7 +83,7 @@
           </div>
 
           <div class="flex justify-end mt-6">
-            <CardEditProfileModal :profile="profileDetails?.profile" />
+            <EditProfileModal :profile="profileDetails?.profile" />
           </div>
         </div>
       </div>
@@ -97,11 +97,11 @@ import { useRoute } from "vue-router";
 import { storeToRefs } from "pinia";
 import { useStoreUserProfile } from "@/stores/user-profile";
 
-import UploadImage from "@/components/user-profiles/UploadImage.vue";
-import CardShowContacts from "@/components/user-profiles/CardShowContacts.vue";
+import UploadImageProfileModal from "@/components/user-profiles/UploadImageProfileModal.vue";
+import CardReportProfileContacts from "@/components/user-profiles/CardReportProfileContacts.vue";
 
-import CardEditUserModal from "@/components/user-profiles/CardEditUserModal.vue";
-import CardEditProfileModal from "@/components/user-profiles/CardEditProfileModal.vue";
+import EditUserModal from "@/components/user-profiles/EditUserModal.vue";
+import EditProfileModal from "@/components/user-profiles/EditProfileModal.vue";
 
 const route = useRoute();
 const profileDetails = ref(null);

@@ -1,43 +1,3 @@
-<script setup>
-import { useRoute } from "vue-router";
-
-import CardAddContacts from "@/components/user-profiles/CardAddContacts.vue";
-
-const route = useRoute();
-
-
-const props = defineProps({
-  profileID: {
-    type: Number,
-    required: true,
-  },
-  contacts: {
-    type: Object,
-    required: true,
-  },
-});
-
-const onDelete = async $id => {
-  console.log('on delete ', $id);
-  const response = await fetch(`/api/user_profile_contacts/${id}`, {
-    method: 'DELETE',
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem('token')}`,
-      'Content-Type': 'application/json', // (ถ้าต้องการ)
-    },
-  })
-
-  if (response.status !== 200) {
-    console.error('delete contacts false', response.error)
-  }
-
-  console.log('delete contacts success ')
-
-  window.location.reload()
-}
-
-</script>
-
 <template>
   <div
     class="w-full max-w-md m-auto p-4 bg-white border border-gray-200 rounded-lg shadow-sm sm:p-6 dark:bg-gray-800 dark:border-gray-700"
@@ -76,10 +36,10 @@ const onDelete = async $id => {
             </span>
           </div>
         </a>
-                <!-- Delete Button -->
+        <!-- Delete Button -->
         <button
           @click="onDelete(contact.id)"
-          class="text-red-500 hover:text-red-600 transition"
+          class="text-red-500 hover:text-red-600 transition rounded-lg m-auto"
           title="Delete"
         >
           <svg
@@ -106,3 +66,35 @@ const onDelete = async $id => {
     </p>
   </div>
 </template>
+<script setup>
+import { useRoute } from "vue-router";
+import CardAddContacts from "@/components/user-profiles/CardAddContacts.vue";
+
+const props = defineProps({
+  profileID: {
+    type: Number,
+    required: true,
+  },
+  contacts: {
+    type: Object,
+    required: true,
+  },
+});
+
+const onDelete = async ($id) => {
+  console.log("on delete ", $id);
+  const response = await fetch(`/api/user_profile_contacts/${id}`, {
+    method: "DELETE",
+    headers: {
+      authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+
+  if (response.status !== 200) {
+    console.error("delete contacts false", response.error);
+  }
+
+  console.log("delete contacts success", response);
+
+};
+</script>

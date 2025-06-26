@@ -1,7 +1,24 @@
 <template>
   <div>
-    <button class="btn btn-sm btn-outline-primary" @click="open = true">
-      <i class="bi bi-plus-circle"></i>
+    <button
+      class="text-blue-600 hover:blue-red-600 transition rounded-lg m-auto flex justify-between"
+      type="button"
+      @click="open = true"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke-width="1.5"
+        stroke="currentColor"
+        class="size-6"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M12 4.5v15m7.5-7.5h-15"
+        />
+      </svg>
     </button>
 
     <TransitionRoot as="template" :show="open">
@@ -106,7 +123,7 @@ import {
   TransitionChild,
   TransitionRoot,
 } from "@headlessui/vue";
-import { useStoreUserProfileContacts } from '@/stores/user-profile-contacts'
+import { useStoreUserProfileContacts } from "@/stores/user-profile-contacts";
 
 const { storeAddContacts } = useStoreUserProfileContacts();
 

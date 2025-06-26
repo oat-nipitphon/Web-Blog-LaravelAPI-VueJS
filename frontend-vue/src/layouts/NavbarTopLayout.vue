@@ -7,6 +7,7 @@
   >
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <div class="flex h-16 items-center justify-between">
+        <!-- Left: Logo + Desktop Nav -->
         <div class="flex items-center">
           <!-- Logo -->
           <div class="shrink-0">
@@ -22,36 +23,32 @@
           <!-- Desktop Menu -->
           <div class="hidden md:block">
             <div class="ml-10 flex items-baseline space-x-4">
-              <RouterLink
+              <button
                 v-for="item in navigation"
-                :key="item.name"
-                :to="item.to"
-                @click="setActive(item)"
+                :key="item.title"
+                @click="handleNavigation(item)"
                 :class="[
                   item.current
                     ? 'bg-gray-900 text-white'
-                    : 'text-gray-300 hover:bg-gray-700 hover:text-white',
+                    : 'text-gray-700 hover:bg-gray-700 hover:text-white',
                   'rounded-md px-3 py-2 text-sm font-medium',
                 ]"
               >
-                {{ item.name }}
-              </RouterLink>
+                {{ item.title }}
+              </button>
             </div>
           </div>
         </div>
 
-        <!-- Profile Menu -->
+        <!-- Right: Notification + Profile -->
         <div class="hidden md:block">
           <div class="ml-4 flex items-center md:ml-6">
             <!-- Notification -->
             <button
               type="button"
-              class="relative rounded-full bg-white p-1 text-gray-900 hover:text-gray-900 focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 focus:outline-hidden"
+              class="relative rounded-full bg-white p-1 text-gray-900 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white"
             >
               <span class="sr-only">View notifications</span>
-              <!-- 
-                Icon or Image Notification
-              -->
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -71,16 +68,18 @@
             <!-- Profile Dropdown -->
             <Menu as="div" class="relative ml-3">
               <MenuButton
-                class="relative flex max-w-xs items-center rounded-full bg-white text-sm focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-white"
+                class="relative flex max-w-xs items-center rounded-full bg-white text-sm focus:ring-2 focus:ring-offset-2 focus:ring-white"
               >
                 <span class="sr-only">Open user menu</span>
                 <img
                   class="size-8 rounded-full"
                   :src="
-                    'data:image/png;base64,' +
-                    authStore.users?.profileImage?.imageData || imageDefault
+                    authStore.users?.profileImage?.imageData
+                      ? 'data:image/png;base64,' +
+                        authStore.users.profileImage.imageData
+                      : imageDefault
                   "
-                  alt=""
+                  alt="User"
                 />
               </MenuButton>
               <transition
@@ -96,14 +95,14 @@
                 >
                   <MenuItem
                     v-for="item in userNavigation"
-                    :key="item.name"
+                    :key="item.title"
                     v-slot="{ active }"
                   >
                     <button
-                      @click="handleUserNavigation(item)"
+                      @click="handleNavigation(item)"
                       class="block w-full text-left px-4 py-2 text-sm text-gray-700"
                     >
-                      {{ item.name }}
+                      {{ item.title }}
                     </button>
                   </MenuItem>
                 </MenuItems>
@@ -112,46 +111,53 @@
           </div>
         </div>
 
-        <!-- Mobile Menu Button -->
+        <!-- Mobile menu button -->
         <div class="-mr-2 flex md:hidden">
           <DisclosureButton
-            class="relative inline-flex items-center justify-center rounded-md bg-white p-2 text-gray-700 hover:bg-white hover:text-white focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-white"
+            class="relative inline-flex items-center justify-center rounded-md bg-white p-2 text-gray-700 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white"
           >
             <span class="sr-only">Open main menu</span>
-            <img
-              class="size-8 rounded-full"
-              :src="
-                'data:image/png;base64,' +
-                authStore.users?.profileImage?.imageData || imageDefault
-              "
-              alt=""
-            />
+            <svg
+              class="block h-6 w-6"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 6h16M4 12h16M4 18h16"
+              />
+            </svg>
           </DisclosureButton>
         </div>
       </div>
     </div>
 
-    <!-- Mobile Panel -->
+    <!-- Mobile Menu Panel -->
     <DisclosurePanel class="md:hidden">
       <div class="space-y-1 px-2 pt-2 pb-3 sm:px-3">
-        <RouterLink
+        <button
           v-for="item in navigation"
-          :key="item.name"
-          :to="item.to"
-          @click="setActive(item)"
+          :key="item.title"
+          @click="handleNavigation(item)"
           :class="[
             item.current
               ? 'bg-gray-900 text-white'
-              : 'text-gray-300 hover:bg-gray-700 hover:text-white',
+              : 'text-gray-700 hover:bg-gray-700 hover:text-white',
             'block rounded-md px-3 py-2 text-base font-medium',
           ]"
         >
-          {{ item.name }}
-        </RouterLink>
+          {{ item.title }}
+        </button>
       </div>
     </DisclosurePanel>
   </Disclosure>
 </template>
+
 <script setup>
 import {
   Disclosure,
@@ -162,81 +168,64 @@ import {
   MenuItem,
   MenuItems,
 } from "@headlessui/vue";
-
 import { ref } from "vue";
-import { useRouter, useRoute, RouterLink } from "vue-router";
+import { useRouter, RouterLink } from "vue-router";
 import { storeToRefs } from "pinia";
 import { useAuthStore } from "@/stores/auth";
 
 const authStore = useAuthStore();
 const { users } = storeToRefs(authStore);
 const { storeLogout } = useAuthStore();
-
 const router = useRouter();
 
+const imageDefault = "/default-profile.png";
+
+// Main menu
 const navigation = [
-  { name: "Home", href: "/HomeView", current: true },
-  { name: "Create Post", href: "/CreatePostView", current: false },
-  {
-    name: "Store Post",
-    href: "#",
-    current: false,
-  },
-  { name: "Reward Shop", href: "#", current: false },
-  { name: "Admin Manager", href: "#", current: false },
-  { name: "Manager Reward", href: "/ManagerReportRewardView", current: false },
+  { title: "Home", name: "HomeView", current: true },
+  { title: "Create Post", name: "CreatePostView", current: false },
+  { title: "Store Post", name: "StorePostsView", current: false },
+  { title: "Shop Reward", name: "ShopRewardView", current: false },
+  { title: "Dashboard Manager", name: "DashboardManagerView", current: false },
 ];
 
+// Profile dropdown
 const userNavigation = [
-  { name: "Dashboard Profile", href: "#" },
-  { name: "Store Post", href: "#" },
-  { name: "Sign out", href: "#" },
+  { title: "Dashboard Profile", name: "DashboardProfileView" },
+  { title: "Store Post", name: "StorePostsView" },
+  { title: "Sign out", name: "SignOut" },
 ];
 
-const headleUserNavigation = (item) => {
-  if (item.name === "Dashboard Profile") {
-    router.push({
-      name: "DashboardProfileView",
-      params: {
-        id: authStore.users.userProfile?.id,
-      },
-    });
-  } else if (item.name === "Store Post") {
-    router.push({
-      name: "StorePostsView",
-      params: {
-        profileID: authStore.users.userProfile?.id,
-      },
-    });
-  } else if (item.name === "Sign out") {
-    onLogout();
-  }
-};
-
-const handleUserNavigation = (item) => {
-  if (item.name === "Sign out") {
-    onLogout();
-  } else if (item.name === "Store Post") {
-    router.push({
-      name: "StorePostsView",
-      params: {
-        profileID: authStore.users.userProfile?.id,
-      },
-    });
-  } else if (item.name === "Dashboard Profile") {
-    router.push({
-      name: "DashboardProfileView",
-      params: {
-        id: authStore.users.userProfile?.id,
-      },
-    });
-  } else {
-    // ทำอย่างอื่น เช่น router.push(item.href)
+// Unified navigation handler
+const handleNavigation = (item) => {
+  switch (item.name) {
+    case "HomeView":
+    case "CreatePostView":
+    case "ShopRewardView":
+    case "DashboardManagerView":
+      router.push({ name: item.name });
+      break;
+    case "DashboardProfileView":
+      router.push({
+        name: item.name,
+        params: { id: authStore.users?.userProfile?.id },
+      });
+      break;
+    case "StorePostsView":
+      router.push({
+        name: item.name,
+        params: { profileID: authStore.users?.userProfile?.id },
+      });
+      break;
+    case "SignOut":
+      onLogout();
+      break;
+    default:
+      router.push({ name: "PageNotFoundView" });
   }
 };
 
 const onLogout = async () => {
-  console.log("on logout");
   await storeLogout();
 };
 </script>

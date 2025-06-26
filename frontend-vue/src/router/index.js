@@ -10,11 +10,12 @@ import CreatePostView from '@/views/posts/CreatePostView.vue'
 import EditPostView from "@/views/posts/EditPostView.vue";
 
 import StorePostsView from "@/views/posts/StorePostsView.vue";
-import HomeRewardView from "@/views/rewards/HomeRewardView.vue";
+import ShopRewardView from "@/views/rewards/ShopRewardView.vue";
 import ReportCardItemsView from "@/views/rewards/ReportCardItemsView.vue";
 import CreateRewardView from "@/views/rewards/CreateRewardView.vue";
 import EditRewardView from "@/views/rewards/EditRewardView.vue";
 import ManagerReportRewardsView from "@/views/rewards/Manager-ReportRewardsView.vue";
+import DashboardManagerView from "@/views/DashboardManagerView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -22,6 +23,7 @@ const router = createRouter({
 
     {
       path: "/:pathMatch(.*)*",
+      name: 'PageNotFoundView',
       component: () => import("@/views/PageNotFoundView.vue"),
     },
     {
@@ -71,9 +73,9 @@ const router = createRouter({
     
     //----------------- Rewards -------------------
     {
-      path: '/HomeRewardsView',
-      name: 'HomeRewardsView',
-      component: HomeRewardView,
+      path: '/ShopRewardView',
+      name: 'ShopRewardView',
+      component: ShopRewardView,
       meta: { auth: true }
     },
     {
@@ -82,6 +84,15 @@ const router = createRouter({
       component: ReportCardItemsView,
       meta: { auth: true }
     },
+
+
+    //----------- Dashboard Manager ----------------//
+    {
+      path: '/DashboardManagerView',
+      name: 'DashboardManagerView',
+      component: DashboardManagerView,
+      meta: { auth: true }
+    }, 
 
     //----------- Manager Rewards ----------------// 
     {

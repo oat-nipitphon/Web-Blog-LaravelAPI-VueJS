@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <div class="bg-white rounded-2xl shadow-xl p-8 max-w-6xl mx-auto mt-10">
     <div class="grid gap-6 border-b border-gray-200 pb-6 mb-6">
       <div class="grid grid-cols-2 gap-4">
@@ -69,11 +69,7 @@
     </div>
   </div>
   <div class="mt-10">
-    {/* 
-      
-      Card Reward ?
 
-     */}
   </div>
 </template>
 <script setup>
@@ -150,4 +146,15 @@ const onResetItemsCart = () => {
 
 
 
+</script> -->
+<template>
+  <div class="m-auto">
+    <h1>Shop Rewards</h1>
+  </div>
+</template>
+<script>
+import { onMounted } from "vue";
+import { RouterLink } from "vue-router";
+import { storeToRefs } from "pinia";
+import { useRewardStore } from "@/stores/reward";
 </script>

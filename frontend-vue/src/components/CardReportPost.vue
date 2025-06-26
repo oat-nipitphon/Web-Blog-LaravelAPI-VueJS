@@ -1,80 +1,4 @@
-<script setup>
-defineProps({
-  post: {
-    type: Object,
-    required: true,
-  },
-});
 
-import { ref } from "vue";
-import { useRouter } from "vue-router";
-import { storeToRefs } from "pinia";
-import { useAuthStore } from "@/stores/auth";
-import { usePostStore } from "@/stores/post";
-import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
-import { ChevronDownIcon } from "@heroicons/vue/20/solid";
-
-const router = useRouter();
-const authStore = useAuthStore();
-const { users } = storeToRefs(authStore);
-const {
-  storeGetPosts,
-  storeDeletePost,
-  storeEventPostPop,
-  storeConfirmStorePost,
-} = usePostStore();
-
-const onStorePost = async (postID) => {
-  await storeConfirmStorePost(postID);
-  await storeGetPosts();
-};
-
-const onEditPost = (postID) => {
-  console.log("function on edit post ", postID);
-  router.push({
-    name: "EditPostView",
-    params: {
-      id: postID,
-    },
-  });
-};
-
-const onEventPostPop = async (postID, profileID, status) => {
-  await storeEventPostPop(postID, profileID, status);
-  await storeGetPosts();
-};
-
-const formatDateTime = (dateTime) => {
-  if (!dateTime) return "-";
-
-  const date = new Date(dateTime);
-
-  const year = date.getFullYear() + 543; // แปลงเป็น พ.ศ.
-  const month = date.getMonth(); // 0-11
-  const day = date.getDate();
-
-  const hour = date.getHours().toString().padStart(2, "0");
-  const minute = date.getMinutes().toString().padStart(2, "0");
-  const second = date.getSeconds().toString().padStart(2, "0");
-
-  const thaiMonths = [
-    "มกราคม",
-    "กุมภาพันธ์",
-    "มีนาคม",
-    "เมษายน",
-    "พฤษภาคม",
-    "มิถุนายน",
-    "กรกฎาคม",
-    "สิงหาคม",
-    "กันยายน",
-    "ตุลาคม",
-    "พฤศจิกายน",
-    "ธันวาคม",
-  ];
-
-  return `${day} ${thaiMonths[month]} ${year} เวลา ${hour}:${minute}:${second} น.`;
-};
-</script>
 <template>
   <article
     class="w-full rounded-lg shadow-sm transition hover:shadow-lg m-auto"
@@ -302,3 +226,80 @@ const formatDateTime = (dateTime) => {
     </div>
   </article>
 </template>
+<script setup>
+defineProps({
+  post: {
+    type: Object,
+    required: true,
+  },
+});
+
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { storeToRefs } from "pinia";
+import { useAuthStore } from "@/stores/auth";
+import { usePostStore } from "@/stores/post";
+import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
+import { ChevronDownIcon } from "@heroicons/vue/20/solid";
+
+const router = useRouter();
+const authStore = useAuthStore();
+const { users } = storeToRefs(authStore);
+const {
+  storeGetPosts,
+  storeDeletePost,
+  storeEventPostPop,
+  storeConfirmStorePost,
+} = usePostStore();
+
+const onStorePost = async (postID) => {
+  await storeConfirmStorePost(postID);
+  await storeGetPosts();
+};
+
+const onEditPost = (postID) => {
+  console.log("function on edit post ", postID);
+  router.push({
+    name: "EditPostView",
+    params: {
+      id: postID,
+    },
+  });
+};
+
+const onEventPostPop = async (postID, profileID, status) => {
+  await storeEventPostPop(postID, profileID, status);
+  await storeGetPosts();
+};
+
+const formatDateTime = (dateTime) => {
+  if (!dateTime) return "-";
+
+  const date = new Date(dateTime);
+
+  const year = date.getFullYear() + 543; // แปลงเป็น พ.ศ.
+  const month = date.getMonth(); // 0-11
+  const day = date.getDate();
+
+  const hour = date.getHours().toString().padStart(2, "0");
+  const minute = date.getMinutes().toString().padStart(2, "0");
+  const second = date.getSeconds().toString().padStart(2, "0");
+
+  const thaiMonths = [
+    "มกราคม",
+    "กุมภาพันธ์",
+    "มีนาคม",
+    "เมษายน",
+    "พฤษภาคม",
+    "มิถุนายน",
+    "กรกฎาคม",
+    "สิงหาคม",
+    "กันยายน",
+    "ตุลาคม",
+    "พฤศจิกายน",
+    "ธันวาคม",
+  ];
+
+  return `${day} ${thaiMonths[month]} ${year} เวลา ${hour}:${minute}:${second} น.`;
+};
+</script>
