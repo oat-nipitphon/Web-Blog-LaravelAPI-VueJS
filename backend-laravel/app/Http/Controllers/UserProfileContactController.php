@@ -116,13 +116,82 @@ class UserProfileContactController extends Controller
         }
     }
 
+    public function update(Request $request, string $id)
+    {
+        try {
+
+            $request->validate([
+                'profile_id' => 'required|integer',
+                'contacts' => 'required|array|min:1',
+                'contacts.*.name' => 'required|string',
+                'contacts.*.url' => 'required|string',
+                'contacts.*.file_icon' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            ]);
+        } catch (\Exception $error) {
+            return response()->json([
+                'message' => 'controller update contact function error',
+                'error' => $error->getMessage()
+            ], 500);
+        }
+    }
+
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function updateContacts(Request $request, string $id)
     {
-        //
+        try {
+            $request->validate([
+                'profile_id' => 'required|integer',
+                'contacts' => 'required|array|min:1',
+                'contacts.*.name' => 'required|string',
+                'contacts.*.url' => 'required|string',
+                'contacts.*.file_icon' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            ]);
+
+            $contacts = $request->input('contacts', []);
+            $inserted = [];
+
+            foreach ($contacts as $index => $contact) {
+                $user_profile_contact = new UserProfileContact();
+
+                if ($request->hasFile("contacts.{$index}.file_icon")) {
+                    $icon_data = $request->file("contacts.{$index}.file_icon");
+                    $icon_data_base64 = base64_encode(file_get_contents($icon_data->getRealPath()));
+                } else {
+                    $icon_data_base64 = null;
+                }
+
+                $user_profile_contact->profile_id = $request->profile_id;
+                $user_profile_contact->name = $contact['name'];
+                $user_profile_contact->url = $contact['url'];
+                $user_profile_contact->status = 'active';
+                $user_profile_contact->image_data = $icon_data_base64;
+
+                if ($user_profile_contact->save()) {
+                    $inserted[] = $user_profile_contact;
+                }
+            }
+
+            if (count($inserted) !== count($contacts)) {
+                return response()->json([
+                    'message' => "บางรายการไม่สามารถบันทึกได้",
+                    'saved_count' => count($inserted),
+                    'expected_count' => count($contacts),
+                ], 400);
+            }
+
+            return response()->json([
+                'message' => "บันทึกช่องทางการติดต่อสำเร็จ",
+                'userProfileContacts' => $inserted,
+            ], 201);
+        } catch (\Exception $error) {
+            return response()->json([
+                'message' => "เกิดข้อผิดพลาดขณะบันทึกข้อมูลช่องทางการติดต่อ",
+                'error' => $error->getMessage()
+            ], 500);
+        }
     }
 
     /**
@@ -145,5 +214,4 @@ class UserProfileContactController extends Controller
             ], 500);
         }
     }
-
 }

@@ -48,7 +48,7 @@
         <button
           type="button"
           :disabled="checkPointSelectd < 0 || cartItemCounters === 0"
-          @click="onSave"
+          @click="onSaveSeletedItems"
           class="px-6 py-2 rounded-xl shadow transition text-white"
           :class="{
             'bg-gray-400 cursor-not-allowed':
@@ -99,8 +99,11 @@ const { counterItems, cartItemCounters, totalPoint } =
 const { storeConfirmSelectdItems } = useWalletStore();
 const { storeGetRewards } = useRewardStore();
 
+const reportRewards = ref([]);
+
 onMounted(async () => {
-  await rewardStore.storeGetRewards();
+  reportRewards.value = await rewardStore.storeGetRewards();
+  console.log('shop reward ', reportRewards.value);
 });
 
 const form = reactive({
@@ -113,7 +116,7 @@ const checkPointSelectd = computed(() => {
   return form.point - totalPoint.value;
 })
 
-const onSave = async () => {
+const onSaveSeletedItems = async () => {
   const formData = new FormData();
   formData.append("wallet_id", form.walletID);
   formData.append("point", checkPointSelectd.value);

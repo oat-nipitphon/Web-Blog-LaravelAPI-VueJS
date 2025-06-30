@@ -8,7 +8,6 @@ export const useStoreUserProfile = defineStore("storeUserProfile", {
     errors: {},
   }),
   actions: {
-    
     async storeGetUserStatus() {
       try {
         const response = await fetch(`/api/get_user_status`, {
@@ -77,9 +76,8 @@ export const useStoreUserProfile = defineStore("storeUserProfile", {
         }
 
         const data = await response.json();
-        console.log('store update user', data.user);
+        console.log("store update user", data.user);
         // return data.user;
-
       } catch (error) {
         console.error("store update user function error ", error);
       }
@@ -103,11 +101,15 @@ export const useStoreUserProfile = defineStore("storeUserProfile", {
       }
       try {
         formData.append("_method", "PUT");
-        const response = await axiosAPI.post(`/api/user_profiles/${id}`, formData, {
-          headers: {
-            authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
+        const response = await axiosAPI.post(
+          `/api/user_profiles/${id}`,
+          formData,
+          {
+            headers: {
+              authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
 
         if (!response.status === 200 || response.status === 201) {
           console.log("store update profile", response);
@@ -115,7 +117,6 @@ export const useStoreUserProfile = defineStore("storeUserProfile", {
 
         const data = await response.json();
         return data.userProfile;
-
       } catch (error) {
         console.error("store update profile function error ", error);
       }

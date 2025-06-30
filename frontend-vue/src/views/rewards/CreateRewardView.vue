@@ -52,10 +52,14 @@
 
         <div class="mt-2">
           <BaseSelect
-          
-          > 
-        
-        </BaseSelect>
+            id="statusID"
+            label="Status"
+            v-model="form.statusID"
+            :options="rewardStatus"
+            optionKey="id"
+            optionLabel="name"
+          >
+          </BaseSelect>
         </div>
 
         <div class="flex justify-end mt-5">
@@ -92,7 +96,7 @@
 <script setup>
 import axiosAPI from "@/services/axiosAPI";
 import Swal from "sweetalert2";
-import { ref } from "vue";
+import { ref, reactive, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import BaseLabel from "@/components/BaseLabel.vue";
 import BaseInput from "@/components/BaseInput.vue";
@@ -100,14 +104,15 @@ import BaseSelect from "@/components/BaseSelect.vue";
 import { useRewardStore } from "@/stores/reward";
 
 const router = useRouter();
+const rewardStatus = ref([]);
 
-const { storeCreateReward } = useRewardStore();
+const { storeGetRewardStatus, storeCreateReward } = useRewardStore();
 
-const form = ref({
+const form = reactive({
   name: "",
   point: "",
   amount: "",
-  status: "true",
+  statusID: "",
 });
 
 const imageFile = ref(null);
@@ -121,27 +126,31 @@ const onSelectFileImage = (event) => {
   }
 };
 
+onMounted(async () => {
+  rewardStatus.value = await storeGetRewardStatus();
+});
+
 const onSave = async () => {
   const formData = new FormData();
-  formData.append("name", form.value.name);
-  formData.append("point", form.value.point);
-  formData.append("amount", form.value.amount);
-  formData.append("type", form.value.type);
-  formData.append("status", form.value.status);
+  formData.append("name", form.name);
+  formData.append("point", form.point);
+  formData.append("amount", form.amount);
+  formData.append("status_id", form.statusID);
   if (imageFile.value) {
-    formData.append("imageFile", imageFile.value);
+    formData.append("image_file", imageFile.value);
   }
 
-  for (const [key, value] of formData.entries()) {
-    console.log(`${key}:`, value);
-  }
-  return;
-  await storeCreateReward(formData);
+await storeCreateReward(formData);
+
+  router.push({
+    name: "ManagerReportRewardView",
+  });
+
 };
 
 const onCancel = () => {
   router.push({
-    name: 'ManagerReportRewardsView'
+    name: "ManagerReportRewardView",
   });
 };
 </script>

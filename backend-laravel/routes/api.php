@@ -27,6 +27,7 @@ use App\Http\Controllers\AdminWalletController;
 use App\Http\Controllers\UserProfileContactController;
 use App\Models\UserStatus;
 use App\Models\PostType;
+use App\Models\Reward;
 use App\Models\RewardStatus;
 use App\Models\User;
 
@@ -86,25 +87,35 @@ Route::prefix('/')->group(function () {
     // --------------------------------------- Post ------------------------------------------------ //
 
     // --------------------------------------- Reward ------------------------------------------------ //
+    Route::get('/rewards/get_reward_status', function () {
+        $reward_status = RewardStatus::all();
+        return response()->json([
+            'message' => 'api get reward status',
+            'rewardStatus' => $reward_status
+        ], 200);
+    });
     Route::apiResource('/rewards', RewardController::class);
-    Route::prefix('/rewards')->group(function () {
-        Route::get('/get_status', function () {
-            $reward_status = RewardStatus::all();
-            return response()->json([
-                'rewardStatus' => $reward_status
-            ], 200);
-        });
-        Route::get('/report_card_items/{profileID}', [RewardController::class,]);
+    Route::prefix('/reward')->group(function () {
+
+        Route::get('/report_card_items/{profileID}', [RewardController::class]);
     });
     // --------------------------------------- Reward ------------------------------------------------ //
 
     // --------------------------------------- Wellet ------------------------------------------------ //
     Route::apiResource('/wellets', WalletController::class);
     Route::prefix('/wellets')->group(function () {
+
         Route::apiResource('/counters', WalletCounterController::class);
+
         Route::prefix('/cartItems')->group(function () {
+
+            // Save insert selectd items
             Route::post('/userConfirmSelectReward', [WalletCounterController::class, 'userConfirmSelectReward']);
+
+            // Report selectd items
             Route::get('/getReportReward/{userID}', [WalletCounterController::class, 'getReportReward']);
+
+            // Cancel item selectd
             Route::post('/cancel_reward/{itemID}', [WalletCounterController::class, 'cancelReward']);
         });
     });

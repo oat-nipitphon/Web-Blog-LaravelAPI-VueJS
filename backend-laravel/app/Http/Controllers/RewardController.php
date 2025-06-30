@@ -24,20 +24,17 @@ class RewardController extends Controller
     {
         try {
 
-            $rewards = Reward::with([
-                'reward_status',
-                'reward_image'
-            ])->get();
+            $rewards = Reward::with(['reward_status', 'reward_images'])->get();
 
 
             if (!$rewards) {
                 return response()->json([
-                    'message' => 'reward index() get false ',
+                    'message' => 'reward index() get false.',
                 ], 400);
             }
 
             return response()->json([
-                'message' => 'controller reward index',
+                'message' => 'reward index() get success.',
                 'rewards' => $rewards,
             ], 200);
         } catch (\Exception $error) {
@@ -77,8 +74,6 @@ class RewardController extends Controller
                 ], 400);
             }
 
-
-
             if ($request->hasFile('image_file')) {
                 $image_file = $request->file('image_file');
                 $image_data = file_get_contents($image_file->getRealPath());
@@ -116,7 +111,7 @@ class RewardController extends Controller
 
             $reward = Reward::with([
                 'reward_status',
-                'reward_image'
+                'reward_images'
             ])->findOrFail($id);
 
             if (empty($reward)) {
@@ -214,24 +209,24 @@ class RewardController extends Controller
         try {
 
             DB::beginTransaction();
+
             $reward = Reward::findOrFail($id);
 
-            if (empty($reward)) {
+            if (!$reward) {
                 return response()->json([
                     'message' => 'reward delete() where id false',
                     'rewardID' => $id
                 ], 400);
             }
 
-            $reward->reward_images->delete();
             $reward->delete();
-
-
             DB::commit();
 
             return response()->json([
                 'message' => 'reward delete() success',
+                'status' => 200,
             ], 200);
+
         } catch (\Exception $error) {
             return response()->json([
                 'message' => 'reward delete() function error',

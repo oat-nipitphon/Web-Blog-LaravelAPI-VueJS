@@ -9,6 +9,26 @@ export const useRewardStore = defineStore("rewardStore", {
     errors: [],
   }),
   actions: {
+    async storeGetRewardStatus() {
+      try {
+        const response = await fetch(`/api/rewards/get_reward_status`, {
+          method: "GET",
+          headers: {
+            authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+
+        if (response.status !== 200) {
+          console.error("store get reward status false ", response);
+          return;
+        }
+
+        const data = await response.json();
+        return data.rewardStatus;
+      } catch (error) {
+        console.error("store get reward status", error);
+      }
+    },
 
     async storeGetRewards() {
       try {
@@ -18,15 +38,13 @@ export const useRewardStore = defineStore("rewardStore", {
             authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
-        if (!response.ok) {
+        if (!response.status == 200) {
           console.error("store get rewards false ", response.error);
           return;
         }
 
         const data = await response.json();
         this.rewards = data.rewards;
-        
-        console.log("store get rewards success", this.rewards);
       } catch (error) {
         console.error("store get rewards function error ", error);
       }
@@ -35,7 +53,7 @@ export const useRewardStore = defineStore("rewardStore", {
     async storeCreateReward(formData) {
       const result = await Swal.fire({
         title: "Are you sure?",
-        text: "Do you want to created this reward?",
+        text: "Do you want to create this reward?",
         icon: "question",
         showCancelButton: true,
         cancelButtonText: "Cancel",
@@ -45,8 +63,7 @@ export const useRewardStore = defineStore("rewardStore", {
         confirmButtonColor: "#3085d6",
       });
 
-      if (result.isConfirmed) {
-        Swal.close();
+      if (!result.isConfirmed) {
         return;
       }
 
@@ -54,27 +71,45 @@ export const useRewardStore = defineStore("rewardStore", {
         const response = await axiosAPI.post(`/api/rewards`, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
-            authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
 
-        if (response.status !== 200) {
-          throw new Error("store create reward false ", response.message);
+        if (![200, 201].includes(response.status)) {
+          throw new Error("Failed to create reward");
+          return;
         }
 
-        const data = await response.json();
-        console.log("store create reward success ", data.reward);
-        Swal.fire("Saved!", "Your reward has been saved.", "success");
-        this.router.push({
-          name: 'ManagerReportRewardsView'
-        });
-
+        const data = response.data;
+        Swal.fire("Saved!", data.reward, "success");
+        return true;
       } catch (error) {
         console.error("store create reward function error", error);
+        return false;
       }
     },
 
-    async storeEditReward(formData) {
+    async storeGetReward(id) {
+      try {
+        const response = await fetch(`/api/rewards/${id}`, {
+          method: "GET",
+          headers: {
+            authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+        if (!response.status == 200) {
+          console.error("store get rewards false ", response.error);
+          return;
+        }
+
+        const data = await response.json();
+        return data.rewards;
+      } catch (error) {
+        console.error("store get rewards function error ", error);
+      }
+    },
+
+    async storeUpdateReward(formData) {
       const result = await Swal.fire({
         title: "Are you sure?",
         text: "Do you want to updated this reward?",
@@ -101,41 +136,68 @@ export const useRewardStore = defineStore("rewardStore", {
           },
         });
 
-        if (response.status !== 200) {
+        if (![201, 200].includes(response.status)) {
           throw new Error("store updated reward false ", response.message);
         }
 
-        const data = await response.json();
-        console.log("store updated reward success ", data.reward);
-        Swal.fire("Saved!", "Your reward has been saved.", "success");
-
+        const data = response.data;
+        Swal.fire("Saved!", data.reward, "success");
+        return true;
       } catch (error) {
         console.error("store updated reward function error", error);
       }
     },
 
     async storeDeleteReward(id) {
+      const result = await Swal.fire({
+        title: "Are you sure?",
+        text: "Do you want to delete this reward?",
+        icon: "warning",
+        showCancelButton: true,
+        cancelButtonText: "Cancel",
+        cancelButtonColor: "#d33",
+        showConfirmButton: true,
+        confirmButtonText: "Delete",
+        confirmButtonColor: "#3085d6",
+      });
+
+      if (!result.isConfirmed) {
+        return false;
+      }
+
       try {
-        const response = await fetch(`/api/reward/${id}`, {
+        const response = await fetch(`/api/rewards/${id}`, {
           method: "DELETE",
           headers: {
             authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
 
-        if (response !== 200) {
-          console.error(
-            "store delete reward false ",
-            response.error || response.message
+        if (response.status !== 200) {
+          const error = await response.json();
+          await Swal.fire(
+            "Delete failed",
+            error.message || "Unknown error",
+            "error"
           );
+          return false;
         }
 
-        console.log('store delete reward success ');
-        // const data = await response.json();
-        // return data.modelReward.filter((reward) => reward.id !== id);
-        
+        const data = await response.json();
+        await Swal.fire({
+          title: "Deleted!",
+          text: data.status || "Reward has been deleted.",
+          icon: "success",
+          timer: 1300,
+          timerProgressBar: true,
+          showConfirmButton: false,
+        });
+
+        return true;
       } catch (error) {
-        console.error("store delete reward function error ", error);
+        console.error("storeDeleteReward error:", error);
+        await Swal.fire("Error", "Something went wrong.", "error");
+        return false;
       }
     },
 

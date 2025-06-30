@@ -1,18 +1,14 @@
 <template>
-  <div class="w-max-md flex justify-between rounded-md shadow-lg bg-white">
-    <div class="grid grid-cols-2">
-      <div class="flex-1/4 border-gray-900 p-3 font-normal text-2xl">
-        <RouterLink
-          :to="{
-            name: 'CreateRewardView'
-          }"
-        ></RouterLink>
-      </div>
-      <div class="flex-1/4 border-gray-900 p-3 font-normal text-2xl">
-        
-      </div>
-    </div>
+<div class="grid grid-cols-2 bg-white rounded-lg shadow-lg">
+  <div class="w-50 flex justify-center items-center">
+    <RouterLink class="block border border-blue-600 bg-blue-600 px-12 py-3 transition-transform group-hover:-translate-x-1 group-hover:-translate-y-1"
+      :to="{ name: 'ManagerReportRewardView' }"
+    >
+      Reward
+    </RouterLink>
   </div>
+  <div class="w-50"></div>
+</div>
 </template>
 
 <script setup>
