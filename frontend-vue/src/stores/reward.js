@@ -109,7 +109,7 @@ export const useRewardStore = defineStore("rewardStore", {
       }
     },
 
-    async storeUpdateReward(formData) {
+    async storeUpdateReward(id, formData) {
       const result = await Swal.fire({
         title: "Are you sure?",
         text: "Do you want to updated this reward?",
@@ -129,7 +129,7 @@ export const useRewardStore = defineStore("rewardStore", {
 
       try {
         formData.append("_method", "PUT");
-        const response = await axiosAPI.post(`/api/rewards`, formData, {
+        const response = await axiosAPI.post(`/api/rewards/${id}`, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
             authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -141,8 +141,9 @@ export const useRewardStore = defineStore("rewardStore", {
         }
 
         const data = response.data;
-        Swal.fire("Saved!", data.reward, "success");
+        Swal.fire("Updated!", data.reward, "success");
         return true;
+
       } catch (error) {
         console.error("store updated reward function error", error);
       }

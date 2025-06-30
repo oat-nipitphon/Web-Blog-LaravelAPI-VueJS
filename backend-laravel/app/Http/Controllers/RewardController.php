@@ -171,6 +171,7 @@ class RewardController extends Controller
                 ]
             );
 
+
             if ($request->hasFile('image_file')) {
                 $image_file = $request->file('image_file');
                 $image_data = file_get_contents($image_file->getRealPath());
