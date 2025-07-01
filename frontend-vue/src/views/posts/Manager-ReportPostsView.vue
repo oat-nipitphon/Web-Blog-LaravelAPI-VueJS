@@ -143,4 +143,18 @@
 <script setup>
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
 import { ChevronDownIcon } from "@heroicons/vue/20/solid";
+import { ref, onMounted } from "vue";
+import { RouterLink } from "vue-router";
+import { storeToRefs } from "pinia";
+import { usePostStore } from "@/stores/post";
+
+const postStore = usePostStore();
+const { storeGetPosts } = usePostStore();
+
+const posts = ref([]);
+
+onMounted(async () => {
+  posts.value = await storeGetPosts();
+  console.log("manager report post view ", posts.value);
+});
 </script>

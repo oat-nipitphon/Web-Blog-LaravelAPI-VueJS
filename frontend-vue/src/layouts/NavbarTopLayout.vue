@@ -4,6 +4,7 @@
     class="bg-white"
     v-slot="{ open }"
     v-if="authStore.users"
+    v-model="disclosureOpen"
   >
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <div class="flex h-16 items-center justify-between">
@@ -28,7 +29,7 @@
                 :key="item.title"
                 @click="handleNavigation(item)"
                 :class="[
-                  item.current
+                  $route.name === item.name
                     ? 'bg-gray-900 text-white'
                     : 'text-gray-700 hover:bg-gray-700 hover:text-white',
                   'rounded-md px-3 py-2 text-sm font-medium',
@@ -101,7 +102,7 @@
                     <button
                       @click="handleNavigation(item)"
                       :class="[
-                        item.current
+                        $route.name === item.name
                           ? 'bg-gray-900 text-white'
                           : 'text-gray-700 hover:bg-gray-700 hover:text-white',
                         'block rounded-md px-3 py-2 text-base font-medium',
@@ -117,7 +118,7 @@
         </div>
 
         <!-- Mobile menu button -->
-        <div class="-mr-2 flex md:hidden">
+        <div class="mr-2 flex md:hidden">
           <DisclosureButton
             class="relative inline-flex items-center justify-center rounded-md bg-white p-2 text-gray-700 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white"
           >
@@ -150,7 +151,7 @@
           :key="item.name"
           @click="handleNavigation(item)"
           :class="[
-            item.current
+            $route.name === item.name
               ? 'bg-gray-900 text-white'
               : 'text-gray-700 hover:bg-gray-700 hover:text-white',
             'block rounded-md px-3 py-2 text-base font-medium',
@@ -164,7 +165,7 @@
 </template>
 
 <script setup>
-import Swal from 'sweetalert2'
+import Swal from "sweetalert2";
 import {
   Disclosure,
   DisclosureButton,
@@ -175,7 +176,7 @@ import {
   MenuItems,
 } from "@headlessui/vue";
 import { ref } from "vue";
-import { useRouter, RouterLink } from "vue-router";
+import { useRouter, RouterLink, useRoute } from "vue-router";
 import { storeToRefs } from "pinia";
 import { useAuthStore } from "@/stores/auth";
 
@@ -183,92 +184,58 @@ const authStore = useAuthStore();
 const { users } = storeToRefs(authStore);
 const { storeLogout } = useAuthStore();
 const router = useRouter();
+const route = useRoute();
 
 const imageDefault = "/default-profile.png";
+const disclosureOpen = ref(false);
 
-// Main menu
 const navigation = [
-  { title: "Home", name: "HomeView", current: true },
-  { title: "Create Post", name: "CreatePostView", current: false },
-  { title: "Shop Reward", name: "ShopRewardView", current: false },
-];
-
-// Profile dropdown
-const userNavigation = [
-  { title: "Profile", name: "DashboardProfileView", current: false },
-  { title: "Store Post", name: "StorePostsView", current: false },
-  { title: "Manager", name: "DashboardManagerView", current: false },
+  { title: "Home", name: "HomeView" },
+  { title: "Create Post", name: "CreatePostView" },
+  { title: "Store Post", name: "StorePostsView" },
+  { title: "Profile", name: "DashboardProfileView" },
+  { title: "Manager", name: "DashboardManagerView" },
   { title: "Sign out", name: "SignOut" },
 ];
 
-// Unified navigation handler
-const handleNavigation = (item) => {
+const userNavigation = [...navigation];
+
+const handleNavigation = async (item) => {
+  disclosureOpen.value = false;
+
   switch (item.name) {
-
-    case "HomeView":
-      router.push({
-        name: item.name,
-      });
-      item.current = true;
-      break;
-
-    case "CreatePostView":
-      router.push({
-        name: item.name,
-      });
-      item.current = true;
-      break;
-
-    case "ShopRewardView":
-      router.push({
-        name: item.name,
-      });
-      item.current = true;
-      break;
-
     case "DashboardProfileView":
       router.push({
         name: item.name,
         params: { id: authStore.users?.userProfile?.id },
       });
+      disclosureOpen.value = false;
       break;
-
     case "StorePostsView":
       router.push({
         name: item.name,
         params: { profileID: authStore.users?.userProfile?.id },
       });
+      disclosureOpen.value = false;
       break;
-
     case "DashboardManagerView":
       if (authStore.users?.userStatus?.name === "admin") {
-        router.push({
-          name: item.name
-        });
+        router.push({ name: item.name });
       } else {
-        Swal.fire({
-          title: 'This page is restricted',
-          text: 'This page is restricted and can only be accessed by the specified status.',
-          icon: 'error',
-          timer: true,
-        }).then(() => {
-          router.push({
-            name: 'HomeView'
-          });
+        await Swal.fire({
+          title: "This page is restricted",
+          text: "This page is restricted and can only be accessed by the specified status.",
+          icon: "error",
+          timer: 1500,
         });
+        router.push({ name: "HomeView" });
       }
-
       break;
-
     case "SignOut":
-      onLogout();
+      await storeLogout();
       break;
     default:
-      router.push({ name: "PageNotFoundView" });
+      router.push({ name: item.name });
   }
-};
-
-const onLogout = async () => {
-  await storeLogout();
 };
 </script>

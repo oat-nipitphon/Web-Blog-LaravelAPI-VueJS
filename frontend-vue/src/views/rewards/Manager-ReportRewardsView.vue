@@ -1,15 +1,22 @@
 <template>
   <div class="p-6 bg-gray-50 min-h-screen">
-    <div
-      class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6"
-    >
-      <h1 class="text-2xl font-bold text-gray-800">Dashboard Manage Rewards</h1>
-      <RouterLink
-        :to="{ name: 'CreateRewardView' }"
-        class="text-white font-bold block border border-blue-600 bg-blue-600 px-8 py-2 rounded-md hover:bg-blue-700 transition"
-      >
-        + New Reward
-      </RouterLink>
+    <PageHeader title="Manager Reward" />
+
+    <!-- Chart + Recent Transactions -->
+    <div class="grid md:grid-cols-2 gap-6 mb-5 mt-5">
+      <div class="bg-white p-4 rounded-xl shadow">
+        <h2 class="text-lg font-semibold mb-2">สถิติการแลก (เดือนนี้)</h2>
+        <ChartRewardsMonthly />
+      </div>
+      <div class="bg-white p-4 rounded-xl shadow">
+        <h2 class="text-lg font-semibold mb-2">รายการล่าสุด</h2>
+        <ul class="divide-y">
+          <li v-for="n in 3" :key="n" class="py-2 text-sm flex justify-between">
+            <span>ผู้ใช้ #{{ n }} แลกรางวัล</span>
+            <span class="text-blue-600 font-semibold">+100 pts</span>
+          </li>
+        </ul>
+      </div>
     </div>
 
     <!-- Summary Cards -->
@@ -31,25 +38,17 @@
         <p class="text-2xl font-bold text-blue-600">12</p>
       </div>
     </div>
-
-    <!-- Chart + Recent Transactions -->
-    <div class="grid md:grid-cols-2 gap-6 mb-10">
-      <div class="bg-white p-4 rounded-xl shadow">
-        <h2 class="text-lg font-semibold mb-2">สถิติการแลก (เดือนนี้)</h2>
-        <ChartRewardsMonthly />
-      </div>
-      <div class="bg-white p-4 rounded-xl shadow">
-        <h2 class="text-lg font-semibold mb-2">รายการล่าสุด</h2>
-        <ul class="divide-y">
-          <li v-for="n in 3" :key="n" class="py-2 text-sm flex justify-between">
-            <span>ผู้ใช้ #{{ n }} แลกรางวัล</span>
-            <span class="text-blue-600 font-semibold">+100 pts</span>
-          </li>
-        </ul>
-      </div>
+    <div class="flex justify-start items-start mb-5 mt-5 ml-5">
+      <RouterLink
+        class="inline-flex justify-center items-center px-4 py-2 bg-blue-500 text-white border rounded-md shadow text-sm font-medium hover:bg-gray-50"
+        :to="{
+          name: 'CreateRewardView',
+        }"
+      >
+        New reward
+      </RouterLink>
     </div>
-
-    <!-- Rewards Table -->
+    <!-- Table Report Rewards -->
     <div class="overflow-x-auto bg-white rounded-xl shadow">
       <table class="w-full text-sm text-gray-700">
         <thead class="bg-gray-100 text-xs uppercase">
@@ -105,7 +104,21 @@
               {{ reward.amount }}
             </td>
             <td class="text-center px-4 py-3">
-              {{ reward.reward_status.name }}
+              <span
+                class="px-3 py-1 rounded-full text-xs font-semibold"
+                :class="
+                  reward.reward_status.id === 1
+                    ? 'bg-green-100 text-green-700'
+                    : reward.reward_status.id === 2
+                    ? 'bg-yellow-100 text-yellow-700'
+                    : reward.reward_status.id === 3
+                    ? 'bg-red-100 text-red-700'
+                    : 'bg-white text-gray-900'
+                "
+              >
+                {{ reward.reward_status.name }}
+                {{ reward.reward_status.id }}
+              </span>
             </td>
             <td class="text-center px-4 py-3">
               <Menu as="div" class="relative inline-block text-left">
@@ -187,6 +200,7 @@ import { useRewardStore } from "@/stores/reward";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
 import { ChevronDownIcon } from "@heroicons/vue/20/solid";
 import ChartRewardsMonthly from "@/components/rewards/ChartRewardsMonthly.vue";
+import PageHeader from "@/components/PageHeader.vue";
 
 const router = useRouter();
 const rewardStore = useRewardStore();
@@ -203,6 +217,12 @@ const toggleDropdown = () => {
 
 const selectOption = (option) => {
   isOpen.value = false;
+};
+
+const onCreateReward = () => {
+  router.push({
+    name: "CreateRewardView",
+  });
 };
 
 const onEditReward = async (rewardID) => {
