@@ -54,15 +54,16 @@ class WalletCounterController extends Controller
                 'updated_at' => $this->dateTimeFormatTimeZone()
             ]);
 
-            if (!$counterItems) {
+            if (!$wallet) {
                 return response()->json([
-                    'message' => 'laravelapi counter item request false',
-                    'counterItems' => $counterItems = $request->input('counterItems'),
-                ], 404);
+                    'message' => 'wallet where profile id false',
+                    'walletID' => $request->wallet_id,
+                ], 400);
             }
 
-            $checkStatusCounter = false;
-            foreach(json_decode($counterItems) as $item) {
+            $statusCounter = false;
+            foreach(json_decode($items) as $item) {
+
                 $data = [
                     'rewardID' => $item->rewardID,
                     'rewardName' => $item->rewardName,
@@ -81,11 +82,11 @@ class WalletCounterController extends Controller
                 // $reward = Reward::findOrFail($data['rewardID']);
                 // $
 
-                $checkStatusCounter = true;
+                $statusCounter = true;
             }
 
 
-            if ($checkStatusCounter !== true) {
+            if ($statusCounter !== true) {
 
                 return response()->json([
                     'userWallets' => $user_wallets,

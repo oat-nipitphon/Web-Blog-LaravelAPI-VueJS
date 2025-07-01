@@ -9,6 +9,7 @@ export const useRewardStore = defineStore("rewardStore", {
     errors: [],
   }),
   actions: {
+    
     async storeGetRewardStatus() {
       try {
         const response = await fetch(`/api/rewards/get_reward_status`, {
@@ -207,44 +208,5 @@ export const useRewardStore = defineStore("rewardStore", {
       }
     },
 
-    // Get Card Profile Report Reward Selectd Items
-    async getReportRewards(userID) {
-      try {
-        const res = await fetch(`/api/cartItems/getReportReward/${userID}`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-
-        const data = await res.json();
-
-        if (!res.ok) {
-          console.log("store get report reward request false", res);
-        } else {
-          return data.userPointCounter;
-        }
-      } catch (error) {
-        console.error("store get report reward function error", error);
-      }
-    },
-
-    // Card Profile Report Reward Selectd Event Delete Item
-    async cancelReward(itemID) {
-      try {
-        const res = await axiosAPI.post(
-          `/api/cartItems/cancel_reward/${itemID}`,
-          {
-            headers: {
-              authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
-        );
-
-        console.log("cancel api reward", res);
-      } catch (error) {
-        console.error(error);
-      }
-    },
   },
 });

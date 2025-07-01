@@ -99,17 +99,17 @@
                     :key="item.name"
                     v-slot="{ active }"
                   >
-                    <button
+                    <span
                       @click="handleNavigation(item)"
                       :class="[
                         $route.name === item.name
-                          ? 'bg-gray-900 text-white'
-                          : 'text-gray-700 hover:bg-gray-700 hover:text-white',
+                          ? 'bg-blue-600 text-white'
+                          : 'text-gray-700 hover:bg-blue-600 hover:text-white',
                         'block rounded-md px-3 py-2 text-base font-medium',
                       ]"
                     >
                       {{ item.title }}
-                    </button>
+                    </span>
                   </MenuItem>
                 </MenuItems>
               </transition>
@@ -146,7 +146,7 @@
     <!-- Mobile Menu Panel -->
     <DisclosurePanel class="md:hidden">
       <div class="space-y-1 px-2 pt-2 pb-3 sm:px-3">
-        <button
+        <span
           v-for="item in navigation"
           :key="item.name"
           @click="handleNavigation(item)"
@@ -158,7 +158,7 @@
           ]"
         >
           {{ item.title }}
-        </button>
+        </span>
       </div>
     </DisclosurePanel>
   </Disclosure>
@@ -190,12 +190,13 @@ const imageDefault = "/default-profile.png";
 const disclosureOpen = ref(false);
 
 const navigation = [
-  { title: "Home", name: "HomeView" },
-  { title: "Create Post", name: "CreatePostView" },
-  { title: "Store Post", name: "StorePostsView" },
-  { title: "Profile", name: "DashboardProfileView" },
-  { title: "Manager", name: "DashboardManagerView" },
-  { title: "Sign out", name: "SignOut" },
+  { title: "home", name: "HomeView" },
+  { title: "new post", name: "CreatePostView" },
+  { title: "shop", name: "ShopRewardView" },
+  { title: "profile", name: "DashboardProfileView" },
+  { title: "admin manager", name: "DashboardManagerView" },
+  { title: "post store", name: "StorePostsView" },
+  { title: "logout", name: "SignOut" },
 ];
 
 const userNavigation = [...navigation];
@@ -204,38 +205,47 @@ const handleNavigation = async (item) => {
   disclosureOpen.value = false;
 
   switch (item.name) {
+    case "HomeView":
+      router.push({ name: "HomeView" });
+      break;
+    case "CreatePostView":
+      router.push({ name: "CreatePostVIew" });
+      break;
+    case "ShopRewardView":
+      router.push({ name: "ShopRewardView" });
+      break;
     case "DashboardProfileView":
       router.push({
-        name: item.name,
+        name: "DashboardProfileView",
         params: { id: authStore.users?.userProfile?.id },
       });
-      disclosureOpen.value = false;
-      break;
-    case "StorePostsView":
-      router.push({
-        name: item.name,
-        params: { profileID: authStore.users?.userProfile?.id },
-      });
-      disclosureOpen.value = false;
       break;
     case "DashboardManagerView":
-      if (authStore.users?.userStatus?.name === "admin") {
-        router.push({ name: item.name });
-      } else {
+      if (authStore.users?.userStatus?.name !== "admin") {
         await Swal.fire({
-          title: "This page is restricted",
+          title: "This page is restricted!!",
           text: "This page is restricted and can only be accessed by the specified status.",
           icon: "error",
           timer: 1500,
         });
-        router.push({ name: "HomeView" });
+        Swal.close();
+        return;
       }
+      router.push({
+        name: item.name,
+      });
+      break;
+    case "StorePostView":
+      router.push({
+        name: "StorePostView",
+        params: { id: authStore.users?.userProfile?.id },
+      });
       break;
     case "SignOut":
       await storeLogout();
       break;
     default:
-      router.push({ name: item.name });
+      router.push({ name: "PageNotFoundView" });
   }
 };
 </script>

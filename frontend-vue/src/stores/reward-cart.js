@@ -25,6 +25,7 @@ export const useRewardCartStore = defineStore("rewardCart", () => {
 
   // รีเซ็ตตะกร้าทั้งหมด
   const resetCart = () => {
+    console.log('store reset cart item');
     items.value = [];
   };
 
