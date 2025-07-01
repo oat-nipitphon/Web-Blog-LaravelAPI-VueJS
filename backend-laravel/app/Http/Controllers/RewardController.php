@@ -142,7 +142,6 @@ class RewardController extends Controller
         try {
 
             $validated = $request->validate([
-                'reward_id' => 'required|integer|exists:rewards,id',
                 'name' => 'required|string',
                 'point' => 'required|numeric',
                 'amount' => 'required|integer',
@@ -160,8 +159,7 @@ class RewardController extends Controller
                 ], 400);
             }
 
-            $reward->updateOrCreate(
-                ['id' => $id],
+            $reward->update(
                 [
                     'name' => $validated['name'],
                     'point' => $validated['point'],
@@ -171,28 +169,33 @@ class RewardController extends Controller
                 ]
             );
 
+            $reward_image = RewardImage::where('reward_id', $reward->id)->first();
 
-            if ($request->hasFile('image_file')) {
-                $image_file = $request->file('image_file');
-                $image_data = file_get_contents($image_file->getRealPath());
-                $image_data_base64 = base64_encode($image_data);
-            } else {
-                $image_data_base64 = null;
+            if (!empty($reward_image)) {
+                if ($request->hasFile('image_file')) {
+                    $image_file = $request->file('image_file');
+                    $image_data = file_get_contents($image_file->getRealPath());
+                    $image_data_base64 = base64_encode($image_data);
+                } else {
+                    $image_data_base64 = null;
+                }
+
+                $reward_image->updateOrCreate(
+                    ['reward_id' => $reward->id],
+                    [
+                        'image_data' => $image_data_base64,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]
+                );
             }
-
-            $reward->reward_images->updateOfCreate(
-                ['reward_id' => $reward->id],
-                [
-                    'image_data' => $image_data_base64,
-                    'updated_at' => now(),
-                ]
-            );
 
             return response()->json([
                 'message' => 'reward update() success',
                 'reward' => $reward,
                 'imageDataBase64' => $image_data_base64
             ], 201);
+
         } catch (\Exception $error) {
             return response()->json([
                 'message' => 'reward update() function error',
@@ -227,7 +230,6 @@ class RewardController extends Controller
                 'message' => 'reward delete() success',
                 'status' => 200,
             ], 200);
-
         } catch (\Exception $error) {
             return response()->json([
                 'message' => 'reward delete() function error',

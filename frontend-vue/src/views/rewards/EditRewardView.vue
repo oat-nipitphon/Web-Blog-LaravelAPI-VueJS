@@ -131,6 +131,7 @@ onMounted(async () => {
 });
 
 const onUpdate = async () => {
+  
   const id = reward.value.id;
   const formData = new FormData();
   formData.append("name", form.name);
@@ -148,7 +149,7 @@ const onUpdate = async () => {
     const file = new File([blob], filename, { type: blob.type });
     formData.append("image_file", file);
   }
-
+console.log('function update ', reward.value.id);
   const success = await storeUpdateReward(id, formData);
   if (success) {
     router.push({ name: "ManagerReportRewardsView" });

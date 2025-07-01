@@ -1,135 +1,150 @@
-<!-- <script setup>
-import { ref, onMounted, } from 'vue'
-import { RouterLink, useRouter } from 'vue-router'
-import { useAdminUserProfileStore } from '@/stores/admin.user.profile'
-const fallbackImage = 'https://via.placeholder.com/150?text=No+Image'
-
-const { adminAPIGETuserProfiles, adminDeleteUserProfile, storeAdminAPIDeleteUserProfile } =
-  useAdminUserProfileStore()
-
-const router = useRouter()
-const userProfiles = ref([])
-const openDropdown = ref(null);
-
-
-const formatBrithDay = brithDay => {
-  const birthDate = new Date(brithDay)
-  const currentDate = new Date()
-  let calculatedAge = currentDate.getFullYear() - birthDate.getFullYear()
-  const monthDifference = currentDate.getMonth() - birthDate.getMonth()
-  if (
-    monthDifference < 0 ||
-    (monthDifference === 0 && currentDate.getDate() < birthDate.getDate())
-  ) {
-    calculatedAge--
-  }
-  return calculatedAge
-}
-
-const onShow = async (userProfile) => {
-  console.log('onShow', userProfile);
-}
-
-const onEdit = async (userProfile) => {
-  console.log('onEdit', userProfile.id);
-  router.push({
-    name: 'AdminEditUserProfileView',
-    params: {
-      userProfileID: userProfile.id
-    }
-  });
-}
-
-const onDelete = async (userProfile) => {
-  console.log('onDelete', userProfile);
-  await adminDeleteUserProfile(userProfile)
-  userProfiles.value = await adminAPIGETuserProfiles()
-}
-
-
-onMounted(async () => {
-  userProfiles.value = await adminAPIGETuserProfiles()
-})
-
-</script>
-
 <template>
-  <div class="bg-white rounded-lg shadow-lg p-3 w-auto h-auto">
-    <div class="rounded border border-gray-300 shadow-sm">
-      <table class="min-w-full divide-y-2 divide-gray-200">
-        <thead class="ltr:text-left rtl:text-right">
-          <tr class="*:font-medium *:text-gray-900">
-            <th class="px-3 py-2 whitespace-nowrap">#</th>
-            <th class="px-3 py-2 whitespace-nowrap">Status</th>
-            <th class="px-3 py-2 whitespace-nowrap">Image</th>
-            <th class="px-3 py-2 whitespace-nowrap">Profile Detail</th>
-            <th class="px-3 py-2 whitespace-nowrap">Actions</th>
+  <div class="p-6 bg-gray-50 min-h-screen">
+    <div
+      class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6"
+    >
+      <h1 class="text-2xl font-bold text-gray-800">
+        Dashboard Manage User Profiles
+      </h1>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+      <div class="bg-white p-4 rounded-xl shadow text-center">
+        <p class="text-sm text-gray-500">ผู้ใช้ทั้งหมด</p>
+        <p class="text-2xl font-bold">250</p>
+      </div>
+      <div class="bg-white p-4 rounded-xl shadow text-center">
+        <p class="text-sm text-gray-500">ออนไลน์</p>
+        <p class="text-2xl font-bold text-green-600">180</p>
+      </div>
+      <div class="bg-white p-4 rounded-xl shadow text-center">
+        <p class="text-sm text-gray-500">ออฟไลน์</p>
+        <p class="text-2xl font-bold text-red-600">70</p>
+      </div>
+      <div class="bg-white p-4 rounded-xl shadow text-center">
+        <p class="text-sm text-gray-500">อายุเฉลี่ย</p>
+        <p class="text-2xl font-bold text-blue-600">28</p>
+      </div>
+    </div>
+
+    <!-- User Profiles Table -->
+    <div class="overflow-x-auto bg-white rounded-xl shadow">
+      <table class="w-full text-sm text-gray-700">
+        <thead class="bg-gray-100 text-xs uppercase">
+          <tr>
+            <th class="text-center px-4 py-3 font-semibold">#</th>
+            <th class="text-center px-4 py-3 font-semibold">Status</th>
+            <th class="text-center px-4 py-3 font-semibold">Image</th>
+            <th class="text-left px-4 py-3 font-semibold">Profile Details</th>
+            <th class="text-center px-4 py-3 font-semibold">Actions</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-gray-200" v-if="userProfiles.length > 0">
-          <tr class="*:text-gray-900 *:first:font-medium" v-for="(userProfile, index) in userProfiles" :key="index">
-            <td class="px-3 py-2 whitespace-nowrap">{{ index }}</td>
-            <td class="px-3 py-2 whitespace-nowrap">
-              <div class="flex flex-col">
-                <span v-if="userProfile?.userLogin?.status_login === 'online'" class="text-green-600 font-semibold">{{
-                  userProfile?.userLogin?.status_login }}</span>
-                <span v-else class="text-red-600 font-semibold">{{ userProfile?.userLogin?.status_login }}</span>
-                <span class="text-gray-500">{{ userProfile?.userStatus?.status_name }}</span>
+        <tbody>
+          <tr
+            class="border-b hover:bg-gray-50 transition"
+            v-for="n in 5"
+            :key="n"
+          >
+            <td class="text-center px-4 py-3 font-medium">{{ n }}</td>
+            <td class="text-center px-4 py-3">
+              <span class="text-green-600 font-semibold">online</span>
+              <div class="text-sm text-gray-500">active</div>
+            </td>
+            <td class="text-center px-4 py-3">
+              <img
+                src="https://via.placeholder.com/80"
+                class="w-16 h-16 rounded-full m-auto object-cover"
+                alt="profile image"
+              />
+            </td>
+            <td class="px-4 py-3">
+              <div class="grid grid-cols-2 gap-x-4 gap-y-1">
+                <span class="font-semibold">Email:</span
+                ><span>user{{ n }}@example.com</span>
+                <span class="font-semibold">Name:</span
+                ><span>User {{ n }}</span>
+                <span class="font-semibold">Tel:</span
+                ><span>098-123456{{ n }}</span>
+                <span class="font-semibold">Age:</span><span>{{ 20 + n }}</span>
               </div>
             </td>
-            <td class="px-3 py-2 whitespace-nowrap">
-              <div v-for="image in userProfile.userImage" :key="image.id">
-                <img :src="image.imageData ? 'data:image/png;base64,' + image.imageData : fallbackImage"
-                  class="w-16 h-16 object-cover rounded-full border" alt="Profile Image" />
-              </div>
-            </td>
-            <td class="px-3 py-2 whitespace-nowrap">
-              <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-gray-700">
-                <span class="font-semibold">Email:</span><span>{{ userProfile?.email }}</span>
-                <span class="font-semibold">Name:</span><span>{{ userProfile?.userProfile?.full_name }}</span>
-                <span class="font-semibold">Tel:</span><span>{{ userProfile?.userProfile?.tel_phone }}</span>
-                <span class="font-semibold">Age:</span><span>{{ formatBrithDay(userProfile?.userProfile?.birth_day)
-                  }}</span>
-              </div>
-            </td>
-            <td class="px-3 py-2 whitespace-nowrap">
-              <div class="relative inline-block">
-                <button @click="openDropdown = userProfile.id"
-                  class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded text-xs">
-                  Actions
-                </button>
-                <div v-if="openDropdown === userProfile.id" @click.outside="openDropdown = null"
-                  class="absolute right-0 mt-2 w-40 bg-white border rounded-md shadow-lg z-50">
-                  <ul class="py-1 text-sm text-gray-700">
-                    <li><button @click="onShow(userProfile)"
-                        class="block w-full px-4 py-2 hover:bg-gray-100">Show</button></li>
-                    <li><button @click="onEdit(userProfile.id)"
-                        class="block w-full px-4 py-2 hover:bg-gray-100">Edit</button></li>
-                    <li><button @click="storeAdminAPIDeleteUserProfile(userProfile.id)"
-                        class="block w-full px-4 py-2 text-red-600 hover:bg-gray-100">Delete</button></li>
-                  </ul>
+            <td class="text-center px-4 py-3">
+              <Menu as="div" class="relative inline-block text-left">
+                <div>
+                  <MenuButton
+                    class="inline-flex justify-center items-center px-4 py-2 bg-white border rounded-md shadow text-sm font-medium hover:bg-gray-50"
+                  >
+                    Options
+                    <ChevronDownIcon class="ml-2 h-5 w-5 text-gray-500" />
+                  </MenuButton>
                 </div>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-        <tbody v-else>
-          <tr>
-            <td colspan="5" class="text-center py-5 text-gray-500 font-semibold">
-              No user profile data available.
+                <transition
+                  enter-active-class="transition ease-out duration-100"
+                  enter-from-class="transform opacity-0 scale-95"
+                  enter-to-class="transform opacity-100 scale-100"
+                  leave-active-class="transition ease-in duration-75"
+                  leave-from-class="transform opacity-100 scale-100"
+                  leave-to-class="transform opacity-0 scale-95"
+                >
+                  <MenuItems
+                    class="absolute right-0 z-10 mt-2 w-40 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                  >
+                    <div class="py-1">
+                      <MenuItem v-slot="{ active }">
+                        <button
+                          type="button"
+                          :class="[
+                            active
+                              ? 'bg-gray-100 text-gray-900'
+                              : 'text-gray-700',
+                            'block w-full px-4 py-2 text-left text-sm',
+                          ]"
+                        >
+                          Show
+                        </button>
+                      </MenuItem>
+                      <MenuItem v-slot="{ active }">
+                        <button
+                          type="button"
+                          :class="[
+                            active
+                              ? 'bg-gray-100 text-gray-900'
+                              : 'text-gray-700',
+                            'block w-full px-4 py-2 text-left text-sm',
+                          ]"
+                        >
+                          Edit
+                        </button>
+                      </MenuItem>
+                      <MenuItem v-slot="{ active }">
+                        <button
+                          type="button"
+                          :class="[
+                            active
+                              ? 'bg-gray-100 text-gray-900'
+                              : 'text-red-600',
+                            'block w-full px-4 py-2 text-left text-sm',
+                          ]"
+                        >
+                          Delete
+                        </button>
+                      </MenuItem>
+                    </div>
+                  </MenuItems>
+                </transition>
+              </Menu>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
   </div>
-</template> -->
-<script setup>
-import { ref } from 'vue'
-import { RouterLink } from 'vue-router'
-</script>
-<template>
-  <div class="m-auto">
-    <h1>Manager Report User Profile VIew</h1>
-  </div>
 </template>
+<script setup>
+import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
+import { ChevronDownIcon } from "@heroicons/vue/20/solid";
+
+import { ref, onMounted } from "vue";
+import { RouterLink, useRouter } from "vue-router";
+</script>

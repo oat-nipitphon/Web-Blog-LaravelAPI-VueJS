@@ -14,7 +14,7 @@
 
       <div class="flex justify-between items-center">
         <p class="text-gray-700 text-lg">จำนวนรางวัล:</p>
-        <p class="font-bold text-red-600 text-lg">{{ counterItems }}</p>
+        <p class="font-bold text-red-600 text-lg">{{ countItems }}</p>
       </div>
     </div>
 
@@ -23,7 +23,7 @@
       <div class="flex justify-between items-center">
         <p class="text-gray-700 text-lg">จำนวนแต้มที่ใช้:</p>
         <p class="font-bold text-rose-600 text-lg">
-          {{ totalPoint }}
+          {{ sumTotalPoint }}
           <span class="text-sm font-normal text-gray-500">Point</span>
         </p>
       </div>
@@ -31,7 +31,7 @@
       <div class="flex justify-between items-center">
         <p class="text-gray-700 text-lg">แต้มคงเหลือ:</p>
         <p class="font-bold text-green-600 text-lg">
-          {{ checkPointSelectd }}
+          {{ remainingPoint }}
           <span class="text-sm font-normal text-gray-500">Point</span>
         </p>
       </div>
@@ -41,14 +41,13 @@
     <div class="flex flex-col md:flex-row justify-end gap-4">
       <button
         type="button"
-        :disabled="checkPointSelectd < 0 || cartItemCounters === 0"
-        @click="onSaveSeletedItems"
+        :disabled="sumTotalPoint <= 0 || countItems === 0"
+        @click="onConfirmExchange"
         class="w-full md:w-auto px-6 py-2 rounded-xl text-white font-semibold transition shadow-md"
         :class="{
           'bg-gray-400 cursor-not-allowed':
-            checkPointSelectd < 0 || cartItemCounters === 0,
-          'bg-blue-600 hover:bg-blue-700':
-            checkPointSelectd >= 0 && cartItemCounters > 0,
+            sumTotalPoint <= 0 || countItems === 0,
+          'bg-blue-600 hover:bg-blue-700': sumTotalPoint > 0 && countItems > 0,
         }"
       >
         แลกของรางวัล
@@ -56,12 +55,12 @@
 
       <button
         type="button"
-        :disabled="cartItemCounters === 0"
-        @click="onResetItemsCart"
+        :disabled="countItems === 0"
+        @click="resetCart"
         class="w-full md:w-auto px-6 py-2 rounded-xl text-white font-semibold transition shadow-md"
         :class="{
-          'bg-gray-400 cursor-not-allowed': cartItemCounters === 0,
-          'bg-red-600 hover:bg-red-700': cartItemCounters > 0,
+          'bg-gray-400 cursor-not-allowed': countItems === 0,
+          'bg-red-600 hover:bg-red-700': countItems > 0,
         }"
       >
         รีเซ็ตแลกของรางวัล
@@ -83,6 +82,19 @@
           <p class="text-sm text-gray-500 text-center">
             Point: {{ reward.point }}
           </p>
+          <div class="grid grid-cols-2">
+            <div class="flex justify-center m-2 p-2">
+              Amount: {{ reward.amount }}
+            </div>
+            <div class="flex justify-center m-2 p-2">
+              <button
+                @click="addToCart(reward)"
+                class="text-blue-600 hover:underline"
+              >
+                Add
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -91,13 +103,11 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted } from "vue";
-import { RouterLink } from "vue-router";
 import { storeToRefs } from "pinia";
 
 import { useAuthStore } from "@/stores/auth";
-import { useWalletStore } from "@/stores/wallet";
 import { useRewardStore } from "@/stores/reward";
-import { useRewardCartStore } from "@/stores/reward-card";
+import { useRewardCartStore } from "@/stores/reward-cart";
 
 const authStore = useAuthStore();
 const rewardStore = useRewardStore();
@@ -105,45 +115,38 @@ const rewardCartStore = useRewardCartStore();
 
 const { users } = storeToRefs(authStore);
 const { rewards } = storeToRefs(rewardStore);
-const { counterItems, cartItemCounters, totalPoint } =
+const { storeGetRewards } = rewardStore;
+const { addItems, cartItems, countItems, sumTotalPoint, resetCart } =
   storeToRefs(rewardCartStore);
 
-const { storeConfirmSelectdItems } = useWalletStore();
-const { storeGetRewards } = useRewardStore();
+const form = reactive({
+  walletID: users.value?.wallet?.id || "",
+  point: users.value?.wallet?.point || 0,
+  items: [],
+});
 
-const reportRewards = ref([]);
+const remainingPoint = computed(() => {
+  return form.point - sumTotalPoint.value;
+});
 
 onMounted(async () => {
-  reportRewards.value = await rewardStore.storeGetRewards();
-  console.log("shop reward ", reportRewards.value);
+  await storeGetRewards();
 });
 
-const form = reactive({
-  walletID: authStore?.users?.wallet?.id || "",
-  point: authStore?.users?.wallet?.point || 0,
-  items: "",
-});
-
-const checkPointSelectd = computed(() => {
-  return form.point - totalPoint.value;
-});
-
-const onSaveSeletedItems = async () => {
-  const formData = new FormData();
-  formData.append("wallet_id", form.walletID);
-  formData.append("point", checkPointSelectd.value);
-  formData.append("items", JSON.stringify(counterItems.value));
-
-  for (const [key, value] of formData.entries()) {
-    console.log(`${key}:`, value);
-  }
-
-  return;
-
-  await storeConfirmSelectdItems(formData);
+const addToCart = (reward) => {
+  rewardCartStore.addItems(reward);
 };
 
-const onResetItemsCart = () => {
-  rewardCartStore.resetCart();
+const onConfirmExchange = async () => {
+  const payload = {
+    wallet_id: form.walletID,
+    point: remainingPoint.value,
+    items: cartItems.value,
+  };
+
+  console.log("📦 ส่งข้อมูลแลกของรางวัล:", payload);
+
+  // TODO: เรียก API ส่ง payload
+  // await rewardCartStore.storeConfirmSelectdItems(payload);
 };
 </script>

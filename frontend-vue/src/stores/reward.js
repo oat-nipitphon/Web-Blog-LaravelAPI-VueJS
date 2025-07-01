@@ -110,6 +110,11 @@ export const useRewardStore = defineStore("rewardStore", {
     },
 
     async storeUpdateReward(id, formData) {
+      // for (const [key, value] of formData.entries()) {
+      //   console.log(`${key}:`, value);
+      // }
+      
+
       const result = await Swal.fire({
         title: "Are you sure?",
         text: "Do you want to updated this reward?",
@@ -122,7 +127,7 @@ export const useRewardStore = defineStore("rewardStore", {
         confirmButtonColor: "#3085d6",
       });
 
-      if (result.isConfirmed) {
+      if (!result.isConfirmed) {
         Swal.close();
         return;
       }
