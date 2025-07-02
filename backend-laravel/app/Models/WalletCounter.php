@@ -23,8 +23,8 @@ class WalletCounter extends Model
         'wallet_id',
         'reward_id',
         'point',
+        'amount',
         'status',
-        'detail',
         'created_at',
         'updated_at'
     ];

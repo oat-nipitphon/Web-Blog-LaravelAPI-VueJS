@@ -10,27 +10,48 @@ export const useWalletStore = defineStore("walletStore", {
   actions: {
     // Confirmd Selectd Items
     async storeConfirmSelectdItems(payload) {
-      // for (const [key, value] of payload.entries()) {
-      //   console.log(`store confirm selectd items ${key}:`, value);
+      // for (const [key, value] of formData.entries()) {
+      //   console.log(`${key}:`, value);
       // }
-      console.log('store confirm selectd items', payload);
-      return;
+
+      // return;
+
+      const result = await Swal.fire({
+        title: "Confirmed ?",
+        text: "Do you want to confirmed selectd items ?",
+        icon: "warning",
+        showCancelButton: true,
+        cancelButtonText: "Cancel",
+        cancelButtonColor: "#d33",
+        showConfirmButton: true,
+        confirmButtonText: "Confirmed",
+        confirmButtonColor: "#3085d6",
+      });
+
+      if (!result.isConfirmed) {
+        Swal.close();
+        return;
+      }
 
       try {
-        const response = await fetch(`/api/wellets`, {
+        const response = await fetch("/api/wellets/counters", {
           method: "POST",
           headers: {
-            authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
-          body: formData,
+          body: JSON.stringify(payload),
         });
 
-        if (response.status !== 201 || response.status !== 200) {
-          console.error("store confirm selectd items false ", response.error);
+        const data = await response.json();
+
+        if (!response.ok) {
+          console.error("Failed:", data.message);
+          return false;
         }
 
-        const data = await response.json();
-        console.log("store confirm selectd items success ", data);
+        console.log("Success:", data);
+        return true;
       } catch (error) {
         console.error("store confirm selectd items function error ", error);
       }
@@ -75,6 +96,5 @@ export const useWalletStore = defineStore("walletStore", {
         console.error(error);
       }
     },
-
   },
 });

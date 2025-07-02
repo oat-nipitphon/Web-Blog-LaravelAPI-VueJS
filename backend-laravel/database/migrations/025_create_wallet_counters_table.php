@@ -16,8 +16,8 @@ return new class extends Migration
             $table->foreignId('wallet_id')->constrained('user_wallets')->onDelete('cascade');
             $table->foreignId('reward_id')->constrained('rewards')->onDelete('cascade');
             $table->double('point')->nullable();
+            $table->double('amount')->nullable();
             $table->enum('status', ['null', 'in', 'out'])->default('null');
-            $table->string('detail')->nullable();
             $table->timestamps();
         });
     }

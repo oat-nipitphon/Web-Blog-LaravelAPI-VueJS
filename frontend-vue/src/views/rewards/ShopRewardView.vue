@@ -119,13 +119,14 @@
 </template>
 
 <script setup>
+import Swal from "sweetalert2";
 import { ref, reactive, computed, onMounted } from "vue";
 import { storeToRefs } from "pinia";
 
 import { useAuthStore } from "@/stores/auth";
 import { useRewardStore } from "@/stores/reward";
 import { useRewardCartStore } from "@/stores/reward-cart";
-import { useWalletStore } from '@/stores/wallet'
+import { useWalletStore } from "@/stores/wallet";
 
 const authStore = useAuthStore();
 const rewardStore = useRewardStore();
@@ -134,14 +135,13 @@ const rewardCartStore = useRewardCartStore();
 const { users } = storeToRefs(authStore);
 const { rewards } = storeToRefs(rewardStore);
 const { storeGetRewards } = rewardStore;
-const { addItems, cartItems, countItems, sumTotalPoint, resetCart } =
-  storeToRefs(rewardCartStore);
+const { cartItems, countItems, sumTotalPoint } = storeToRefs(rewardCartStore);
 
 const { storeConfirmSelectdItems } = useWalletStore();
 
 const form = reactive({
-  walletID: users.value?.wallet?.id || "",
-  point: users.value?.wallet?.point || 0,
+  walletID: users.value?.wallet?.id,
+  point: users.value?.wallet?.point,
   items: [],
 });
 
@@ -168,10 +168,25 @@ const onConfirmedSelectdItems = async () => {
     items: cartItems.value,
   };
 
-  
+  // const formData = new FormData();
+  // formData.append("wallet_id", form.walletID);
+  // formData.append("point", remainingPoint.value);
+  // formData.append("items", JSON.stringify(cartItems.value));
 
-  console.log('confirm selectd items add', payload);
-  await storeConfirmSelectdItems(payload);
+  const success = await storeConfirmSelectdItems(payload);
 
+  if (success) {
+    console.log(success);
+    Swal.fire({
+      title: "Confirmed success",
+      text: "confirmed selectd items cart successfully.",
+      icon: "success",
+      timer: 1200,
+    }).then(() => {
+      Swal.close();
+      window.location.reload();
+      return;
+    });
+  }
 };
 </script>

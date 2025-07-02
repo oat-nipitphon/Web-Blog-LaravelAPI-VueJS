@@ -31,28 +31,19 @@ class WalletCounterController extends Controller
     {
         try {
 
-            $validated =  $request->validate([
-                'wallet_id' => 'required|integer',
-                'amount' => 'required|integer',
-                'items' => 'required|json',
+            $validated = $request->validate([
+                'wallet_id' => 'required|integer|exists:user_wallets,id',
+                'point' => 'required|integer',
+                'items' => 'required|array|min:1',
+                'items.*.rewardID' => 'required|integer',
+                'items.*.rewardName' => 'required|string',
+                'items.*.rewardPoint' => 'required|integer',
+                'items.*.rewardAmount' => 'required|integer',
             ]);
 
             $items = $request->input('items');
 
             $wallet = UserWallet::findOrFail($validated['wallet_id']);
-
-            if (!$wallet) {
-
-                return response()->json([
-                    'message' => 'laravelapi user point request false',
-                    'walletID' => $validated['wallet_id'],
-                ], 404);
-            }
-
-            $wallet->update([
-                'point' => $request->userAmount,
-                'updated_at' => $this->dateTimeFormatTimeZone()
-            ]);
 
             if (!$wallet) {
                 return response()->json([
@@ -61,50 +52,47 @@ class WalletCounterController extends Controller
                 ], 400);
             }
 
-            $statusCounter = false;
-            foreach(json_decode($items) as $item) {
+            $wallet->update([
+                'point' => $validated['point'],
+                'updated_at' => now()
+            ]);
 
-                $data = [
-                    'rewardID' => $item->rewardID,
-                    'rewardName' => $item->rewardName,
-                    'rewardPoint' => $item->rewardPoint,
-                    'rewardAmount' => $item->rewardAmount,
-                ];
+            if (!empty($request->input('items'))) {
+                $statusCounter = false;
+                foreach ($validated['items'] as $item) {
 
-                WalletCounter::create([
-                    'user_id' => $request->userID,
-                    'reward_id' => $data['rewardID'],
-                    'point_status' => $data['rewardPoint'],
-                    'created_at' => $this->dateTimeFormatTimeZone()
-                ]);
+                    WalletCounter::create([
+                        'wallet_id' => $validated['wallet_id'],
+                        'reward_id' => $item['rewardID'],
+                        'point' => $item['rewardPoint'],
+                        'amount' => $item['rewardAmount'],
+                        'status' => 'out',
+                        'created_at' => now(),
+                        'updated_at' => now()
+                    ]);
 
-                // จำนวนคงเหลือ ของรางวัล
-                // $reward = Reward::findOrFail($data['rewardID']);
-                // $
-
-                $statusCounter = true;
+                    $statusCounter = true;
+                }
             }
-
 
             if ($statusCounter !== true) {
 
                 return response()->json([
-                    'userWallets' => $user_wallets,
-                    'counterItems' => $counterItems,
-                    'message' => 'laravelapi create reward user point counter false',
+                    'userWallets' => $wallet,
+                    'counterItems' => $statusCounter,
+                    'message' => 'wallet counter store() false',
                 ], 404);
-
             }
 
             return response()->json([
-                'userWallets' => $user_wallets,
-                'counterItems' => $counterItems,
-                'message' => 'laravelapi create reward user point counter success.',
+                'wallet' => $wallet,
+                'statusCounter' => $statusCounter,
+                'message' => 'wallet counter store() success.',
             ], 201);
-
-        } catch (\Exception $e) {
+        } catch (\Exception $error) {
             return response()->json([
-                'message' => 'api function userConfirmSelectReward error' . $e->getMessage()
+                'message' => 'wallet counter store() function error',
+                'error' => $error->getMessage()
             ]);
         }
     }
@@ -112,55 +100,7 @@ class WalletCounterController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
-    {
-        // Card Report Items Selectd Wallet ID
-        try {
-            // ดึงข้อมูลเฉพาะผู้ใช้ พร้อม relation
-            $user = User::with('user_wallet', 'user_wallet.wallet_counters', '
-            user_wallet.wallet_counters.reward')->findOrFail($$id);
-
-            $userPointCounters = [
-                'id' => $user->id,
-                'email' => $user->email,
-                'username' => $user->username,
-                'wallet' => $user->user_wallet->point,
-                'walletCounters' => $user->user_wallet->wallet_counters?->map(function ($counter) {
-                    return $counter ? [
-                        'id' => $counter->id,
-                        'walletID' => $counter->wallet_id,
-                        'detail' => $counter->detail,
-                        'created_at' => $counter->created_at,
-                        'updated_at' => $counter->updated_at,
-                        'rewards' => $counter->reward->map(function ($reward) {
-                            return $reward ? [
-                                'id' => $reward->id,
-                                'point' => $reward->point,
-                                'images' => $reward->rewardImage->map(function ($image) {
-                                    return $image ? [
-                                        'id' => $image->id,
-                                        'image_data' => $image->image_data,
-                                    ] : null;
-                                }),
-                            ] : null;
-                        }),
-                    ] : null;
-                }),
-            ];
-
-            return response()->json([
-                'message' => 'Laravel API get report reward success.',
-                // 'userPointCounter' => $user,
-                'userPointCounter' => $userPointCounters,
-            ], 200);
-
-        } catch (\Exception $error) {
-            return response()->json([
-                'message' => 'Laravel API function get report reward error',
-                'error' => $error->getMessage()
-            ], 500);
-        }
-    }
+    public function show(string $id) {}
 
     /**
      * Update the specified resource in storage.
@@ -173,31 +113,5 @@ class WalletCounterController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
-    {
-        try {
-
-            $cancelReward = WalletCounter::findOrFail($id);
-
-            if (empty($cancelReward)) {
-                return response()->json([
-                    'message' => 'laravelapi reward false',
-                    'id' => $id
-                ], 404);
-            }
-
-            $cancelReward->delete();
-
-
-            return response()->json([
-                'message' => 'laravelapi function cancel reward success'
-            ], 201);
-
-        } catch (\Exception $error) {
-            return response()->json([
-                'message' => 'function cancel reward error',
-                'error' => $$error->getMessage(),
-            ], 404);
-        }
-    }
+    public function destroy(string $id) {}
 }
