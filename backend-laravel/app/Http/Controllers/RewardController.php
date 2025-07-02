@@ -195,7 +195,6 @@ class RewardController extends Controller
                 'reward' => $reward,
                 'imageDataBase64' => $image_data_base64
             ], 201);
-
         } catch (\Exception $error) {
             return response()->json([
                 'message' => 'reward update() function error',

@@ -1,6 +1,6 @@
 <template>
   <div class="p-6 bg-gray-50 min-h-screen">
-    <h1 class="text-2xl font-bold text-gray-800 mb-6">Dashboard Admin</h1>
+    <PageHeader title="Dashboard Manager" />
 
     <!-- Manager Blog -->
     <div class="m-auto rounded-lg bg-white shadow-lg">
@@ -41,6 +41,7 @@
 <script setup>
 import { ref } from "vue";
 import { RouterLink } from "vue-router";
+import PageHeader from "@/components/PageHeader.vue";
 </script>
 
 <style scoped></style>

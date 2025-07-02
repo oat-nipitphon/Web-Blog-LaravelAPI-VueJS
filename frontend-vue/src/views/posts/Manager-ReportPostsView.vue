@@ -1,10 +1,6 @@
 <template>
   <div class="p-6 bg-gray-50 min-h-screen">
-    <div
-      class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6"
-    >
-      <h1 class="text-2xl font-bold text-gray-800">Dashboard Manage Posts</h1>
-    </div>
+    <PageHeader title="Manager Post" />
 
     <!-- Summary Cards -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
@@ -143,6 +139,7 @@
 <script setup>
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
 import { ChevronDownIcon } from "@heroicons/vue/20/solid";
+import PageHeader from "@/components/PageHeader.vue";
 import { ref, onMounted } from "vue";
 import { RouterLink } from "vue-router";
 import { storeToRefs } from "pinia";
