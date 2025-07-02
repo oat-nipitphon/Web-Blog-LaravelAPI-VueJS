@@ -24,19 +24,21 @@
           <!-- Desktop Menu -->
           <div class="hidden md:block">
             <div class="ml-10 flex items-baseline space-x-4">
-              <button
-                v-for="item in navigation"
+              <span
+                v-for="item in ItemsMenuMain"
                 :key="item.title"
                 @click="handleNavigation(item)"
                 :class="[
-                  $route.name === item.name
-                    ? 'bg-gray-900 text-white'
+                  item.name === 'SignOut'
+                    ? 'bg-red-500 hover:bg-red-700 text-white'
+                    : $route.name === item.name
+                    ? 'bg-blue-600 text-white'
                     : 'text-gray-700 hover:bg-gray-700 hover:text-white',
-                  'rounded-md px-3 py-2 text-sm font-medium',
+                  'block rounded-md px-3 py-2 text-base font-medium',
                 ]"
               >
                 {{ item.title }}
-              </button>
+              </span>
             </div>
           </div>
         </div>
@@ -73,14 +75,19 @@
               >
                 <span class="sr-only">Open user menu</span>
                 <img
+                  v-if="authStore.users?.profileImage?.imageData"
                   class="size-8 rounded-full"
                   :src="
+                    'data:image/png;base64,' +
                     authStore.users?.profileImage?.imageData
-                      ? 'data:image/png;base64,' +
-                        authStore.users.profileImage.imageData
-                      : imageDefault
                   "
-                  alt="User"
+                  alt="ProfileImage"
+                />
+                <img
+                  v-else
+                  src="../assets/images/account-profile.png"
+                  class="size-8 rounded-full"
+                  alt="ProfileImage"
                 />
               </MenuButton>
               <transition
@@ -95,21 +102,23 @@
                   class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black/5 focus:outline-none"
                 >
                   <MenuItem
-                    v-for="item in userNavigation"
+                    v-for="item in ItemsMenuProfileImage"
                     :key="item.name"
                     v-slot="{ active }"
                   >
-                    <button
+                    <span
                       @click="handleNavigation(item)"
                       :class="[
-                        $route.name === item.name
-                          ? 'bg-gray-900 text-white'
+                        item.name === 'SignOut'
+                          ? 'bg-red-500 hover:bg-red-700 text-white'
+                          : $route.name === item.name
+                          ? 'bg-blue-600 text-white'
                           : 'text-gray-700 hover:bg-gray-700 hover:text-white',
                         'block rounded-md px-3 py-2 text-base font-medium',
                       ]"
                     >
                       {{ item.title }}
-                    </button>
+                    </span>
                   </MenuItem>
                 </MenuItems>
               </transition>
@@ -146,19 +155,42 @@
     <!-- Mobile Menu Panel -->
     <DisclosurePanel class="md:hidden">
       <div class="space-y-1 px-2 pt-2 pb-3 sm:px-3">
-        <button
-          v-for="item in navigation"
+        <div class="flex justify-center p-2 m-auto items-center">
+          <span class="sr-only">Open user menu</span>
+          <img
+            v-if="authStore.users?.profileImage?.imageData"
+            class="size-12 rounded-full"
+            :src="
+              'data:image/png;base64,' +
+              authStore.users?.profileImage?.imageData
+            "
+            alt="ProfileImage"
+          />
+          <img
+            v-else
+            src="../assets/images/account-profile.png"
+            class="size-12 rounded-full"
+            alt="ProfileImage"
+          />
+          <span class="font-bold text-gray-700 text-2xl bg-white ml-5">
+            {{ authStore.users?.email }}
+          </span>
+        </div>
+        <span
+          v-for="item in ItemsMenuMoblie"
           :key="item.name"
           @click="handleNavigation(item)"
           :class="[
-            $route.name === item.name
-              ? 'bg-gray-900 text-white'
+            item.name === 'SignOut'
+              ? 'bg-red-500 hover:bg-red-700 text-white'
+              : $route.name === item.name
+              ? 'bg-blue-600 text-white'
               : 'text-gray-700 hover:bg-gray-700 hover:text-white',
             'block rounded-md px-3 py-2 text-base font-medium',
           ]"
         >
           {{ item.title }}
-        </button>
+        </span>
       </div>
     </DisclosurePanel>
   </Disclosure>
@@ -189,16 +221,37 @@ const route = useRoute();
 const imageDefault = "/default-profile.png";
 const disclosureOpen = ref(false);
 
-const navigation = [
+const ItemsMenuMain = [
+  { title: "Home", name: "HomeView" },
+  { title: "Create Post", name: "CreatePostView" },
+  { title: "Reward Shop", name: "ShopRewardView" },
+  { title: "Manager", name: "DashboardManagerView" },
+];
+
+const ItemsMenuProfileImage = [
+  { title: "Profile", name: "DashboardProfileView" },
+  { title: "Store Post", name: "StorePostsView" },
+  { title: "Manager", name: "DashboardManagerView" },
+  { title: "Sign out", name: "SignOut" },
+];
+
+const ItemsMenuMoblie = [
   { title: "Home", name: "HomeView" },
   { title: "Create Post", name: "CreatePostView" },
   { title: "Store Post", name: "StorePostsView" },
+  { title: "Reward Shop", name: "ShopRewardView" },
   { title: "Profile", name: "DashboardProfileView" },
   { title: "Manager", name: "DashboardManagerView" },
   { title: "Sign out", name: "SignOut" },
 ];
 
-const userNavigation = [...navigation];
+// All IN SUM Items
+// const seen = new Set();
+// const ListIemsMenus = [...ItemsMenuMain, ...ItemsMenuProfileImage, ...ItemsMenuMoblie].filter(item => {
+//   if (seen.has(item.name)) return false;
+//   seen.add(item.name);
+//   return true;
+// });
 
 const handleNavigation = async (item) => {
   disclosureOpen.value = false;
@@ -228,7 +281,8 @@ const handleNavigation = async (item) => {
           icon: "error",
           timer: 1500,
         });
-        router.push({ name: "HomeView" });
+        Swal.close();
+        return;
       }
       break;
     case "SignOut":
@@ -236,7 +290,7 @@ const handleNavigation = async (item) => {
       break;
     default:
       if (!item.name) {
-        router.push({ name: 'PageNotFoundView' });
+        router.push({ name: "PageNotFoundView" });
       }
       router.push({ name: item.name });
   }
