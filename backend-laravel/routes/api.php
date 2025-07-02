@@ -103,6 +103,7 @@ Route::prefix('/')->group(function () {
 
     // --------------------------------------- Wellet ------------------------------------------------ //
     Route::apiResource('/wellets', WalletController::class);
+
     Route::prefix('/wellets')->group(function () {
 
         Route::apiResource('/counters', WalletCounterController::class);

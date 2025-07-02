@@ -22,16 +22,20 @@ import ManagerReportPostsView from "@/views/posts/Manager-ReportPostsView.vue";
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+    // ************************************ Page Not Found
     {
       path: "/:pathMatch(.*)*",
+      name: "PageNotFoum",
       component: () => import("@/views/PageNotFoundView.vue"),
     },
+    // ************************************ Index
     {
       path: "/",
       name: "IndexView",
       component: IndexView,
       meta: { guest: true },
     },
+    // ************************************ Home
     {
       path: "/HomeView",
       name: "HomeView",
@@ -39,7 +43,7 @@ const router = createRouter({
       meta: { auth: true },
     },
 
-    //------------------- Account -----------------------
+    //************************************ Account ************************************
     {
       path: "/user_profiles/:id",
       name: "DashboardProfileView",
@@ -47,7 +51,7 @@ const router = createRouter({
       meta: { auth: true },
     },
 
-    //----------- Post Create Update and Delete -------------
+    //************************************ Start Post ************************************
     {
       path: "/CreatePostView",
       name: "CreatePostView",
@@ -60,17 +64,18 @@ const router = createRouter({
       component: EditPostView,
       meta: { auth: true },
     },
-    // #Delete post event api success
+    // ************************************ End Post ************************************
 
-    //---------------- Post Stores ------------------
+    //************************************ Start Post Stores ************************************
     {
       path: "/posts/stores/:profileID",
       name: "StorePostsView",
       component: StorePostsView,
       meta: { auth: true },
     },
+    // ************************************ End Post Stores ************************************
 
-    //----------------- Rewards -------------------
+    //************************************ Start Rewards ************************************
     {
       path: "/ShopRewardView",
       name: "ShopRewardView",
@@ -83,30 +88,38 @@ const router = createRouter({
       component: ReportCardItemsView,
       meta: { auth: true },
     },
+    // ************************************ Ebd Rewards ************************************
 
-    // **************************************** Admin Manager Blog **************************************** //
+    // ************************************ Start Manager Blog ************************************ //
 
+    // ************************************ Start Dashboard Manager
     {
       path: "/DashboardManagerView",
       name: "DashboardManagerView",
       component: () => import("@/views/DashboardManagerView.vue"),
       meta: { auth: true },
     },
+    // ************************************ End Dashboard Manager
 
+    // ************************************ Start Manager Account
     {
-      path: '/Manager-ReportUserProfileView',
-      name: 'ManagerReportUserProfileView',
+      path: "/Manager-ReportUserProfileView",
+      name: "ManagerReportUserProfileView",
       component: ManagerReportUserProfilesView,
-      meta: { auth: true }
+      meta: { auth: true },
     },
+    // ************************************ End Manager Account
 
+    // ************************************ Start Manager Post
     {
-      path: '/ManagerReportPostsView',
-      name: 'ManagerReportPostsView',
+      path: "/ManagerReportPostsView",
+      name: "ManagerReportPostsView",
       component: ManagerReportPostsView,
-      meta: { auth: true }
+      meta: { auth: true },
     },
+    // ************************************ End Manager Post
 
+    // ************************************ Start Manager Reward
     {
       path: "/ManagerReportRewardView",
       name: "ManagerReportRewardView",
@@ -125,6 +138,9 @@ const router = createRouter({
       component: EditRewardView,
       meta: { auth: true },
     },
+    // ************************************ End Manager Reward
+
+    // ************************************ End Manager Blog ************************************
   ],
 });
 
