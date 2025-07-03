@@ -2,26 +2,6 @@
   <div class="p-6 bg-gray-50 min-h-screen">
 <PageHeader title="Manager Account" />
 
-    <!-- Summary Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-      <div class="bg-white p-4 rounded-xl shadow text-center">
-        <p class="text-sm text-gray-500">ผู้ใช้ทั้งหมด</p>
-        <p class="text-2xl font-bold">250</p>
-      </div>
-      <div class="bg-white p-4 rounded-xl shadow text-center">
-        <p class="text-sm text-gray-500">ออนไลน์</p>
-        <p class="text-2xl font-bold text-green-600">180</p>
-      </div>
-      <div class="bg-white p-4 rounded-xl shadow text-center">
-        <p class="text-sm text-gray-500">ออฟไลน์</p>
-        <p class="text-2xl font-bold text-red-600">70</p>
-      </div>
-      <div class="bg-white p-4 rounded-xl shadow text-center">
-        <p class="text-sm text-gray-500">อายุเฉลี่ย</p>
-        <p class="text-2xl font-bold text-blue-600">28</p>
-      </div>
-    </div>
-
     <!-- User Profiles Table -->
     <div class="overflow-x-auto bg-white rounded-xl shadow">
       <table class="w-full text-sm text-gray-700">
@@ -138,19 +118,22 @@
 <script setup>
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
 import { ChevronDownIcon } from "@heroicons/vue/20/solid";
-import { ref, onMounted } from "vue";
-import { RouterLink, useRouter } from "vue-router";
-import { storeToRefs } from "pinia";
+import { ref, reactive, onMounted } from "vue";
+import { useRouter } from "vue-router";
 import { useManagerBlogStore } from "@/stores/manager-blog";
 import PageHeader from "@/components/PageHeader.vue";
 
 const managerBlogStore = useManagerBlogStore();
-// const { storeManagerGetUsers, storeManagerGetProfiles } = useManagerBlogStore();
-const { users, profiles, errors } = storeToRefs(managerBlogStore);
+const { storeManagerGetUserProfiles } = managerBlogStore;
+
+const userProfiles = ref([]);
 
 onMounted(async () => {
-  await managerBlogStore.storeManagerGetUsers();
-  await managerBlogStore.storeManagerGetProfiles();
+  userProfiles.value = await storeManagerGetUserProfiles();
+  console.log('manager report user profiles view ', userProfiles.value);
 });
 
+
+
 </script>
+
