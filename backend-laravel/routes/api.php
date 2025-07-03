@@ -8,28 +8,30 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\UserProfileController;
-use App\Http\Controllers\UserProfilePopController;
-use App\Http\Controllers\UserProfileFollowersController;
-use App\Http\Controllers\PostController;
-use App\Http\Controllers\PostStoreController;
-use App\Http\Controllers\PostPopController;
-use App\Http\Controllers\RewardController;
-use App\Http\Controllers\WalletController;
-use App\Http\Controllers\WalletCounterController;
-
-use App\Http\Controllers\AdminPostController;
-use App\Http\Controllers\AdminRewardController;
-use App\Http\Controllers\AdminUserProfileController;
-use App\Http\Controllers\AdminWalletController;
-use App\Http\Controllers\UserProfileContactController;
 use App\Models\UserStatus;
 use App\Models\PostType;
 use App\Models\Reward;
 use App\Models\RewardStatus;
 use App\Models\User;
+
+use App\Http\Controllers\AuthController;
+
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\UserProfileController;
+use App\Http\Controllers\UserProfilePopController;
+use App\Http\Controllers\UserProfileFollowersController;
+use App\Http\Controllers\UserProfileContactController;
+
+use App\Http\Controllers\PostController;
+use App\Http\Controllers\PostStoreController;
+use App\Http\Controllers\PostPopController;
+
+use App\Http\Controllers\RewardController;
+
+use App\Http\Controllers\WalletController;
+use App\Http\Controllers\WalletCounterController;
+
+use App\Http\Controllers\ManagerBlogController;
 
 /*
 |--------------------------------------------------------------------------
@@ -127,19 +129,25 @@ Route::prefix('/')->group(function () {
     // --------------------------------------- Manager Blog ------------------------------------------------ //
     Route::prefix('/manager')->group(function () {
 
-        Route::apiResource('/user_profiles', AdminUserProfileController::class);
+        Route::prefix('/user_profiles')->group(function () {
+            Route::get('/get_reports', [ManagerBlogController::class, 'managerGetUserProfiles']);
+        });
 
-        Route::apiResource('/posts', AdminPostController::class);
+
         Route::prefix('/posts')->group(function () {
-            Route::post('/blockOrUnBlock/{postID}/{blockStatus}', [AdminPostController::class, 'blockOrUnBlockPost']);
+            Route::get('/get_reports', [ManagerBlogController::class, 'managerGetPosts']);
+            Route::post('/set_status_post/{id}/{status}',
+            [ManagerBlogController::class, 'managerEventSetStatusPost']);
         });
 
-        Route::apiResource('/rewards', AdminRewardController::class);
         Route::prefix('/rewards')->group(function () {
-            Route::post('/updateStatusReward/{rewardID}', [AdminRewardController::class, 'updateStatusReward']);
+            Route::get('/get_reports', [ManagerBlogController::class, 'managerGetRewards']);
+            Route::post('/set_status_reward/{id}', [ManagerBlogController::class, 'managerSetStatusReward']);
         });
 
-        Route::apiResource('/wellets', AdminWalletController::class);
+        Route::prefix('/wallets')->group(function () {
+            Route::get('/get_reports', [ManagerBlogController::class, 'managerGetWellets']);
+        });
     });
     // --------------------------------------- Manager Blog ------------------------------------------------ //
     // ***************************************************************************************************** //
