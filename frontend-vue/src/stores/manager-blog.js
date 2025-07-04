@@ -11,48 +11,6 @@ export const useManagerBlogStore = defineStore("managerBlogStore", {
     errors: null,
   }),
   actions: {
-    async storeManagerGetUsers() {
-      try {
-        const response = await fetch(`/api/users`, {
-          method: "GET",
-          headers: {
-            authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-
-        if (![200].includes(response.status)) {
-          this.errors = response.error;
-          console.error("store manager get users false ", this.errors);
-        }
-
-        const data = await response.json();
-        this.users = data.users;
-        console.log("store manager get users success ", this.users);
-      } catch (error) {
-        console.error(error);
-      }
-    },
-    async storeManagerGetProfiles() {
-      try {
-        const response = await fetch(`/api/user_profiles`, {
-          method: "GET",
-          headers: {
-            authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-
-        if (![200].includes(response.status)) {
-          this.errors = response.error;
-          console.error("store manager get profiles false ", this.errors);
-        }
-
-        const data = await response.json();
-        this.profiles = data.user_profile;
-        console.log("store manager get profiles success ", this.profiles);
-      } catch (error) {
-        console.error(error);
-      }
-    },
 
     async storeManagerGetUserProfiles () {
       try {
@@ -68,9 +26,9 @@ export const useManagerBlogStore = defineStore("managerBlogStore", {
           return;
         }
 
-        console.log('store manager get success', response.data);
-        const data = response.data;
-        return data;
+        const data = await response.json();
+        console.log('store manager get success', data.userProfiles);
+        return data.userProfiles;
 
       } catch (error) {
         console.error(error);

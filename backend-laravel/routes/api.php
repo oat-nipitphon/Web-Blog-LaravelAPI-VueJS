@@ -136,8 +136,10 @@ Route::prefix('/')->group(function () {
 
         Route::prefix('/posts')->group(function () {
             Route::get('/get_reports', [ManagerBlogController::class, 'managerGetPosts']);
-            Route::post('/set_status_post/{id}/{status}',
-            [ManagerBlogController::class, 'managerEventSetStatusPost']);
+            Route::post(
+                '/set_status_post/{id}/{status}',
+                [ManagerBlogController::class, 'managerEventSetStatusPost']
+            );
         });
 
         Route::prefix('/rewards')->group(function () {
@@ -163,15 +165,19 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
         $users = User::with([
             'user_status',
             'user_wallet',
-            'user_wallet.wallet_counters',
+
             'user_profile',
-            'user_profile.profile_image'
+            'user_profile.profile_image',
+            'user_profile.profile_contacts',
+            'user_profile.profile_pops',
+            'user_profile.profile_followers',
 
         ])->findOrFail($user_req->id);
 
         $token = $users->createToken($users->username)->plainTextToken;
 
         $users =  [
+
             'id' => optional($users)->id,
             'name' => optional($users)->name,
             'email' => optional($users)->email,
@@ -208,19 +214,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
                 'status' => optional($users->user_wallet)->status,
             ] : null,
 
-            'walletCounters' => $users->user_wallet->wallet_counters ?
-                $users->user_wallet->wallet_counters->map(function ($counter) {
-                    return [
-                        'id' => optional($counter)->id,
-                        'walletID' => optional($counter)->wallet_id,
-                        'rewardID' => optional($counter)->reward_id,
-                        'point' => optional($counter)->point,
-                        'status' => optional($counter)->reward_id,
-                        'detail' => optional($counter)->detail,
-                        'createdAt' => optional($counter)->created_at,
-                        'updatedAt' => optional($counter)->updated_at,
-                    ];
-                }) : null,
         ];
 
         if (empty($users)) {

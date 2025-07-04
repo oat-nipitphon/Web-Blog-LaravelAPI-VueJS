@@ -27,15 +27,100 @@ class ManagerBlogController extends Controller
     {
         try {
 
-            $user_profiles = User::with([
+            $users = User::with([
+
                 'user_status',
-                'user_wallet',
-                'report_log_logins',
+                'check_status_login',
+
+                'user_profile',
                 'user_profile.profile_image',
+                'user_profile.profile_contacts',
+                'user_profile.profile_pops',
+                'user_profile.profile_followers',
 
-            ])->get();
+            ])->get()->map(function ($user) {
+                return $user ? [
 
-            if (!$user_profiles) {
+                    'users' => $user ? [
+                        'id' => optional($user)->id,
+                        'name' => optional($user)->name,
+                        'email' => optional($user)->email,
+                        'username' => optional($user)->username,
+                        'status_id' => optional($user)->status_id,
+                        'created_at' => optional($user)->created_at,
+                        'updated_at' => optional($user)->updated_at,
+
+                        'status' => $user->user_status ? [
+                            'id' => optional($user->user_status)->id,
+                            'name' => optional($user->user_status)->name,
+                        ] : null,
+
+                        'checkStatusOnline' => $user->check_status_login ? [
+                            'id' => optional($user->check_status_login)->id,
+                            'status' => optional($user->check_status_login)->status,
+                            'time_in' => optional($user->check_status_login)->time_in,
+                            'time_out' => optional($user->check_status_login)->time_out,
+                            'time_total_login' => optional($user->check_status_login)->time_total_login,
+                        ] : null,
+
+
+                    ] : null,
+
+                    'profiles' => $user ? [
+
+                        'id' => optional($user->user_profile)->id,
+                        'titleName' => optional($user->user_profile)->title_name,
+                        'firstName' => optional($user->user_profile)->first_name,
+                        'lastName' => optional($user->user_profile)->last_name,
+                        'nickName' => optional($user->user_profile)->nick_name,
+                        'birthDay' => optional($user->user_profile)->birth_day,
+
+                        'fullName' => optional($user->user_profile)->title_name.
+                        ' '. optional($user->user_profile)->first_name.
+                        ' '. optional($user->user_profile)->last_name,
+
+                        'image' => $user->user_profile->profile_image ? [
+                            'id' => optional($user->user_profile->profile_image)->id,
+                            'profile_id' => optional($user->user_profile->profile_image)->profile_id,
+                            'imageData' => optional($user->user_profile->profile_image)->image_data,
+                        ] : null,
+
+                        'contacts' => $user->user_profile->profile_contacts ?
+                            $user->user_profile->profile_contacts->map(function ($contact) {
+                                return [
+                                    'id' => optional($contact)->id,
+                                    'name' => optional($contact)->name,
+                                    'url' => optional($contact)->url,
+                                    'detail' => optional($contact)->detail,
+                                    'status' => optional($contact)->status,
+                                    'imageData' => base64_encode(optional($contact)->image_data),
+                                ];
+                            }) : null,
+
+                        'pops' => $user->user_profile->profile_pops ?
+                            $user->user_profile->profile_pops->map(function ($pop) {
+                                return [
+                                    'profileID' => optional($pop)->profile_id,
+                                    'popID' => optional($pop)->profile_id_pop,
+                                    'status' => optional($pop)->status, // like , disLike
+                                ];
+                            }) : null,
+
+                        'followers' => $user->user_profile->profile_followers ?
+                            $user->user_profile->profile_followers->map(function ($follower) {
+                                return [
+                                    'profileID' => optional($follower)->profile_id,
+                                    'followerID' => optional($follower)->profile_id_followers,
+                                    'status' => optional($follower)->status, // true , false
+                                ];
+                            }) : null,
+
+                    ] : null,
+
+                ] : null;
+            });
+
+            if (!$users) {
                 return response()->json([
                     'message' => 'managerGetUserProfiles() false',
                 ], 400);
@@ -43,7 +128,7 @@ class ManagerBlogController extends Controller
 
             return response()->json([
                 'message' => 'managerGetUserProfiles() success',
-                'userProfiles' => $user_profiles
+                'userProfiles' => $users
             ], 200);
         } catch (\Exception $error) {
             return response()->json([
