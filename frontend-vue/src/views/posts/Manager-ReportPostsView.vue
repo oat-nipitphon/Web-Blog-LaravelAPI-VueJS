@@ -131,5 +131,6 @@ const posts = ref([]);
 
 onMounted(async () => {
   posts.value = await storeManagerGetPosts();
+  console.log('manager report post view ', posts.value);
 });
 </script>

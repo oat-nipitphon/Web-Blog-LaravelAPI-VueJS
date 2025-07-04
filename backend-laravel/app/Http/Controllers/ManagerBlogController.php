@@ -75,9 +75,9 @@ class ManagerBlogController extends Controller
                         'nickName' => optional($user->user_profile)->nick_name,
                         'birthDay' => optional($user->user_profile)->birth_day,
 
-                        'fullName' => optional($user->user_profile)->title_name.
-                        ' '. optional($user->user_profile)->first_name.
-                        ' '. optional($user->user_profile)->last_name,
+                        'fullName' => optional($user->user_profile)->title_name .
+                            ' ' . optional($user->user_profile)->first_name .
+                            ' ' . optional($user->user_profile)->last_name,
 
                         'image' => $user->user_profile->profile_image ? [
                             'id' => optional($user->user_profile->profile_image)->id,
@@ -147,8 +147,37 @@ class ManagerBlogController extends Controller
                 'post_type',
                 'post_images',
                 'post_pops',
-                'user_profiles'
-            ])->get();
+            ])->get()->map(function ($post) {
+                return $post ? [
+
+                    'id' => optional($post)->id,
+                    'title' => optional($post)->title,
+                    'content' => optional($post)->content,
+                    'refer' => optional($post)->refer,
+                    'createdAt' => optional($post)->created_at,
+                    'updatedAt' => optional($post)->updated_at,
+
+                    'type' => $post->post_type ? [
+                        'id' => optional($post->post_type)->id,
+                        'name' => optional($post->post_type)->name,
+                    ] : null,
+
+                    'status' => $post->post_status ? [
+                        'id' => optional($post->post_status)->id,
+                        'name' => optional($post->post_status)->name,
+                    ] : null,
+
+                    'pops' => $post->post_pops ?
+                        $post->post_pops->map(function ($pop) {
+                            return [
+                                'post_id' => optional($pop)->post_id,
+                                'profile_id' => optional($pop)->profile_id,
+                                'status' => optional($pop)->status,
+                            ];
+                        }) : null,
+
+                ] : null;
+            });
 
             if (!$posts) {
                 return response()->json([
@@ -176,7 +205,31 @@ class ManagerBlogController extends Controller
             $rewards = Post::with([
                 'reward_status',
                 'reward_images'
-            ])->get();
+            ])->get()->map(function ($reward) {
+                return $reward ? [
+
+                    'id' => optional($reward)->id,
+                    'name' => optional($reward)->name,
+                    'point' => optional($reward)->point,
+                    'amount' => optional($reward)->amount,
+                    'createdAt' => optional($reward)->created_at,
+                    'updatedAt' => optional($reward)->updated_at,
+
+                    'status_id' => [
+                        'id' => optional($reward->reward_status)->id,
+                        'name' => optional($reward->reward_status)->name,
+                    ],
+
+                    'image' => $reward->reward_images ?
+                        $reward->reward_images->map(function ($image) {
+                            return [
+                                'id' => optional($image)->id,
+                                'imageData' => optional($image)->image_data,
+                            ];
+                        }) : null,
+
+                ] : null;
+            });
 
             if (!$rewards) {
                 return response()->json([

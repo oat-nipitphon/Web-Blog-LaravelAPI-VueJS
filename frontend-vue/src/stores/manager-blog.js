@@ -11,75 +11,66 @@ export const useManagerBlogStore = defineStore("managerBlogStore", {
     errors: null,
   }),
   actions: {
-
-    async storeManagerGetUserProfiles () {
+    async storeManagerGetUserProfiles() {
       try {
         const response = await fetch(`/api/manager/user_profiles/get_reports`, {
           method: "GET",
           headers: {
-            authorization: `Bearer ${localStorage.getItem('token')}`
-          }
+            authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         });
 
         if (![200, 201].includes(response.status)) {
-          console.error('store managet get false');
+          console.error("store managet get false");
           return;
         }
 
         const data = await response.json();
-        console.log('store manager get success', data.userProfiles);
         return data.userProfiles;
-
       } catch (error) {
         console.error(error);
       }
     },
-    async storeManagerGetPosts () {
+    async storeManagerGetPosts() {
       try {
         const response = await fetch(`/api/manager/posts/get_reports`, {
           method: "GET",
           headers: {
-            authorization: `Bearer ${localStorage.getItem('token')}`
-          }
+            authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         });
 
         if (![200, 201].includes(response.status)) {
-          console.error('store managet get false');
+          console.error("store managet get false");
           return;
         }
 
-        console.log('store manager get success', response.data);
-        const data = response.data;
-        return data;
-
+        const data = await response.json();
+        return data.posts;
       } catch (error) {
         console.error(error);
       }
     },
-    async storeManagerGetReward () {
+
+    async storeManagerGetRewards() {
       try {
         const response = await fetch(`/api/manager/rewards/get_reports`, {
           method: "GET",
           headers: {
-            authorization: `Bearer ${localStorage.getItem('token')}`
-          }
+            authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         });
 
         if (![200, 201].includes(response.status)) {
-          console.error('store managet get false');
+          console.error("store managet get false");
           return;
         }
 
-        console.log('store manager get success', response.data);
-        const data = response.data;
-        return data;
-
+        const data = await response.json();
+        return data.rewards;
       } catch (error) {
         console.error(error);
       }
     },
-
-
-
   },
 });
