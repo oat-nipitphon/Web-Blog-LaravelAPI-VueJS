@@ -66,9 +66,11 @@
                 </p>
                 <span
                   class="inline-block px-2 py-1 text-xs rounded-full"
-                  :class="item.users?.status?.name === 'active'
-                    ? 'bg-green-100 text-green-700'
-                    : 'bg-red-100 text-red-600'"
+                  :class="
+                    item.users?.status?.name === 'active'
+                      ? 'bg-green-100 text-green-700'
+                      : 'bg-red-100 text-red-600'
+                  "
                 >
                   {{ item.users?.status?.name || "Unknown" }}
                 </span>
@@ -93,37 +95,44 @@
               <div class="grid gap-y-1 text-sm">
                 <p>
                   <span class="font-semibold">Followers:</span>
-                  {{ item.profiles?.followers?.filter((f) => f.status)?.length || 0 }}
+                  {{
+                    item.profiles?.followers?.filter((f) => f.status)?.length ||
+                    0
+                  }}
                 </p>
                 <p>
                   <span class="font-semibold">Likes:</span>
-                  {{ item.profiles?.pops?.filter((p) => p.status === "like")?.length || 0 }}
+                  {{
+                    item.profiles?.pops?.filter((p) => p.status === "like")
+                      ?.length || 0
+                  }}
                 </p>
                 <p>
                   <span class="font-semibold">Dislikes:</span>
-                  {{ item.profiles?.pops?.filter((p) => p.status === "disLike")?.length || 0 }}
+                  {{
+                    item.profiles?.pops?.filter((p) => p.status === "disLike")
+                      ?.length || 0
+                  }}
                 </p>
               </div>
             </td>
 
             <td class="px-4 py-3">
-                              <!-- Toggle -->
-                <div class="flex items-center space-x-2">
-                  <span class="text-xs">Disabled</span>
-                  <ToggleSwitchStatus
-                    v-model="item.users.statusAccount"
-                    :userID="item.users.id"
-                    @status-changed="onSweetStatusAccount"
-                  />
-                  <span class="text-xs">Active</span>
-                </div>
+              <!-- Toggle -->
+              <div class="flex items-center space-x-2">
+                <span class="text-xs">Disabled</span>
+                <ToggleSwitchStatus
+                  v-model="item.users.statusAccount"
+                  :userID="item.users.id"
+                  @status-changed="onSweetStatusAccount"
+                />
+                <span class="text-xs">Active</span>
+              </div>
             </td>
 
             <!-- Toggle & Actions -->
             <td class="px-4 py-3">
               <div class="flex flex-col items-center gap-2">
-
-
                 <!-- Actions Dropdown -->
                 <Menu as="div" class="relative inline-block">
                   <div>
@@ -145,7 +154,7 @@
                     <MenuItems
                       class="absolute right-0 mt-2 w-36 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
                     >
-                      <MenuItem>
+                      <MenuItem as="button">
                         <button
                           @click="onShowDetail(item)"
                           class="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
@@ -153,15 +162,23 @@
                           View Profile
                         </button>
                       </MenuItem>
-                      <MenuItem>
+                      <MenuItem as="button">
                         <button
-                          @click="onEditUser(item)"
+                          @click="onEditUser(item.users)"
                           class="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         >
                           Edit User
                         </button>
                       </MenuItem>
-                      <MenuItem>
+                      <MenuItem as="button">
+                        <button
+                          @click="onEditProfile(item.profiles)"
+                          class="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        >
+                          Edit Profile
+                        </button>
+                      </MenuItem>
+                      <MenuItem as="button">
                         <button
                           @click="onDeleteAccount(item.users.id)"
                           class="block w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"
@@ -180,29 +197,34 @@
     </div>
 
     <p v-else class="text-gray-500 text-center">No user profiles found.</p>
+
   </div>
 </template>
-
 
 <script setup>
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
 import { ChevronDownIcon } from "@heroicons/vue/20/solid";
 import { ref, onMounted } from "vue";
 import { useManagerBlogStore } from "@/stores/manager-blog";
+import { useStoreUserProfile } from "@/stores/user-profile";
 import PageHeader from "@/components/PageHeader.vue";
 import ToggleSwitchStatus from "@/components/user-profiles/ToggleSwitchStatus.vue";
+import EditUserModal from "@/components/user-profiles/EditUserModal.vue";
+import EditProfileModal from "@/components/user-profiles/EditProfileModal.vue";
 
 const managerBlogStore = useManagerBlogStore();
-const {
-  storeManagerGetUserProfiles,
-  storeManagerDeleteUser,
-  storeManagerUpdateUserStatus,
-} = managerBlogStore;
+const { storeManagerGetUserProfiles } = managerBlogStore;
 
+const { storeGetUserStatus } = useStoreUserProfile();
+
+const userStatus = ref([]);
 const userProfiles = ref([]);
+const selectedUser = ref(null);
+const selectedProfile = ref(null);
 
 onMounted(async () => {
   userProfiles.value = await storeManagerGetUserProfiles();
+  userStatus.value = await storeGetUserStatus();
 });
 
 // Toggle Account Status API
@@ -240,9 +262,12 @@ const onShowDetail = (item) => {
   console.log("Show Profile", item);
 };
 
-// Edit User
-const onEditUser = (item) => {
-  console.log("Edit User", item);
+const onEditUser = async (users) => {
+  selectedUser.value = users;
+};
+
+const onEditProfile = async (profiles) => {
+  selectedProfile.value = profiles;
 };
 
 // Format DateTime

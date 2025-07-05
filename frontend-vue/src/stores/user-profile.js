@@ -48,6 +48,12 @@ export const useStoreUserProfile = defineStore("storeUserProfile", {
     },
 
     async storeUpdateUser(id, formData) {
+      for (const [key, value] of formData.entries()) {
+        console.log(`${key}:`, value);
+      }
+      console.log("store update user ", id);
+      return;
+
       const result = await Swal.fire({
         title: "Confirm Update",
         text: "Are you sure you want to update ?",
@@ -84,6 +90,12 @@ export const useStoreUserProfile = defineStore("storeUserProfile", {
     },
 
     async storeUpdateProfile(id, formData) {
+      for (const [key, value] of formData.entries()) {
+        console.log(`${key}:`, value);
+      }
+      console.log("store update user ", id);
+      return;
+
       const result = await Swal.fire({
         title: "Confirm Update",
         text: "Are you sure you want to update ?",
@@ -121,6 +133,5 @@ export const useStoreUserProfile = defineStore("storeUserProfile", {
         console.error("store update profile function error ", error);
       }
     },
-
   },
 });
