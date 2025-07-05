@@ -109,7 +109,6 @@ class AuthController extends Controller
                         'user_id' => $user->id,
                         'status' => "online",
                         'time_in' => now(),
-                        'created_at' => now(),
                     ]);
 
                     if (!empty($logLogin)) {
@@ -129,7 +128,6 @@ class AuthController extends Controller
             return response()->json([
                 'message' => "laravel function login response false"
             ], 404);
-
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'login function error',
@@ -143,38 +141,40 @@ class AuthController extends Controller
     {
         try {
 
-
-            if ($user = $request->user()) {
-
-                $LogLogout = UserLogLogin::where('user_id', $user->id)->first();
-
-
-                if (empty($LogLogout) && empty($user)) {
-                    return response()->json([
-                        'message' => "Laravel function logout request user false"
-                    ], 404);
-                }
-
-                // $timeIn = \Carbon\Carbon::parse($LogLogout->time_in);
-                // $timeOut = now();
-                // $totalLogin = $timeIn->diffInSeconds($timeOut);
-
-                $LogLogout->update([
-                    'user_id' => $user->id,
-                    'status' => "offline",
-                    'time_out' => now(),
-                    // 'time_total_login' => $totalLogin,
-                    'updated_at' => now()
-                ]);
-
-                $user->tokens()->delete();
-
+            if (!$request->user()) {
                 return response()->json([
-                    'message' => "logout successfullry.",
-                    'logLogout' => $LogLogout,
-                    // 'timeLogin' => $totalLogin,
-                ], 200);
+                    'message' => 'controller logout() request false'
+                ], 400);
             }
+
+            $id = $request->user()->id;
+            $user = User::findOrFail($id);
+
+            $time_out = now();
+            $time_in = $user->check_status_login->time_in;
+            $total_login = $time_out->diffInSeconds($time_in);
+            // $total_login = $time_out->diffInSeconds($time_in);
+            // คำนวณเวลาทั้งหมดที่ล็อกอินเป็นวินาที (หรือแปลงเป็นนาที/ชั่วโมงก็ได้)
+
+            $user->user_log_login()->create([
+                'user_id' => $user->id,
+                'status' => "offline",
+                'time_out' => $time_out,
+                'time_total_login' => $total_login,
+            ]);
+
+            if (empty($total_login)) {
+                return response()->json([
+                    'message' => 'logout() total time login null',
+                ], 400);
+            }
+
+            $user->tokens()->delete();
+
+            return response()->json([
+                'message' => "logout() successfullry",
+            ], 200);
+
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'logout function error.',

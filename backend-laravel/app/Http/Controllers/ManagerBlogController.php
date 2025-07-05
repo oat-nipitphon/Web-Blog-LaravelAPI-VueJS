@@ -46,9 +46,8 @@ class ManagerBlogController extends Controller
                         'name' => optional($user)->name,
                         'email' => optional($user)->email,
                         'username' => optional($user)->username,
-                        'status_id' => optional($user)->status_id,
-                        'created_at' => optional($user)->created_at,
-                        'updated_at' => optional($user)->updated_at,
+                        'statusID' => optional($user)->status_id,
+                        'statusAccount' => optional($user)->status_account,
 
                         'status' => $user->user_status ? [
                             'id' => optional($user->user_status)->id,
@@ -58,9 +57,9 @@ class ManagerBlogController extends Controller
                         'checkStatusOnline' => $user->check_status_login ? [
                             'id' => optional($user->check_status_login)->id,
                             'status' => optional($user->check_status_login)->status,
-                            'time_in' => optional($user->check_status_login)->time_in,
-                            'time_out' => optional($user->check_status_login)->time_out,
-                            'time_total_login' => optional($user->check_status_login)->time_total_login,
+                            'timeIn' => optional($user->check_status_login)->time_in,
+                            'timeOut' => optional($user->check_status_login)->time_out,
+                            'totalTimeLogin' => optional($user->check_status_login)->time_total_login,
                         ] : null,
 
 
@@ -81,7 +80,7 @@ class ManagerBlogController extends Controller
 
                         'image' => $user->user_profile->profile_image ? [
                             'id' => optional($user->user_profile->profile_image)->id,
-                            'profile_id' => optional($user->user_profile->profile_image)->profile_id,
+                            'profileID' => optional($user->user_profile->profile_image)->profile_id,
                             'imageData' => optional($user->user_profile->profile_image)->image_data,
                         ] : null,
 

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->foreignId('status_id')->constrained('user_status')->onDelete('cascade');
+            $table->enum('status_account', ['active', 'disabled'])->default('active');
             $table->rememberToken();
             $table->timestamps();
         });

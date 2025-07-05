@@ -140,28 +140,25 @@ export const useAuthStore = defineStore("authStore", {
           },
         });
 
-        if (!response.status === 200) {
+        if (![200].includes(response.status)) {
           Swal.fire({
             title: "Logout failed",
             icon: "error",
             timer: 1200,
-            timerProgressBar: true,
-            showConfirmButton: false,
           });
         }
 
-        this.users = null;
-        this.errors = {};
-        localStorage.removeItem("token");
         Swal.fire({
-          title: "Logout successful",
+          title: "Good Bye.",
           icon: "success",
           timer: 1200,
-          timerProgressBar: true,
-          showConfirmButton: false,
         }).then(() => {
+          this.users = null;
+          this.errors = {};
+          localStorage.removeItem("token");
           this.router.push({ name: "IndexView" });
         });
+
       } catch (error) {
         console.error("store function api logout error", error);
       }

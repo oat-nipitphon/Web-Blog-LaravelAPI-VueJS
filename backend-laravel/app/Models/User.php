@@ -26,6 +26,7 @@ class User extends Authenticatable
         'email',
         'password',
         'status_id',
+        'status_account',
         'created_at',
         'updated_at'
     ];
@@ -63,9 +64,9 @@ class User extends Authenticatable
         return $this->hasOne(UserProfile::class, 'user_id', 'id');
     }
 
-    // report log login
-    public function report_log_logins () : HasMany {
-        return $this->hasMany(UserLogLogin::class, 'user_id', 'id');
+    // Join Table User->UserLogLogin
+    public function user_log_login () : HasMany {
+        return $this->hasMany(UserLogLogin::class);
     }
 
     // check status login now

@@ -1,51 +1,54 @@
 <template>
-  <div class="p-6 bg-gray-50 min-h-screen">
-    <PageHeader title="Manager Account" />
+  <div class="p-6 space-y-6">
+    <!-- Page Header -->
+    <PageHeader title="Manage User Profiles" />
 
     <!-- User Profiles Table -->
-    <div class="overflow-x-auto bg-white rounded-xl shadow">
+    <div
+      v-if="userProfiles.length"
+      class="overflow-x-auto bg-white rounded-xl shadow-lg ring-1 ring-gray-200"
+    >
       <table class="w-full text-sm text-gray-700">
-        <thead class="bg-gray-100 text-xs uppercase">
+        <thead class="bg-gray-50 text-xs uppercase font-semibold text-gray-600">
           <tr>
-            <th class="text-center px-4 py-3 font-semibold">#</th>
-            <th class="text-center px-4 py-3 font-semibold">Account</th>
-            <th class="text-center px-4 py-3 font-semibold">Profile</th>
-            <th class="text-center px-4 py-3 font-semibold">Details</th>
-            <th class="text-center px-4 py-3 font-semibold">Actions</th>
+            <th class="px-4 py-3 text-left w-[20%]">#</th>
+            <th class="px-4 py-3 text-left w-[25%]">User</th>
+            <th class="px-4 py-3 text-left w-[25%]">Profile</th>
+            <th class="px-4 py-3 text-left w-[20%]">Contact</th>
+            <th class="px-4 py-3 text-left w-[20%]">Status</th>
+            <th class="px-4 py-3 text-left w-[15%]">Actions</th>
           </tr>
         </thead>
         <tbody>
           <tr
-            v-for="(userProfile, index) in userProfiles"
-            :key="userProfile.users.id"
-            class="border-b hover:bg-gray-50 transition"
+            v-for="(item, index) in userProfiles"
+            :key="item.users.id"
+            class="border-t odd:bg-white even:bg-gray-50 hover:bg-gray-100 transition-colors"
           >
-            <!-- Profile Image & Status -->
-            <td class="text-center px-4 py-3 font-medium">
-              <div class="grid grid-rows-2">
+            <!-- Online Status + Profile Image -->
+            <td class="px-4 py-3">
+              <div class="flex flex-col items-center">
                 <span
                   :class="[
-                    userProfile.users?.checkStatusOnline?.status === 'online'
-                      ? 'text-green-600'
+                    item.users?.checkStatusOnline?.status === 'online'
+                      ? 'text-green-500'
                       : 'text-gray-400',
-                    'font-semibold m-auto',
+                    'font-semibold',
                   ]"
                 >
-                  {{
-                    userProfile.users?.checkStatusOnline?.status || "offline"
-                  }}
+                  {{ item.users?.checkStatusOnline?.status || "offline" }}
                 </span>
-                <div class="p-2 mt-2 flex justify-center items-center">
+                <div class="mt-2">
                   <img
-                    v-if="userProfile.profiles?.image?.imageData"
-                    :src="`data:image/png;base64,${userProfile.profiles.image.imageData}`"
-                    class="w-16 h-16 rounded-full object-cover"
+                    v-if="item.profiles?.image?.imageData"
+                    :src="`data:image/png;base64,${item.profiles.image.imageData}`"
+                    class="w-14 h-14 rounded-full object-cover ring-2 ring-gray-200 hover:scale-105 transition-transform duration-300"
                     alt="Profile Image"
                   />
                   <img
                     v-else
                     src="../../assets/images/account-profile.png"
-                    class="w-16 h-16 rounded-full object-cover"
+                    class="w-14 h-14 rounded-full object-cover ring-2 ring-gray-200 hover:scale-105 transition-transform duration-300"
                     alt="Default Image"
                   />
                 </div>
@@ -54,167 +57,147 @@
 
             <!-- User Account -->
             <td class="px-4 py-3">
-              <div class="grid gap-y-1">
-                <span class="font-semibold">Email:</span>
-                <span>{{ userProfile.users?.email || "-" }}</span>
-                <span class="font-semibold">Username:</span>
-                <span>{{ userProfile.users?.username || "-" }}</span>
-                <span class="font-semibold">Role:</span>
-                <span>{{ userProfile.users?.status?.name || "-" }}</span>
+              <div class="space-y-1">
+                <p class="font-medium text-gray-800">
+                  {{ item.users?.email || "-" }}
+                </p>
+                <p class="text-gray-500 text-xs">
+                  Username: {{ item.users?.username || "-" }}
+                </p>
+                <span
+                  class="inline-block px-2 py-1 text-xs rounded-full"
+                  :class="item.users?.status?.name === 'active'
+                    ? 'bg-green-100 text-green-700'
+                    : 'bg-red-100 text-red-600'"
+                >
+                  {{ item.users?.status?.name || "Unknown" }}
+                </span>
               </div>
             </td>
 
             <!-- Profile Info -->
             <td class="px-4 py-3">
-              <div class="grid gap-y-1">
-                <span class="font-semibold">Full Name:</span>
-                <span>{{ userProfile.profiles?.fullName || "-" }}</span>
-                <span class="font-semibold">Nickname:</span>
-                <span>{{ userProfile.profiles?.nickName || "-" }}</span>
-                <span class="font-semibold">Birth Day:</span>
-                <span>{{
-                  formatDateTime(userProfile.profiles?.birthDay)
-                }}</span>
+              <div class="space-y-1">
+                <p class="font-medium">{{ item.profiles?.fullName || "-" }}</p>
+                <p class="text-gray-500 text-xs">
+                  Nickname: {{ item.profiles?.nickName || "-" }}
+                </p>
+                <p class="text-gray-400 text-xs">
+                  Birthday: {{ formatDateTime(item.profiles?.birthDay) }}
+                </p>
               </div>
             </td>
 
-            <!-- Details -->
+            <!-- Followers and Pops -->
             <td class="px-4 py-3">
-              <div class="grid gap-y-2">
-                <!-- Followers -->
-                <div class="grid grid-cols-2 gap-1">
+              <div class="grid gap-y-1 text-sm">
+                <p>
                   <span class="font-semibold">Followers:</span>
-                  <span>
-                    {{
-                      userProfile.profiles?.followers?.filter((f) => f.status)
-                        ?.length || 0
-                    }}
-                  </span>
-                </div>
-
-                <!-- Pops -->
-                <div class="grid grid-cols-2 gap-1">
-                  <span class="font-semibold">Pops Like:</span>
-                  <span>
-                    {{
-                      userProfile.profiles?.pops?.filter(
-                        (p) => p.status === "like"
-                      )?.length || 0
-                    }}
-                  </span>
-                  <span class="font-semibold">Pops Dislike:</span>
-                  <span>
-                    {{
-                      userProfile.profiles?.pops?.filter(
-                        (p) => p.status === "disLike"
-                      )?.length || 0
-                    }}
-                  </span>
-                </div>
-
-                <!-- Contacts -->
-                <div class="flex justify-center items-center space-x-1">
-                  <div
-                    v-for="(contact, cIndex) in userProfile.profiles?.contacts"
-                    :key="cIndex"
-                  >
-                    <img
-                      v-if="contact?.imageData"
-                      :src="`data:image/png;base64,${contact.imageData}`"
-                      class="w-5 h-5 rounded-full object-cover"
-                      alt="Contact Icon"
-                    />
-                  </div>
-                </div>
+                  {{ item.profiles?.followers?.filter((f) => f.status)?.length || 0 }}
+                </p>
+                <p>
+                  <span class="font-semibold">Likes:</span>
+                  {{ item.profiles?.pops?.filter((p) => p.status === "like")?.length || 0 }}
+                </p>
+                <p>
+                  <span class="font-semibold">Dislikes:</span>
+                  {{ item.profiles?.pops?.filter((p) => p.status === "disLike")?.length || 0 }}
+                </p>
               </div>
             </td>
 
-            <!-- Actions -->
-            <td class="text-center px-4 py-3">
-              <Menu as="div" class="relative inline-block text-left">
-                <div>
-                  <MenuButton
-                    class="inline-flex justify-center items-center px-4 py-2 bg-white border rounded-md shadow text-sm font-medium hover:bg-gray-50"
-                  >
-                    Options
-                    <ChevronDownIcon class="ml-2 h-5 w-5 text-gray-500" />
-                  </MenuButton>
+            <td class="px-4 py-3">
+                              <!-- Toggle -->
+                <div class="flex items-center space-x-2">
+                  <span class="text-xs">Disabled</span>
+                  <ToggleSwitchStatus
+                    v-model="item.users.statusAccount"
+                    :userID="item.users.id"
+                    @status-changed="onSweetStatusAccount"
+                  />
+                  <span class="text-xs">Active</span>
                 </div>
-                <transition
-                  enter-active-class="transition ease-out duration-100"
-                  enter-from-class="transform opacity-0 scale-95"
-                  enter-to-class="transform opacity-100 scale-100"
-                  leave-active-class="transition ease-in duration-75"
-                  leave-from-class="transform opacity-100 scale-100"
-                  leave-to-class="transform opacity-0 scale-95"
-                >
-                  <MenuItems
-                    class="absolute right-0 z-10 mt-2 w-40 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+            </td>
+
+            <!-- Toggle & Actions -->
+            <td class="px-4 py-3">
+              <div class="flex flex-col items-center gap-2">
+
+
+                <!-- Actions Dropdown -->
+                <Menu as="div" class="relative inline-block">
+                  <div>
+                    <MenuButton
+                      class="inline-flex justify-center rounded-md border border-gray-300 shadow px-3 py-1 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none"
+                    >
+                      Actions
+                      <ChevronDownIcon class="ml-2 h-4 w-4" />
+                    </MenuButton>
+                  </div>
+                  <Transition
+                    enter="transition ease-out duration-100"
+                    enter-from="transform opacity-0 scale-95"
+                    enter-to="transform opacity-100 scale-100"
+                    leave="transition ease-in duration-75"
+                    leave-from="transform opacity-100 scale-100"
+                    leave-to="transform opacity-0 scale-95"
                   >
-                    <div class="py-1">
-                      <MenuItem v-slot="{ active }">
+                    <MenuItems
+                      class="absolute right-0 mt-2 w-36 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                    >
+                      <MenuItem>
                         <button
-                          @click="showProfile(userProfile)"
-                          :class="[
-                            active
-                              ? 'bg-gray-100 text-gray-900'
-                              : 'text-gray-700',
-                            'block w-full px-4 py-2 text-left text-sm',
-                          ]"
+                          @click="onShowDetail(item)"
+                          class="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         >
-                          Show
+                          View Profile
                         </button>
                       </MenuItem>
-                      <MenuItem v-slot="{ active }">
+                      <MenuItem>
                         <button
-                          @click="editProfile(userProfile)"
-                          :class="[
-                            active
-                              ? 'bg-gray-100 text-gray-900'
-                              : 'text-gray-700',
-                            'block w-full px-4 py-2 text-left text-sm',
-                          ]"
+                          @click="onEditUser(item)"
+                          class="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         >
-                          Edit
+                          Edit User
                         </button>
                       </MenuItem>
-                      <MenuItem v-slot="{ active }">
+                      <MenuItem>
                         <button
-                          @click="deleteProfile(userProfile.users.id)"
-                          :class="[
-                            active
-                              ? 'bg-gray-100 text-gray-900'
-                              : 'text-red-600',
-                            'block w-full px-4 py-2 text-left text-sm',
-                          ]"
+                          @click="onDeleteAccount(item.users.id)"
+                          class="block w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"
                         >
-                          Delete
+                          Delete User
                         </button>
                       </MenuItem>
-                    </div>
-                  </MenuItems>
-                </transition>
-              </Menu>
+                    </MenuItems>
+                  </Transition>
+                </Menu>
+              </div>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
+
+    <p v-else class="text-gray-500 text-center">No user profiles found.</p>
   </div>
 </template>
+
 
 <script setup>
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
 import { ChevronDownIcon } from "@heroicons/vue/20/solid";
 import { ref, onMounted } from "vue";
-import { useRouter } from "vue-router";
 import { useManagerBlogStore } from "@/stores/manager-blog";
 import PageHeader from "@/components/PageHeader.vue";
+import ToggleSwitchStatus from "@/components/user-profiles/ToggleSwitchStatus.vue";
 
-const router = useRouter();
 const managerBlogStore = useManagerBlogStore();
-const { storeManagerGetUserProfiles, storeManagerDeleteUser } =
-  managerBlogStore;
+const {
+  storeManagerGetUserProfiles,
+  storeManagerDeleteUser,
+  storeManagerUpdateUserStatus,
+} = managerBlogStore;
 
 const userProfiles = ref([]);
 
@@ -222,32 +205,25 @@ onMounted(async () => {
   userProfiles.value = await storeManagerGetUserProfiles();
 });
 
-// Format DateTime
-const formatDateTime = (dateTime) => {
-  if (!dateTime) return "-";
-  const date = new Date(dateTime);
-  const options = {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  };
-  return date.toLocaleDateString("th-TH", options);
+// Toggle Account Status API
+const onSweetStatusAccount = async (userID, newStatus) => {
+  console.log("Toggle user:", userID, "to", newStatus);
+  // try {
+  //   await storeManagerUpdateUserStatus(
+  //     userID,
+  //     newStatus ? "active" : "inactive"
+  //   );
+  //   const user = userProfiles.value.find((u) => u.users.id === userID);
+  //   if (user) {
+  //     user.users.statusAccount = newStatus ? "active" : "inactive";
+  //   }
+  // } catch (error) {
+  //   console.error("Failed to update status", error);
+  // }
 };
 
-// Actions
-const showProfile = (profile) => {
-  console.log("Show Profile", profile);
-  router.push({ name: "ShowProfileView", params: { id: profile.users.id } });
-};
-
-const editProfile = (profile) => {
-  console.log("Edit Profile", profile);
-  router.push({ name: "EditProfileView", params: { id: profile.users.id } });
-};
-
-const deleteProfile = async (userId) => {
+// Delete Account
+const onDeleteAccount = async (userId) => {
   if (confirm("Are you sure you want to delete this user?")) {
     const success = await storeManagerDeleteUser(userId);
     if (success) {
@@ -257,5 +233,29 @@ const deleteProfile = async (userId) => {
       alert("User deleted successfully.");
     }
   }
+};
+
+// Show Profile Detail
+const onShowDetail = (item) => {
+  console.log("Show Profile", item);
+};
+
+// Edit User
+const onEditUser = (item) => {
+  console.log("Edit User", item);
+};
+
+// Format DateTime
+const formatDateTime = (dateTime) => {
+  if (!dateTime) return "-";
+  const date = new Date(dateTime);
+  const options = {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    // hour: "2-digit",
+    // minute: "2-digit",
+  };
+  return date.toLocaleDateString("th-TH", options);
 };
 </script>
