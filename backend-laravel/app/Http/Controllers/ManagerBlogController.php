@@ -137,7 +137,42 @@ class ManagerBlogController extends Controller
         }
     }
 
-    // Get UserProfiles Manager-ReportUserProfileView
+    public function managerUpdateStatusAccount(Request $request)
+    {
+        try {
+
+            $request->validate([
+                'id' => 'required|string',
+                'status' => 'required|string'
+            ]);
+
+            $user = User::findOrFail($request->id);
+
+            if (!$user) {
+                return response()->json([
+                    'message' => 'where user id false',
+                    'userID' => $request->id
+                ]);
+            }
+
+            $user->update(
+                ['status_account' => $request->status]
+            );
+
+            return response()->json([
+                'message' => 'update status account success',
+                'statusAccount' => $user->status_account,
+            ], 200);
+
+        } catch (\Exception $error) {
+            return response()->json([
+                'message' => 'controller update status account () error',
+                'error' => $error->getMessage()
+            ], 500);
+        }
+    }
+
+    // Get Posts Manager-ReportPostView
     public function managerGetPosts()
     {
         try {
@@ -196,7 +231,7 @@ class ManagerBlogController extends Controller
         }
     }
 
-    // Get UserProfiles Manager-ReportUserProfileView
+    // Get Rewards Manager-ReportRewardView
     public function managerGetRewards()
     {
         try {
@@ -243,18 +278,6 @@ class ManagerBlogController extends Controller
         } catch (\Exception $error) {
             return response()->json([
                 'message' => "managerGetRewards() error",
-                'error' => $error->getMessage()
-            ], 500);
-        }
-    }
-
-    // Get UserProfiles Manager-ReportUserProfileView
-    public function managerGetWellets()
-    {
-        try {
-        } catch (\Exception $error) {
-            return response()->json([
-                'message' => "managerGetWellets() error",
                 'error' => $error->getMessage()
             ], 500);
         }

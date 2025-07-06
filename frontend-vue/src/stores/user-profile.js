@@ -48,11 +48,11 @@ export const useStoreUserProfile = defineStore("storeUserProfile", {
     },
 
     async storeUpdateUser(id, formData) {
-      for (const [key, value] of formData.entries()) {
-        console.log(`${key}:`, value);
-      }
-      console.log("store update user ", id);
-      return;
+      // for (const [key, value] of formData.entries()) {
+      //   console.log(`${key}:`, value);
+      // }
+      // console.log("store update user ", id);
+      // return;
 
       const result = await Swal.fire({
         title: "Confirm Update",
@@ -77,24 +77,24 @@ export const useStoreUserProfile = defineStore("storeUserProfile", {
           },
         });
 
-        if (!response.status !== 201 || response.status !== 200) {
-          console.log("store update user", response);
+        if (![200, 201].includes(response.status)) {
+          console.log("store update profile", response);
         }
 
-        const data = await response.json();
-        console.log("store update user", data.user);
-        // return data.user;
+        console.log('store update user success');
+        return true;
+
       } catch (error) {
         console.error("store update user function error ", error);
       }
     },
 
     async storeUpdateProfile(id, formData) {
-      for (const [key, value] of formData.entries()) {
-        console.log(`${key}:`, value);
-      }
-      console.log("store update user ", id);
-      return;
+      // for (const [key, value] of formData.entries()) {
+      //   console.log(`${key}:`, value);
+      // }
+      // console.log("store update user ", id);
+      // return;
 
       const result = await Swal.fire({
         title: "Confirm Update",
@@ -123,12 +123,13 @@ export const useStoreUserProfile = defineStore("storeUserProfile", {
           }
         );
 
-        if (!response.status === 200 || response.status === 201) {
+        if (![200, 201].includes(response.status)) {
           console.log("store update profile", response);
         }
 
-        const data = await response.json();
-        return data.userProfile;
+        console.log('store update profile success');
+        return true;
+
       } catch (error) {
         console.error("store update profile function error ", error);
       }

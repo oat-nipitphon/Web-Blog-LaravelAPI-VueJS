@@ -47,6 +47,7 @@ class AuthController extends Controller
                 'email' => $validate['email'],
                 'password' => Hash::make($validate['password']),
                 'status_id' => $validate['statusID'],
+                'status_account' => 'active',
                 'created_at' => now()
             ]);
 
@@ -100,6 +101,7 @@ class AuthController extends Controller
 
             $user = User::where('email', $request->emailUsername)
                 ->orWhere('username', $request->emailUsername)
+                ->where('status_account', 'active')
                 ->first();
 
             if ($user || !Hash::check($request->password, $user->password)) {
@@ -123,6 +125,11 @@ class AuthController extends Controller
                         ], 200);
                     }
                 }
+            } else {
+                return response()->json([
+                    'message' => "Login false",
+                    'userLogin' => $user
+                ], 400);
             }
 
             return response()->json([
@@ -174,7 +181,6 @@ class AuthController extends Controller
             return response()->json([
                 'message' => "logout() successfullry",
             ], 200);
-
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'logout function error.',

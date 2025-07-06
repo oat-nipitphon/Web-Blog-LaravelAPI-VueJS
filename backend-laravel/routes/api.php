@@ -131,6 +131,7 @@ Route::prefix('/')->group(function () {
 
         Route::prefix('/user_profiles')->group(function () {
             Route::get('/get_reports', [ManagerBlogController::class, 'managerGetUserProfiles']);
+            route::post('/status_account/update', [ManagerBlogController::class, 'managerUpdateStatusAccount']);
         });
 
 

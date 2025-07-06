@@ -158,8 +158,19 @@ const submitForm = async () => {
   formData.append("last_name", form.lastName);
   formData.append("nick_name", form.nickName);
   formData.append("birth_day", form.birthDay);
-  await storeUpdateProfile(id, formData);
+  //   for (const [key, value] of formData.entries()) {
+  //   console.log(`${key}:`, value);
+  // }
+  // return;
+  const success = await storeUpdateProfile(id, formData);
+
+  if (success) {
   closeModal();
   window.location.reload();
+  } else {
+    console.log('edit profile false');
+  }
+
+
 };
 </script>
