@@ -61,14 +61,15 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanc
 Route::prefix('/')->group(function () {
 
     // --------------------------------------- User Profile ------------------------------------------------ //
+
     Route::apiResource('/users', UserController::class);
     Route::apiResource('/user_profiles', UserProfileController::class);
     Route::apiResource('/user_profile_contacts', UserProfileContactController::class);
     Route::post('/user_profiles/upload_image', [UserProfileController::class, 'uploadImageProfile']);
-    Route::apiResource('/user_profile_pops', UserProfilePopController::class);
-    Route::post('/pop_like/{postUserID}/{authUserID}', [UserProfilePopController::class, 'popLikeProfile']);
-    Route::apiResource('/user_profile_followers', UserProfileFollowersController::class);
-    Route::post('/followers/{postUserID}/{authUserID}', [UserProfileFollowersController::class, 'followersProfile']);
+
+    Route::post('/followers/{profileID}/{profileIDfollowers}', [UserProfileFollowersController::class, 'profileEventFollowers']);
+    Route::post('/pop_like/{profileID}/{profileIDpop}', [UserProfilePopController::class, 'profileEventPop']);
+
     // --------------------------------------- User Profile ------------------------------------------------ //
 
     // --------------------------------------- Post ------------------------------------------------ //

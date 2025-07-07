@@ -21,8 +21,8 @@ class UserProfilePop extends Model
     protected $fillable = [
         'id',
         'profile_id',
-        'profile_id_pop', // like , disLike
-        'status',
+        'profile_id_pop',
+        'status', // true , false
         'created_at',
         'updated_at'
     ];

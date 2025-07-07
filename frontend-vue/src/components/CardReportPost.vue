@@ -1,91 +1,93 @@
-
 <template>
   <article
-    class="w-full rounded-lg shadow-sm transition hover:shadow-lg m-auto"
+    class="w-full rounded-lg shadow-lg transition hover:shadow-lg m-auto bg-amber-300"
   >
-    <div class="grid grid-cols-2">
+    <div class="grid grid-cols-2 mb-2 mt-2 p-2 bg-white">
       <div>
-        <!-- Cart Profile -->
-        <time :datetime="post?.postCreatedAT" class="text-gray-500">{{
-          formatDateTime(post?.postCreatedAT)
-        }}</time>
+        <CardProfile :profile="post.userProfile" :user="post.user" :authProfileID="authStore.users?.userProfile?.id" />
       </div>
-      <div>
-        <div class="m-auto">
-          <Menu as="div" class="relative inline-block text-left">
-            <div>
-              <MenuButton
-                class="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50"
-              >
-                Options
-                <ChevronDownIcon
-                  class="-mr-1 size-5 text-gray-400"
-                  aria-hidden="true"
-                />
-              </MenuButton>
-            </div>
 
-            <transition
-              enter-active-class="transition ease-out duration-100"
-              enter-from-class="transform opacity-0 scale-95"
-              enter-to-class="transform opacity-100 scale-100"
-              leave-active-class="transition ease-in duration-75"
-              leave-from-class="transform opacity-100 scale-100"
-              leave-to-class="transform opacity-0 scale-95"
-            >
-              <MenuItems
-                class="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-hidden"
+      <div class="flex justify-end items-end">
+        <Menu as="div" class="relative inline-block text-left">
+          <div>
+            <MenuButton class="inline-flex text-gray-700 hover:text-blue-600">
+              <svg
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="size-6"
               >
-                <div class="py-1">
-                  <MenuItem v-slot="{ active }">
-                    <button
-                      @click="onStorePost(post.postID)"
-                      :class="[
-                        active
-                          ? 'bg-gray-100 text-gray-900 outline-hidden'
-                          : 'text-gray-700',
-                        'block px-4 py-2 text-sm',
-                      ]"
-                    >
-                      Store
-                    </button>
-                  </MenuItem>
-                  <MenuItem v-slot="{ active }">
-                    <button
-                      @click="onEditPost(post.postID)"
-                      :class="[
-                        active
-                          ? 'bg-gray-100 text-gray-900 outline-hidden'
-                          : 'text-gray-700',
-                        'block px-4 py-2 text-sm',
-                      ]"
-                    >
-                      Edit
-                    </button>
-                  </MenuItem>
-                  <MenuItem v-slot="{ active }">
-                    <button
-                      @click="storeDeletePost(post.postID)"
-                      :class="[
-                        active
-                          ? 'bg-gray-100 text-gray-900 outline-hidden'
-                          : 'text-gray-700',
-                        'block px-4 py-2 text-sm',
-                      ]"
-                    >
-                      Delete
-                    </button>
-                  </MenuItem>
-                </div>
-              </MenuItems>
-            </transition>
-          </Menu>
-        </div>
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
+                />
+              </svg>
+            </MenuButton>
+          </div>
+
+          <transition
+            enter-active-class="transition ease-out duration-100"
+            enter-from-class="transform opacity-0 scale-95"
+            enter-to-class="transform opacity-100 scale-100"
+            leave-active-class="transition ease-in duration-75"
+            leave-from-class="transform opacity-100 scale-100"
+            leave-to-class="transform opacity-0 scale-95"
+          >
+            <MenuItems
+              class="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-hidden"
+            >
+              <div class="py-1">
+                <MenuItem v-slot="{ active }">
+                  <span
+                    @click="onStorePost(post.postID)"
+                    :class="[
+                      active
+                        ? 'bg-gray-100 text-gray-900 outline-hidden hover:bg-blue-500 hover:text-white font-bold'
+                        : 'text-gray-700 hover:text-white',
+                      'block px-4 py-2 text-sm',
+                    ]"
+                  >
+                    Store
+                  </span>
+                </MenuItem>
+                <MenuItem v-slot="{ active }">
+                  <span
+                    @click="onEditPost(post.postID)"
+                    :class="[
+                      active
+                        ? 'bg-gray-100 text-gray-900 outline-hidden hover:bg-blue-500 hover:text-white font-bold'
+                        : 'text-gray-700 hover:text-white',
+                      'block px-4 py-2 text-sm',
+                    ]"
+                  >
+                    Edit
+                  </span>
+                </MenuItem>
+                <MenuItem v-slot="{ active }">
+                  <span
+                    @click="storeDeletePost(post.postID)"
+                    :class="[
+                      active
+                        ? 'bg-gray-100 text-gray-900 outline-hidden hover:bg-blue-500 hover:text-white font-bold'
+                        : 'text-gray-700 hover:text-white',
+                      'block px-4 py-2 text-sm',
+                    ]"
+                  >
+                    Delete
+                  </span>
+                </MenuItem>
+              </div>
+            </MenuItems>
+          </transition>
+        </Menu>
       </div>
     </div>
 
-    <div class="m-2 mt-4 mb-3 flex justify-center shadow-lg">
-      <!-- Post Image Header -->
+    <div class="m-2 mt-4 mb-3 flex justify-center shadow-lg bg-white">
       <p v-for="(image, index) in post.postImage" :key="index">
         <img
           :src="'data:image/png;base64,' + image.imageData"
@@ -98,22 +100,24 @@
     <div class="bg-white p-4 sm:p-6">
       <div class="grid grid-cols-1">
         <div>
-          <a
-            href="#"
+          <h3
             class="relative z-10 rounded-full bg-gray-50 px-3 py-1.5 font-medium text-gray-600 hover:bg-gray-100"
-            >{{ post?.postTitle }}</a
           >
+            {{ post?.postTitle }}
+          </h3>
         </div>
+      </div>
+      <div class="flex">
+        {{ formatDateTime(post?.updatedAT) }}
       </div>
 
       <div class="flex justify-between p-2">
-        <!-- Post Content -->
         <p class="mt-2 line-clamp-3 text-sm/relaxed text-gray-500">
           {{ post.postContent }}
         </p>
       </div>
     </div>
-    <div class="m-auto p-3 bg-gray-200">
+    <div class="m-auto p-1 bg-white">
       <div class="grid grid-cols-2">
         <div class="flex justify-center">
           <div class="grid grid-cols-2">
@@ -226,6 +230,7 @@
     </div>
   </article>
 </template>
+
 <script setup>
 defineProps({
   post: {
@@ -241,6 +246,7 @@ import { useAuthStore } from "@/stores/auth";
 import { usePostStore } from "@/stores/post";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
 import { ChevronDownIcon } from "@heroicons/vue/20/solid";
+import CardProfile from "./user-profiles/CardProfile.vue";
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -277,8 +283,8 @@ const formatDateTime = (dateTime) => {
 
   const date = new Date(dateTime);
 
-  const year = date.getFullYear() + 543; // แปลงเป็น พ.ศ.
-  const month = date.getMonth(); // 0-11
+  const year = date.getFullYear() + 543;
+  const month = date.getMonth();
   const day = date.getDate();
 
   const hour = date.getHours().toString().padStart(2, "0");

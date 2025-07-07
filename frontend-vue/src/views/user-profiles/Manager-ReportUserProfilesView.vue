@@ -38,6 +38,9 @@
                     class="w-14 h-14 rounded-full object-cover ring-2 ring-gray-200 hover:scale-105 transition-transform duration-300"
                     alt="Default Image" />
                 </div>
+                <div class="flex justify-center items-center">
+                    <UploadImageProfileModal :profileID="item.profiles.id" />
+                </div>
               </div>
             </td>
 
@@ -145,6 +148,7 @@ import PageHeader from "@/components/PageHeader.vue";
 import ToggleSwitchStatus from "@/components/user-profiles/ToggleSwitchStatus.vue";
 import EditUserModal from "@/components/user-profiles/EditUserModal.vue";
 import EditProfileModal from "@/components/user-profiles/EditProfileModal.vue";
+import UploadImageProfileModal from "@/components/user-profiles/UploadImageProfileModal.vue";
 
 const managerBlogStore = useManagerBlogStore();
 const { storeManagerGetUserProfiles, storeManagerUpdateStatusAccount } = managerBlogStore;

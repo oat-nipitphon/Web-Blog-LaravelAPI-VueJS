@@ -1,88 +1,10 @@
-<script setup>
-import axiosAPI from "@/services/axiosAPI";
-import Swal from "sweetalert2";
-import { ref } from "vue";
-import imageDefault from "@/assets/images/account-profile.png";
-
-const props = defineProps({
-  profileID: {
-    type: Number,
-    required: true,
-  },
-});
-
-const imageFile = ref(null);
-const imageUrl = ref(null);
-
-const onSelectImageFile = (event) => {
-  imageFile.value = event.target.files[0];
-  const file = event.target.files[0];
-  imageUrl.value = URL.createObjectURL(file);
-};
-
-const onUploadFile = async () => {
-  const formData = new FormData();
-  formData.append("profile_id", props.profileID);
-  if (imageFile.value) {
-    formData.append("image_file", imageFile.value);
-  } else {
-    const response = await fetch(imageDefault);
-    const blob = await response.blob();
-    const file = new File([blob], "default-image.jpg", { type: "image/jpeg" });
-    formData.append("image_file", file);
-  }
-
-  // Check require file image form data
-  // for (const [key, value] of formData.entries()) {
-  //   console.log(`${key}:`, value);
-  // }
-  // return;
-
-  try {
-    const response = await axiosAPI.post(
-      `/api/user_profiles/upload_image`,
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      }
-    );
-
-    if (response.status !== 200) {
-      Swal.fire({
-        title: "Upload Image false !!",
-        text: response.error,
-        icon: "error",
-        showCancelButton: true,
-      }).then(() => {
-        Swal.close();
-        return;
-      });
-    }
-
-    Swal.fire({
-      title: "Scuuess.",
-      text: "Upload image profile successflly.",
-      icon: "success",
-      timer: 1200,
-    }).then(() => {
-      Swal.close();
-      window.location.reload();
-    });
-  } catch (error) {
-    console.error("function upload image error", error);
-  }
-};
-</script>
 <template>
-  <div>
+  <div class="flex">
+    <!-- Trigger Button -->
     <button
       type="button"
-      class="btn btn-sm"
-      data-bs-toggle="modal"
-      data-bs-target="#exampleModal"
+      class="btn btn-outline-primary btn-sm"
+      @click="openModal"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -101,54 +23,171 @@ const onUploadFile = async () => {
       </svg>
     </button>
 
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">อัพเดทรูปโปรไฟล์ผู้ใช้</h5>
-            <button
-              type="button"
-              class="btn-sm btn-close text-gray-900"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
-          </div>
-
-          <div class="modal-body">
-            <div class="flex flex-col items-center space-y-4">
-              <div class="flex justify-center w-full">
-                <img
-                  class="ibox-image-profile shadow-lg rounded-lg"
-                  v-show="imageUrl"
-                  :src="imageUrl || '../assets/icon/icon-user-default.png'"
-                  alt="Profile Image"
+    <!-- Modal -->
+    <TransitionRoot as="template" :show="open">
+      <Dialog
+        as="div"
+        class="relative z-50"
+        @close="closeModal"
+      >
+        <div class="fixed inset-0 bg-black/30" aria-hidden="true" />
+        <div class="fixed inset-0 flex items-center justify-center p-4">
+          <TransitionChild
+            as="template"
+            enter="ease-out duration-300"
+            enter-from="opacity-0 scale-95"
+            enter-to="opacity-100 scale-100"
+            leave="ease-in duration-200"
+            leave-from="opacity-100 scale-100"
+            leave-to="opacity-0 scale-95"
+          >
+            <DialogPanel
+              class="w-full max-w-md rounded-lg bg-white p-6 shadow-lg"
+            >
+              <DialogTitle class="text-lg font-semibold mb-4">
+                อัพเดทรูปโปรไฟล์ผู้ใช้
+              </DialogTitle>
+              <div class="flex flex-col items-center space-y-4">
+                <div class="w-32 h-32 rounded-full border overflow-hidden">
+                  <img
+                    v-if="previewUrl"
+                    :src="previewUrl"
+                    alt="Profile Preview"
+                    class="object-cover w-full h-full"
+                  />
+                  <img
+                    v-else
+                    :src="imageDefault"
+                    alt="Default Profile"
+                    class="object-cover w-full h-full"
+                  />
+                </div>
+                <input
+                  ref="fileInput"
+                  type="file"
+                  accept="image/*"
+                  class="hidden"
+                  @change="onSelectImageFile"
                 />
+                <button
+                  type="button"
+                  class="px-3 py-1.5 text-sm rounded-md bg-gray-100 hover:bg-gray-200"
+                  @click="selectFile"
+                >
+                  เลือกรูปภาพ
+                </button>
               </div>
-
-              <input
-                @change="onSelectImageFile"
-                type="file"
-                accept="image/*"
-                id="imageProfile"
-                class="block w-full border rounded-lg p-2"
-              />
-            </div>
-          </div>
-
-          <div class="modal-footer">
-            <button class="btn btn-sm btn-primary w-full" @click="onUploadFile">
-              อัพโหลด
-            </button>
-          </div>
+              <div class="flex justify-end gap-2 mt-6">
+                <button
+                  class="px-4 py-2 text-sm text-white bg-indigo-600 rounded hover:bg-indigo-700"
+                  @click="onUploadFile"
+                >
+                  บันทึก
+                </button>
+                <button
+                  class="px-4 py-2 text-sm bg-gray-300 rounded hover:bg-gray-400"
+                  @click="closeModal"
+                >
+                  ยกเลิก
+                </button>
+              </div>
+            </DialogPanel>
+          </TransitionChild>
         </div>
-      </div>
-    </div>
+      </Dialog>
+    </TransitionRoot>
   </div>
 </template>
-<style>
-.ibox-image-profile {
-  width: 50%;
-  height: auto;
-  margin: auto;
+
+<script setup>
+import {
+  Dialog,
+  DialogPanel,
+  DialogTitle,
+  TransitionChild,
+  TransitionRoot,
+} from "@headlessui/vue";
+import axiosAPI from "@/services/axiosAPI";
+import Swal from "sweetalert2";
+import { ref } from "vue";
+import imageDefault from "@/assets/images/account-profile.png";
+
+const props = defineProps({
+  profileID: {
+    type: [Array, Number],
+    required: true,
+  },
+});
+
+const open = ref(false);
+const previewUrl = ref(null);
+const imageFile = ref(null);
+const fileInput = ref(null);
+
+function openModal() {
+  open.value = true;
 }
+
+function closeModal() {
+  open.value = false;
+  previewUrl.value = null;
+  imageFile.value = null;
+}
+
+function selectFile() {
+  fileInput.value.click();
+}
+
+function onSelectImageFile(event) {
+  const file = event.target.files[0];
+  if (file && file.type.startsWith("image/")) {
+    imageFile.value = file;
+    previewUrl.value = URL.createObjectURL(file);
+  } else {
+    Swal.fire("ไฟล์ไม่ถูกต้อง", "กรุณาเลือกไฟล์รูปภาพเท่านั้น", "warning");
+  }
+}
+
+async function onUploadFile() {
+  const formData = new FormData();
+  formData.append("profile_id", props.profileID);
+  if (imageFile.value) {
+    formData.append("image_file", imageFile.value);
+  } else {
+    Swal.fire("กรุณาเลือกไฟล์", "ยังไม่ได้เลือกไฟล์รูปภาพ", "warning");
+    return;
+  }
+
+  try {
+    const response = await axiosAPI.post(
+      "/api/user_profiles/upload_image",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+
+      if (![201, 200].includes(response.status)) {
+        console.error('upload image profile false', response);
+      }
+
+      Swal.fire({
+        title: "Success",
+        icon: "success",
+        timer: 1200,
+      }).then(() => {
+        Swal.close();
+        window.location.reload();
+      });
+
+  } catch (error) {
+    console.error("Upload error:", error);
+  }
+}
+</script>
+
+<style scoped>
 </style>

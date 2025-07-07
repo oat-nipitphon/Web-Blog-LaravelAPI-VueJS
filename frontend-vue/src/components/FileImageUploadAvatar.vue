@@ -53,6 +53,7 @@ const props = defineProps({
   },
 });
 
+
 const emit = defineEmits(["update:file"]);
 
 const previewUrl = ref(null);

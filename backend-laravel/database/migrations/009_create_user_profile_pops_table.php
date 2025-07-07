@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('profile_id')->constrained('user_profiles')->onDelete('cascade');
             $table->foreignId('profile_id_pop')->constrained('user_profiles')->onDelete('cascade');
-            $table->enum('status', ['null', 'like', 'disLike'])->default('null');
+            $table->enum('status', ['null', 'true', 'false'])->default('null');
             $table->timestamps();
         });
     }

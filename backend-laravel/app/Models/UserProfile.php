@@ -50,6 +50,10 @@ class UserProfile extends Model
         return $this->hasOne(UserProfileImage::class, 'profile_id', 'id');
     }
 
+    public function profile_images() : BelongsTo {
+        return $this->belongsTo(UserProfileImage::class, 'profile_id', 'id');
+    }
+
     public function profile_contacts(): HasMany
     {
         return $this->hasMany(UserProfileContact::class, 'profile_id', 'id');

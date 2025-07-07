@@ -9,63 +9,58 @@ use App\Models\UserProfileFollowers;
 class UserProfileFollowersController extends Controller
 {
 
-    public function followersProfile(Request $request, string $profileID, string $profileIDFollowers)
+    public function profileEventFollowers(string $profileID, string $profileIDfollowers)
     {
         try {
 
             $followers = UserProfileFollowers::where('profile_id', $profileID)
-                ->whereIn('profile_id_followers', $profileIDFollowers)
+                ->where('profile_id_followers', $profileIDfollowers)
                 ->first();
 
-            $checkStatusFollowers = '';
+            $statusFollowers = '';
 
             if (!empty($followers)) {
 
                 if ($followers->status === 'true') {
                     $followers->delete();
-                    $checkStatusFollowers = 'false';
+                    $statusFollowers = 'false';
                 } else {
                     $followers->update([
                         'status' => 'true',
                         'updated_at' => now(),
                     ]);
-                    $checkStatusFollowers = 'true';
+                    $statusFollowers = 'true';
                 }
-
             } else {
 
                 UserProfileFollowers::create([
                     'profile_id' => $profileID,
-                    'profile_id_followers' => $profileIDFollowers,
+                    'profile_id_followers' => $profileIDfollowers,
                     'status' => 'true',
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
-                $checkStatusFollowers = 'true';
-
+                $statusFollowers = 'true';
             }
 
-            if (empty($checkStatusFollowers)) {
+            if (empty($statusFollowers)) {
 
                 return response()->json([
-                    'message' => 'laravel user profile check status followers false',
-                    'checkStatusFollowers' => $checkStatusFollowers
+                    'message' => 'profileEventFollowers() check status false',
+                    'statusFollowers' => $statusFollowers
                 ], 404);
-
             }
 
             return response()->json([
-                'message' => 'laravel user profile followers success',
-                'checkStatusFollowers' => $checkStatusFollowers
+                'message' => 'profileEventFollowers() success',
+                'statusFollowers' => $statusFollowers
             ], 200);
-
         } catch (\Exception $error) {
 
             return response()->json([
-                'message' => "laravel user profile followers function error",
+                'message' => "profileEventFollowers() error",
                 'error' => $error->getMessage()
             ], 500);
-
         }
     }
 

@@ -30,7 +30,10 @@ class PostController extends Controller
                 'post_type',
                 'post_images',
                 'post_pops',
-                'user_profiles.users.user_status'
+                'user_profiles.users.user_status',
+                'user_profiles.profile_image',
+                'user_profiles.profile_pops',
+                'user_profiles.profile_followers',
             ])
                 ->where('status', 'active')
                 ->whereHas('user_profiles.users.user_status', function ($query) {
@@ -40,12 +43,12 @@ class PostController extends Controller
                 ->get()
                 ->map(function ($post) {
                     return [
-                        'postID' => $post->id ?? null,
-                        'postTitle' => $post->title ?? null,
-                        'postContent' => $post->content ?? null,
-                        'postRefer' => $post->refer ?? null,
-                        'postCreatedAT' => $post->created_at ?? null,
-                        'postUpdatedAT' => $post->updated_at ?? null,
+                        'postID' => optional($post)->id,
+                        'postTitle' => optional($post)->title,
+                        'postContent' => optional($post)->content,
+                        'postRefer' => optional($post)->refer,
+                        'postCreatedAT' => optional($post)->created_at,
+                        'postUpdatedAT' => optional($post)->updated_at,
 
                         'postType' => [
                             'typeID' => optional($post->post_type)->id,
@@ -53,39 +56,57 @@ class PostController extends Controller
                         ],
 
                         'postImage' => $post->post_images->map(fn($image) => [
-                            'imageID' => $image->id,
-                            'imageData' => $image->image_data
+                            'imageID' => optional($image)->id,
+                            'imageData' => optional($image)->image_data
                         ]),
 
                         'postPops' => $post->post_pops->map(fn($pop) => [
-                            'popID' => $pop->id,
-                            'popPostID' => $pop->post_id,
-                            'popProfileID' => $pop->profile_id,
-                            'popStatus' => $pop->status
+                            'popID' => optional($pop)->id,
+                            'popPostID' => optional($pop)->post_id,
+                            'popProfileID' => optional($pop)->profile_id,
+                            'popStatus' => optional($pop)->status
                         ]),
 
                         'userProfile' => [
-                            'profileID' => optional($post->user_profiles)->id ?? null,
-                            'titleName' => optional($post->user_profiles)->title_name ??  null,
-                            'firstName' => optional($post->user_profiles)->first_name ??  null,
-                            'lastName' => optional($post->user_profiles)->last_name ??  null,
-                            'nickName' => optional($post->user_profiles)->nick_name ??  null,
-                            'birthDay' => optional($post->user_profiles)->birth_day ?? null,
-                            'createdAT' => optional($post->user_profiles)->created_at ?? null,
-                            'updatedAT' => optional($post->user_profiles)->updated_at ?? null,
+                            'profileID' => optional($post->user_profiles)->id,
+                            'titleName' => optional($post->user_profiles)->title_name,
+                            'firstName' => optional($post->user_profiles)->first_name,
+                            'lastName' => optional($post->user_profiles)->last_name,
+                            'nickName' => optional($post->user_profiles)->nick_name,
+                            'birthDay' => optional($post->user_profiles)->birth_day,
+
+                            'image' => $post->user_profiles->profile_image ? [
+                                'id' => optional($post->user_profiles->profile_image)->id,
+                                'imageData' => optional($post->user_profiles->profile_image)->image_data,
+                            ] : null,
+
+                            'followers' => $post->user_profiles->profile_followers ?
+                                $post->user_profiles->profile_followers->map(fn($row) => [
+                                    'id' => optional($row)->id,
+                                    'profile_id' => optional($row)->profile_id,
+                                    'profile_id_followers' => optional($row)->profile_id_followers,
+                                    'status' => optional($row)->status,
+                                ]) : null,
+
+                            'pops' => $post->user_profiles->profile_pops ?
+                                $post->user_profiles->profile_pops->map(fn($row) => [
+                                    'id' => optional($row)->id,
+                                    'profile_id' => optional($row)->profile_id,
+                                    'profile_id_pop' => optional($row)->profile_id_pop,
+                                    'status' => optional($row)->status,
+                                ]) : null,
+
                         ],
 
                         'user' => [
-                            'userID' => $post->user_profiles->users->id ?? null,
-                            'username' => $post->user_profiles->users->username ?? null,
-                            'name' => $post->user_profiles->users->name ?? null,
-                            'email' => $post->user_profiles->users->email ?? null,
-                            'createdAT' => $post->user_profiles->users->created_at ?? null,
-                            'updatedAT' => $post->user_profiles->users->updated_at ?? null,
+                            'userID' => optional($post->user_profiles->users)->id,
+                            'username' => optional($post->user_profiles->users)->username,
+                            'name' => optional($post->user_profiles->users)->name,
+                            'email' => optional($post->user_profiles->users)->email,
 
                             'userStatus' => [
-                                'statusID' => $post->user_profiles->users->user_status->id ?? null,
-                                'statusName' => $post->user_profiles->users->user_status->name ?? null,
+                                'statusID' => optional($post->user_profiles->users->user_status)->id,
+                                'statusName' => optional($post->user_profiles->users->user_status)->name,
                             ],
                         ]
                     ];

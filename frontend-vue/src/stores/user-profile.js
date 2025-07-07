@@ -81,9 +81,8 @@ export const useStoreUserProfile = defineStore("storeUserProfile", {
           console.log("store update profile", response);
         }
 
-        console.log('store update user success');
+        console.log("store update user success");
         return true;
-
       } catch (error) {
         console.error("store update user function error ", error);
       }
@@ -127,11 +126,51 @@ export const useStoreUserProfile = defineStore("storeUserProfile", {
           console.log("store update profile", response);
         }
 
-        console.log('store update profile success');
+        console.log("store update profile success");
         return true;
-
       } catch (error) {
         console.error("store update profile function error ", error);
+      }
+    },
+
+    async storeProfileFollowers(profileID, profileIDfollowers) {
+      try {
+        const response = fetch(
+          `/api/followers/${profileID}/${profileIDfollowers}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+
+        if (![200, 201].includes(response.status)) return;
+
+        const data = await response.json();
+        return data;
+      } catch (err) {
+        Swal.fire("Error", "Unable to follow profile", "error");
+      }
+    },
+
+    async storeProfilePop(profileID, profileIDpop) {
+      try {
+        const response = fetch(`/api/followers/${profileID}/${profileIDpop}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+
+        if (![200, 201].includes(response.status)) return;
+
+        const data = await response.json();
+        return data;
+      } catch (err) {
+        Swal.fire("Error", "Unable to like profile", "error");
       }
     },
   },

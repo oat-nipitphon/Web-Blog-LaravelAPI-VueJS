@@ -11,53 +11,49 @@ class UserProfilePopController extends Controller
 {
 
 
-    public function popLikeProfile(Request $request, string $profileID, string $profileIDPop)
+    public function profileEventPop(string $profileID, string $profileIDpop)
     {
         try {
 
             $pops = UserProfilePop::where('profile_id', $profileID)
-                ->whereIn('profile_id_pop', $profileIDPop)->first();
+                ->where('profile_id_pop', $profileIDpop)->first();
 
-            $checkStatusPop = '';
+            $statusPop = false;
 
             if ($pops) {
 
-                if ($pops->status === 'like') {
+                if ($pops->status === 'true') {
                     $pops->delete();
-                    $checkStatusPop = 'like';
+                    $statusPop = 'true';
                 } else {
                     $pops->update([
-                        'status' => 'like',
+                        'status' => 'true',
                         'updated_at' => now(),
                     ]);
-                    $checkStatusPop = 'like';
+                    $statusPop = 'true';
                 }
             } else {
-
                 UserProfilePop::create([
                     'profile_id' => $profileID,
-                    'profile_id_pop' => $profileIDPop,
-                    'status' => 'like',
-                    'created_at' => now(),
-                    'updated_at' => now(),
+                    'profile_id_pop' => $profileIDpop,
+                    'status' => 'true'
                 ]);
-                $checkStatusPop = 'like';
             }
 
-            if (empty($checkStatusPop)) {
+            if (!$pops) {
                 return response()->json([
-                    'message' => 'laravel update status user profile pop like false.',
-                    'checkStatusPop' => $checkStatusPop
-                ], 404);
+                    'profileID' => $profileID,
+                    'profileIDpop' => $profileIDpop
+                ], 400);
             }
 
             return response()->json([
-                'message' => 'laravel update status user profile pop like success.',
-                'checkStatusPop' => $checkStatusPop
+                'pops' => $pops,
+                'statusPop' => $statusPop
             ], 200);
         } catch (\Exception $error) {
             return response()->json([
-                'message' => "Laravel popLikeProfile function error",
+                'message' => "profileEventPop() error",
                 'error' => $error->getMessage()
             ], 500);
         }
