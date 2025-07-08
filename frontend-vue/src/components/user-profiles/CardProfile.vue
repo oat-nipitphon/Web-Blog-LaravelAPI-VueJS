@@ -37,17 +37,17 @@
                   <button
                     class="btn btn-sm"
                     @click="
-                      onFollowers(props.profile?.profileID, authProfileID)
+                      onFollowers(props?.profile?.profileID, props?.authProfileID)
                     "
                   >
                     <div class="grid grid-cols-3">
                       <div class="flex justify-center">
                         <svg
                           v-if="
-                            props.profile?.followers.some(
+                            props?.profile?.followers.some(
                               (followers) =>
-                                followers.profile_id_followers ===
-                                  authProfileID && followers.status === 'true'
+                                followers?.profile_id_followers ===
+                                  props?.authProfileID && followers.status === 'true'
                             )
                           "
                           xmlns="http://www.w3.org/2000/svg"
@@ -74,8 +74,8 @@
                       <div class="flex justify-center">
                         <p class="m-auto mt-auto text-gray-700 text-md-2xl">
                           {{
-                            props.profile?.followers.filter(
-                              (followers) => followers.status === "true"
+                            props?.profile?.followers.filter(
+                              (followers) => followers?.status === "true"
                             ).length
                           }}
                         </p>
@@ -93,15 +93,18 @@
                 <div class="flex justify-center items-center">
                   <button
                     class="btn btn-sm"
-                    @click="onPop(props.profile?.profileID, authProfileID)"
+                    @click="onPop(props?.profile?.profileID, props?.authProfileID)"
                   >
+
+                profileID  {{ props?.profile?.profileID }}
+                authProfileID  {{ props?.authProfileID }}
                     <div class="grid grid-cols-3">
                       <div class="flex justify-center">
                         <svg
                           v-if="
-                            props.profile?.pops.some(
+                            props?.profile?.pops.some(
                               (pop) =>
-                                pop.profile_id_pop === authProfileID &&
+                                pop.profile_id_pop === props?.authProfileID &&
                                 pop.status === 'true'
                             )
                           "
@@ -131,8 +134,8 @@
                       <div class="flex justify-center">
                         <p class="m-auto mt-auto text-gray-700 text-md-2xl">
                           {{
-                            props.profile?.pops.filter(
-                              (popLike) => popLike.status === "true"
+                            props?.profile?.pops.filter(
+                              (popLike) => popLike?.status === "true"
                             ).length || 0
                           }}
                         </p>
@@ -163,6 +166,7 @@ const props = defineProps({
   user: Object,
   authProfileID: Number,
 });
+console.log('card profile props ', props);
 
 const onFollowers = async (profileID, authProfileID) => {
   const success = await storeProfileFollowers(profileID, authProfileID);

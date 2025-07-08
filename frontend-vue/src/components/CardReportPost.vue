@@ -252,6 +252,7 @@ import CardProfile from "./user-profiles/CardProfile.vue";
 const router = useRouter();
 const authStore = useAuthStore();
 const { users } = storeToRefs(authStore);
+console.log('auth user profile id', authStore.users?.userProfile?.id);
 const {
   storeGetPosts,
   storeDeletePost,
