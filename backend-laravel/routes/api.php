@@ -67,8 +67,10 @@ Route::prefix('/')->group(function () {
     Route::apiResource('/user_profile_contacts', UserProfileContactController::class);
     Route::post('/user_profiles/upload_image', [UserProfileController::class, 'uploadImageProfile']);
 
-    Route::post('/followers/{profileID}/{profileIDfollowers}', [UserProfileFollowersController::class, 'profileEventFollowers']);
-    Route::post('/pop_like/{profileID}/{profileIDpop}', [UserProfilePopController::class, 'profileEventPop']);
+    route::prefix('/profile')->group(function () {
+        Route::post('/followers/{profileID}/{authProfileID}', [UserProfileFollowersController::class, 'profileFollowers']);
+    Route::post('/pop/{profileID}/{authProfileID}', [UserProfilePopController::class, 'profilePop']);
+    });
 
     // --------------------------------------- User Profile ------------------------------------------------ //
 

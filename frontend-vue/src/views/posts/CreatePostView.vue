@@ -19,12 +19,13 @@
     <!-- Content -->
     <div class="mt-3">
       <BaseLabel for-id="labelPostContent" text="Content" />
-      <BaseTextArea
+      <!-- <BaseTextArea
         id="postContent"
         type="text"
         placeholder="input content ..."
         v-model="form.content"
-      />
+      /> -->
+      <EditorPrimeVue v-model="content" style="height: 300px" :modules="modules" />
     </div>
 
     <!-- Refer -->
@@ -146,6 +147,7 @@ import BaseLabel from "@/components/BaseLabel.vue";
 import BaseInput from "@/components/BaseInput.vue";
 import BaseSelect from "@/components/BaseSelect.vue";
 import BaseTextArea from "@/components/BaseTextArea.vue";
+import EditorPrimeVue from "@/components/posts/EditorPrimeVue.vue";
 import BaseInputFileImageCover from "@/components/FileImageUploadCover.vue";
 
 const router = useRouter();

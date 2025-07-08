@@ -93,7 +93,7 @@
                 <div class="flex justify-center items-center">
                   <button
                     class="btn btn-sm"
-                    @click="onPopLike(props.profile?.profileID, authProfileID)"
+                    @click="onPop(props.profile?.profileID, authProfileID)"
                   >
                     <div class="grid grid-cols-3">
                       <div class="flex justify-center">
@@ -163,14 +163,24 @@ const props = defineProps({
   user: Object,
   authProfileID: Number,
 });
-console.log("profileID", props.profile.id);
-console.log("authProfileID", props.authProfileID);
 
 const onFollowers = async (profileID, authProfileID) => {
-  console.log("on followers ", profileID, authProfileID);
+  const success = await storeProfileFollowers(profileID, authProfileID);
+  if (success) {
+    console.log('card profile event followers success', success);
+    return;
+  } 
+  console.log('card profile event followers false');
+  return;
 };
 
-const onPopLike = async (profileID, authProfileID) => {
-  console.log("on pop like ", profileID, authProfileID);
+const onPop = async (profileID, authProfileID) => {
+  const success = await storeProfilePop(profileID, authProfileID);
+  if (success) {
+    console.log('card profile event pop success', success);
+    return;
+  } 
+  console.log('card profile event pop false');
+  return;
 };
 </script>

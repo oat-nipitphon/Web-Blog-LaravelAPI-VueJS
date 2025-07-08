@@ -3,11 +3,13 @@ import "./assets/tailwind.css";
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap/dist/js/bootstrap.bundle'
 
+
 import { createApp, markRaw } from "vue";
 import { createPinia } from "pinia";
 
 import App from "./App.vue";
 import router from "./router";
+
 
 const app = createApp(App);
 const pinia = createPinia();
