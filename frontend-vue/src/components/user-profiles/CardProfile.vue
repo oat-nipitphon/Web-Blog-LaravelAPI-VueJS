@@ -1,90 +1,160 @@
 <template>
-  <div class="flex items-center space-x-4">
-    <!-- Avatar -->
-    <img
-      class="w-12 h-12 rounded-full border object-cover"
-      :src="'data:image/png;base64,' + props.profile?.image?.imageData"
-      alt="User Avatar"
-    />
+  <div>
+    <div
+      class="bg-white border-gray-200 md:rounded-es-lg dark:bg-gray-800 dark:border-gray-700"
+    >
+      <div class="flex items-start justify-start ml-5 mt-3">
+        <div v-if="props.profile?.image?.imageData">
+          <img
+            :src="'data:image/png;base64,' + props.profile?.image?.imageData"
+            class="size-10 rounded-full"
+            alt="ProfileImage"
+          />
+        </div>
+        <div v-else>
+          <img
+            class="size-10 rounded-full"
+            src="../../assets/images/keyboard.jpg"
+            alt="ProfileImage"
+          />
+        </div>
+        <div>
+          <label class="ml-2">{{ props.profile?.titleName }}</label>
+          <label class="ml-2">{{ props.profile?.firstName }}</label>
+          <label class="ml-2">{{ props.profile?.lastName }}</label>
+        </div>
+      </div>
 
-    <!-- Profile Info -->
-    <div class="flex-1">
-      <p class="font-medium text-gray-900">
-        {{ props.profile?.firstName }} {{ props.profile?.lastName }}
-      </p>
-      <p class="text-sm text-gray-500">{{ props.user?.email }}</p>
+      <div
+        class="space-y-0.5 font-medium dark:text-white text-left rtl:text-right ms-3"
+      >
+        <div class="text-sm text-gray-500 dark:text-gray-400">
+          <div class="grid grid-cols-2">
+            <!-- Followers Profile create post  -->
+            <div class="flex justify-center">
+              <div class="grid grid-cols-2">
+                <div class="flex justify-center items-center">
+                  <button
+                    class="btn btn-sm"
+                    @click="
+                      onFollowers(props.profile?.profileID, authProfileID)
+                    "
+                  >
+                    <div class="grid grid-cols-3">
+                      <div class="flex justify-center">
+                        <svg
+                          v-if="
+                            props.profile?.followers.some(
+                              (followers) =>
+                                followers.profile_id_followers ===
+                                  authProfileID && followers.status === 'true'
+                            )
+                          "
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="currentColor"
+                          class="bi bi-bell-fill text-yellow-300 w-[30px] h-[30px]"
+                          viewBox="0 0 16 16"
+                        >
+                          <path
+                            d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2m.995-14.901a1 1 0 1 0-1.99 0A5 5 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901"
+                          />
+                        </svg>
+                        <svg
+                          v-else
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="currentColor"
+                          class="bi bi-bell-fill w-[30px] h-[30px]"
+                          viewBox="0 0 16 16"
+                        >
+                          <path
+                            d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2m.995-14.901a1 1 0 1 0-1.99 0A5 5 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901"
+                          />
+                        </svg>
+                      </div>
+                      <div class="flex justify-center">
+                        <p class="m-auto mt-auto text-gray-700 text-md-2xl">
+                          {{
+                            props.profile?.followers.filter(
+                              (followers) => followers.status === "true"
+                            ).length
+                          }}
+                        </p>
+                      </div>
+                      <div class="flex justify-center m-auto">ติดตาม</div>
+                    </div>
+                  </button>
+                </div>
+              </div>
+            </div>
 
-      <!-- Action Buttons -->
-      <div class="mt-2 flex space-x-2">
-        <div class="flex items-center space-x-1">
-          <!-- Follow/Unfollow Button -->
-          <button
-            @click="toggleFollowProfile(props.profile?.profileID, authProfileID)"
-            :class="[
-              isFollowingProfile
-                ? 'bg-red-500 text-white hover:bg-red-600'
-                : 'bg-blue-500 text-white hover:bg-blue-600',
-              'px-3 py-1 text-xs rounded-md transition',
-            ]"
-          >
-            {{ isFollowingProfile ? "Unfollow" : "Follow" }}
-          </button>
-          <!-- Counter sum -->
-          <span class="text-xs text-gray-600">
-            {{ followersCount }}
-          </span>
+            <!-- Popularity Profile create post Dis Like -->
+            <div class="flex justify-center">
+              <div class="grid grid-cols-2">
+                <div class="flex justify-center items-center">
+                  <button
+                    class="btn btn-sm"
+                    @click="onPopLike(props.profile?.profileID, authProfileID)"
+                  >
+                    <div class="grid grid-cols-3">
+                      <div class="flex justify-center">
+                        <svg
+                          v-if="
+                            props.profile?.pops.some(
+                              (pop) =>
+                                pop.profile_id_pop === authProfileID &&
+                                pop.status === 'true'
+                            )
+                          "
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="currentColor"
+                          class="bi bi-heart-fill text-red-600 w-[30px] h-[30px]"
+                          viewBox="0 0 16 16"
+                        >
+                          <path
+                            fill-rule="evenodd"
+                            d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"
+                          />
+                        </svg>
+                        <svg
+                          v-else
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="currentColor"
+                          class="bi bi-heart-fill w-[30px] h-[30px]"
+                          viewBox="0 0 16 16"
+                        >
+                          <path
+                            fill-rule="evenodd"
+                            d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"
+                          />
+                        </svg>
+                      </div>
+                      <div class="flex justify-center">
+                        <p class="m-auto mt-auto text-gray-700 text-md-2xl">
+                          {{
+                            props.profile?.pops.filter(
+                              (popLike) => popLike.status === "true"
+                            ).length || 0
+                          }}
+                        </p>
+                      </div>
+                      <div class="flex justify-center m-auto">ถูกใจ</div>
+                    </div>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div class="flex items-center space-x-1">
-          <!-- Like/Unlike Button -->
-          <button
-            @click="togglePopProfile(props.profile?.profileID, authProfileID)"
-            :class="[
-              isLikedProfile
-                ? 'bg-pink-500 text-white hover:bg-pink-600'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300',
-              'px-3 py-1 text-xs rounded-md transition flex items-center space-x-1',
-            ]"
-          >
-            <svg
-              v-if="isLikedProfile"
-              xmlns="http://www.w3.org/2000/svg"
-              class="w-4 h-4"
-              fill="currentColor"
-              viewBox="0 0 16 16"
-            >
-              <path
-                d="M8 15s6-4.686 6-8.333A3.333 3.333 0 0 0 10.667 3C9.4 3 8 4.333 8 4.333S6.6 3 5.333 3A3.333 3.333 0 0 0 2 6.667C2 10.314 8 15 8 15z"
-              />
-            </svg>
-            <svg
-              v-else
-              xmlns="http://www.w3.org/2000/svg"
-              class="w-4 h-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="1.5"
-                d="M4.318 6.318a4.5 4.5 0 0 1 6.364 0L12 7.636l1.318-1.318a4.5 4.5 0 1 1 6.364 6.364L12 20.364l-7.682-7.682a4.5 4.5 0 0 1 0-6.364z"
-              />
-            </svg>
-            <span class="ml-1">
-              {{ likesCount }}
-            </span>
-          </button>
-        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, watch } from "vue";
+import axiosAPI from "@/services/axiosAPI";
 import Swal from "sweetalert2";
+import { ref, onMounted } from "vue";
 import { useStoreUserProfile } from "@/stores/user-profile";
 
 const { storeProfileFollowers, storeProfilePop } = useStoreUserProfile();
@@ -93,46 +163,14 @@ const props = defineProps({
   user: Object,
   authProfileID: Number,
 });
+console.log("profileID", props.profile.id);
+console.log("authProfileID", props.authProfileID);
 
-// State
-const isFollowingProfile = ref(false);
-const isLikedProfile = ref(false);
-
-// Counters
-const followersCount = computed(() => props.profile?.followers?.length || 0);
-const likesCount = computed(() => props.profile?.pops?.length || 0);
-
-// Watch for prop changes
-watch(
-  () => props.profile,
-  (newProfile) => {
-    isFollowingProfile.value = !!newProfile?.followers?.find(
-      (f) => f.follower_id === props.authProfileID
-    );
-    isLikedProfile.value = !!newProfile?.pops?.find(
-      (p) => p.popProfileID === props.authProfileID
-    );
-  },
-  { immediate: true }
-);
-
-// Toggle Follow
-const toggleFollowProfile = async (profileID, profileIDfollowers) => {
-  const response = await storeProfileFollowers(profileID, profileIDfollowers);
-  if (response?.status === 200 || response?.status === 201) {
-    isFollowingProfile.value = response.data.following; // true / false
-    props.profile.followers = response.data.followers; // update followers array
-    Swal.fire("Success", response.data.message, "success");
-  }
+const onFollowers = async (profileID, authProfileID) => {
+  console.log("on followers ", profileID, authProfileID);
 };
 
-// Toggle Like
-const togglePopProfile = async (profileID, profileIDpop) => {
-  const response = await storeProfilePop(profileID, profileIDpop);
-  if (response?.status === 200 || response?.status === 201) {
-    isLikedProfile.value = response.data.liked; // true / false
-    props.profile.pops = response.data.pops; // update pops array
-    Swal.fire("Success", response.data.message, "success");
-  }
+const onPopLike = async (profileID, authProfileID) => {
+  console.log("on pop like ", profileID, authProfileID);
 };
 </script>

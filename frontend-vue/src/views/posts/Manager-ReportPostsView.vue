@@ -3,7 +3,7 @@
     <PageHeader title="Manager Post" />
 
     <!-- Posts Table -->
-    <div class="overflow-x-auto bg-white rounded-xl shadow">
+    <div class="bg-white rounded-xl shadow">
       <table class="w-full text-sm text-gray-700">
         <thead class="bg-gray-100 text-xs uppercase">
           <tr>
@@ -15,31 +15,39 @@
             <th class="text-center px-4 py-3 font-semibold">Actions</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody v-if="posts.length > 0">
           <tr
             class="border-b hover:bg-gray-50 transition"
-            v-for="n in 5"
-            :key="n"
+            v-for="(post, index) in posts"
+            :key="post.postID"
           >
-            <td class="text-center px-4 py-3">{{ n }}</td>
+            <td class="text-center px-4 py-3">{{ index + 1 }}</td>
             <td class="px-4 py-3 font-medium text-gray-800">
-              Post Title {{ n }}
+              Post Title {{ post.postTitle }}
             </td>
-            <td class="px-4 py-3">User {{ n }}</td>
-            <td class="text-center px-4 py-3">Blog</td>
+            <td class="px-4 py-3">User {{ post.user?.username }}</td>
+            <td class="text-center px-4 py-3">{{ post.postType?.typeName }}</td>
             <td class="text-center px-4 py-3">
               <span
                 class="px-3 py-1 rounded-full text-xs font-semibold"
                 :class="
-                  n % 3 === 0
+                  post.postStatus === 'active'
                     ? 'bg-green-100 text-green-700'
-                    : n % 2 === 0
+                    : post.postStatus === 'store'
                     ? 'bg-yellow-100 text-yellow-700'
-                    : 'bg-red-100 text-red-700'
+                    : post.postStatus === 'disable'
+                    ? 'bg-red-100 text-red-700'
+                    : 'bg-red-100 text-gray-700'
                 "
               >
                 {{
-                  n % 3 === 0 ? "active" : n % 2 === 0 ? "pending" : "blocked"
+                  post.postStatus === "active"
+                    ? "active"
+                    : post.postStatus === "store"
+                    ? "store"
+                    : post.postStatus === "disable"
+                    ? "disable"
+                    : "null"
                 }}
               </span>
             </td>
@@ -111,6 +119,11 @@
             </td>
           </tr>
         </tbody>
+        <tbody v-else>
+          <tr class="text-center">
+            <td class="text-2xl font-bold text-red-500">Post repsonse null</td>
+          </tr>
+        </tbody>
       </table>
     </div>
   </div>
@@ -119,10 +132,11 @@
 <script setup>
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
 import { ChevronDownIcon } from "@heroicons/vue/20/solid";
-import PageHeader from "@/components/PageHeader.vue";
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useManagerBlogStore } from "@/stores/manager-blog";
+import PageHeader from "@/components/PageHeader.vue";
+
 
 const managerBlogStore = useManagerBlogStore();
 const { storeManagerGetPosts } = managerBlogStore;
@@ -131,6 +145,5 @@ const posts = ref([]);
 
 onMounted(async () => {
   posts.value = await storeManagerGetPosts();
-  console.log('manager report post view ', posts.value);
 });
 </script>

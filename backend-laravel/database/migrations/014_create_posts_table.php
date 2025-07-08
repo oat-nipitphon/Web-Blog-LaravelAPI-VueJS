@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('title');
             $table->string('content');
             $table->string('refer')->nullable();
-            $table->enum('status', ['active', 'store', 'block', 'disable', 'deletetion'])->default('active');
+            $table->enum('status', ['active', 'store', 'disable', 'null'])->default('active');
             $table->timestamps();
         });
     }

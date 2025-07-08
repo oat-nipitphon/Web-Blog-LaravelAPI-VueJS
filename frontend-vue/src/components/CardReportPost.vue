@@ -1,13 +1,13 @@
 <template>
   <article
-    class="w-full rounded-lg shadow-lg transition hover:shadow-lg m-auto bg-amber-300"
+    class="w-full rounded-lg shadow-lg transition hover:shadow-lg m-auto"
   >
     <div class="grid grid-cols-2 mb-2 mt-2 p-2 bg-white">
       <div>
         <CardProfile :profile="post.userProfile" :user="post.user" :authProfileID="authStore.users?.userProfile?.id" />
       </div>
 
-      <div class="flex justify-end items-end">
+      <div class="flex justify-end items-end mr-5 mt-auto mb-auto">
         <Menu as="div" class="relative inline-block text-left">
           <div>
             <MenuButton class="inline-flex text-gray-700 hover:text-blue-600">
@@ -85,6 +85,7 @@
           </transition>
         </Menu>
       </div>
+
     </div>
 
     <div class="m-2 mt-4 mb-3 flex justify-center shadow-lg bg-white">

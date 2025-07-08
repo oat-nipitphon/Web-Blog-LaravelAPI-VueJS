@@ -135,42 +135,46 @@ export const useStoreUserProfile = defineStore("storeUserProfile", {
 
     async storeProfileFollowers(profileID, profileIDfollowers) {
       try {
-        const response = fetch(
-          `/api/followers/${profileID}/${profileIDfollowers}`,
+        const res = await axiosAPI.post(
+          `/api/followers/${postUserID}/${authUserID}`,
+          {}, // ถ้าไม่มี body ให้ส่งเป็น {} ไป
           {
-            method: "POST",
             headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
               "Content-Type": "application/json",
-              authorization: `Bearer ${localStorage.getItem("token")}`,
             },
           }
         );
-
-        if (![200, 201].includes(response.status)) return;
-
-        const data = await response.json();
-        return data;
-      } catch (err) {
-        Swal.fire("Error", "Unable to follow profile", "error");
+        if (res.error) {
+          console.log("api followers error", res);
+        }
+        posts.value = await apiGetPosts();
+      } catch (error) {
+        console.error("function followers error", error);
       }
     },
 
     async storeProfilePop(profileID, profileIDpop) {
       try {
-        const response = fetch(`/api/followers/${profileID}/${profileIDpop}`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
+        const res = await axiosAPI.post(
+          `/api/pop_like/${postUserID}/${authUserID}`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        if (res.error) {
+          console.log("api pop like error", res);
+        }
 
-        if (![200, 201].includes(response.status)) return;
+        console.log("api pop like success", res);
 
-        const data = await response.json();
-        return data;
-      } catch (err) {
-        Swal.fire("Error", "Unable to like profile", "error");
+        posts.value = await apiGetPosts();
+      } catch (error) {
+        console.error("function pop like error", error);
       }
     },
   },

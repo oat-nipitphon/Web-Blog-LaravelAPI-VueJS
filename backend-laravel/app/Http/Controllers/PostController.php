@@ -43,12 +43,15 @@ class PostController extends Controller
                 ->get()
                 ->map(function ($post) {
                     return [
+
                         'postID' => optional($post)->id,
                         'postTitle' => optional($post)->title,
                         'postContent' => optional($post)->content,
                         'postRefer' => optional($post)->refer,
+                        'postStatus' => optional($post)->status,
                         'postCreatedAT' => optional($post)->created_at,
                         'postUpdatedAT' => optional($post)->updated_at,
+
 
                         'postType' => [
                             'typeID' => optional($post->post_type)->id,

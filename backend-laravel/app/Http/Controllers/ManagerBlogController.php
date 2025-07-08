@@ -177,41 +177,89 @@ class ManagerBlogController extends Controller
     {
         try {
 
-            $posts = Post::with([
+$posts = Post::with([
                 'post_type',
                 'post_images',
                 'post_pops',
-            ])->get()->map(function ($post) {
-                return $post ? [
+                'user_profiles.users.user_status',
+                'user_profiles.profile_image',
+                'user_profiles.profile_pops',
+                'user_profiles.profile_followers',
+            ])->orderBy('updated_at', 'desc')
+                ->get()
+                ->map(function ($post) {
+                    return [
 
-                    'id' => optional($post)->id,
-                    'title' => optional($post)->title,
-                    'content' => optional($post)->content,
-                    'refer' => optional($post)->refer,
-                    'createdAt' => optional($post)->created_at,
-                    'updatedAt' => optional($post)->updated_at,
+                        'postID' => optional($post)->id,
+                        'postTitle' => optional($post)->title,
+                        'postContent' => optional($post)->content,
+                        'postRefer' => optional($post)->refer,
+                        'postStatus' => optional($post)->status,
+                        'postCreatedAT' => optional($post)->created_at,
+                        'postUpdatedAT' => optional($post)->updated_at,
 
-                    'type' => $post->post_type ? [
-                        'id' => optional($post->post_type)->id,
-                        'name' => optional($post->post_type)->name,
-                    ] : null,
 
-                    'status' => $post->post_status ? [
-                        'id' => optional($post->post_status)->id,
-                        'name' => optional($post->post_status)->name,
-                    ] : null,
+                        'postType' => [
+                            'typeID' => optional($post->post_type)->id,
+                            'typeName' => optional($post->post_type)->name,
+                        ],
 
-                    'pops' => $post->post_pops ?
-                        $post->post_pops->map(function ($pop) {
-                            return [
-                                'post_id' => optional($pop)->post_id,
-                                'profile_id' => optional($pop)->profile_id,
-                                'status' => optional($pop)->status,
-                            ];
-                        }) : null,
+                        'postImage' => $post->post_images->map(fn($image) => [
+                            'imageID' => optional($image)->id,
+                            'imageData' => optional($image)->image_data
+                        ]),
 
-                ] : null;
-            });
+                        'postPops' => $post->post_pops->map(fn($pop) => [
+                            'popID' => optional($pop)->id,
+                            'popPostID' => optional($pop)->post_id,
+                            'popProfileID' => optional($pop)->profile_id,
+                            'popStatus' => optional($pop)->status
+                        ]),
+
+                        'userProfile' => [
+                            'profileID' => optional($post->user_profiles)->id,
+                            'titleName' => optional($post->user_profiles)->title_name,
+                            'firstName' => optional($post->user_profiles)->first_name,
+                            'lastName' => optional($post->user_profiles)->last_name,
+                            'nickName' => optional($post->user_profiles)->nick_name,
+                            'birthDay' => optional($post->user_profiles)->birth_day,
+
+                            'image' => $post->user_profiles->profile_image ? [
+                                'id' => optional($post->user_profiles->profile_image)->id,
+                                'imageData' => optional($post->user_profiles->profile_image)->image_data,
+                            ] : null,
+
+                            'followers' => $post->user_profiles->profile_followers ?
+                                $post->user_profiles->profile_followers->map(fn($row) => [
+                                    'id' => optional($row)->id,
+                                    'profile_id' => optional($row)->profile_id,
+                                    'profile_id_followers' => optional($row)->profile_id_followers,
+                                    'status' => optional($row)->status,
+                                ]) : null,
+
+                            'pops' => $post->user_profiles->profile_pops ?
+                                $post->user_profiles->profile_pops->map(fn($row) => [
+                                    'id' => optional($row)->id,
+                                    'profile_id' => optional($row)->profile_id,
+                                    'profile_id_pop' => optional($row)->profile_id_pop,
+                                    'status' => optional($row)->status,
+                                ]) : null,
+
+                        ],
+
+                        'user' => [
+                            'userID' => optional($post->user_profiles->users)->id,
+                            'username' => optional($post->user_profiles->users)->username,
+                            'name' => optional($post->user_profiles->users)->name,
+                            'email' => optional($post->user_profiles->users)->email,
+
+                            'userStatus' => [
+                                'statusID' => optional($post->user_profiles->users->user_status)->id,
+                                'statusName' => optional($post->user_profiles->users->user_status)->name,
+                            ],
+                        ]
+                    ];
+                });
 
             if (!$posts) {
                 return response()->json([
