@@ -4,7 +4,11 @@
   >
     <div class="grid grid-cols-2 mb-2 mt-2 p-2 bg-white">
       <div>
-        <CardProfile :profile="post.userProfile" :user="post.user" :authProfileID="authStore.users?.userProfile?.id" />
+        <CardProfile
+          :profile="post.userProfile"
+          :user="post.user"
+          :authProfileID="authStore.users?.userProfile?.id"
+        />
       </div>
 
       <div class="flex justify-end items-end mr-5 mt-auto mb-auto">
@@ -85,7 +89,6 @@
           </transition>
         </Menu>
       </div>
-
     </div>
 
     <div class="m-2 mt-4 mb-3 flex justify-center shadow-lg bg-white">
@@ -252,7 +255,7 @@ import CardProfile from "./user-profiles/CardProfile.vue";
 const router = useRouter();
 const authStore = useAuthStore();
 const { users } = storeToRefs(authStore);
-console.log('auth user profile id', authStore.users?.userProfile?.id);
+console.log("auth user profile id", authStore.users?.userProfile?.id);
 const {
   storeGetPosts,
   storeDeletePost,

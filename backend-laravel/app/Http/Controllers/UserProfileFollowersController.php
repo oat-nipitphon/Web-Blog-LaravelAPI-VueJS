@@ -52,43 +52,42 @@ class UserProfileFollowersController extends Controller
     public function profileFollowers(Request $request, string $profileID, string $authProfileID)
     {
         try {
-
+            // ตรวจสอบว่ามี record อยู่หรือไม่
             $followers = UserProfileFollowers::where('profile_id', $profileID)
                 ->where('profile_id_followers', $authProfileID)
                 ->first();
 
-            $status_followers = null;
+            $status_followers = 'null';
 
-            if ($followers->status === true) {
-                $followers->delete();
-                $status_followers = false;
-            } else {
+            if ($followers) {
+                if ($followers->status === 'true') {
+                    // ถ้ามีและ status = true → ลบ
+                    $followers->delete();
+                    $status_followers = 'false';
 
-                $followers = UserProfileFollowers::create([
-                    'profile_id' => $profileID,
-                    'profile_id_followers' => $authProfileID,
-                    'status' => true,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
-
-                $status_followers = true;
+                    return response()->json([
+                        'message' => 'followers removed successfully.',
+                        'statusFollowers' => $status_followers
+                    ], 200);
+                }
             }
 
-            if (empty($status_followers)) {
-                return response()->json([
-                    'controller profileFollowers() status followers null',
-                    'statusPop' => $status_followers
-                ], 404);
-            }
+            // ถ้าไม่มี record หรือ status != true → สร้างใหม่
+            $followers = UserProfileFollowers::create([
+                'profile_id' => $profileID,
+                'profile_id_followers' => $authProfileID,
+                'status' => 'true',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+            $status_followers = 'true';
 
             return response()->json([
-                'message' => 'controller profileFollowers() success',
+                'message' => 'followers created successfully.',
                 'followers' => $followers,
                 'statusFollowers' => $status_followers
             ], 201);
         } catch (\Exception $error) {
-
             return response()->json([
                 'message' => "controller profileFollowers() error",
                 'error' => $error->getMessage()

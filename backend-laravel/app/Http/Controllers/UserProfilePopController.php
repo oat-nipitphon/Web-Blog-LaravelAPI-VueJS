@@ -52,40 +52,41 @@ class UserProfilePopController extends Controller
     public function profilePop(Request $request, string $profileID, string $authProfileID)
     {
         try {
-
+            // ตรวจสอบว่ามี record อยู่หรือไม่
             $pops = UserProfilePop::where('profile_id', $profileID)
-                ->whereIn('profile_id_pop', $authProfileID)->first();
+                ->where('profile_id_pop', $authProfileID)
+                ->first();
 
-            $status_pop = null;
+            $status_pop = 'null';
 
-            if ($pops->status === true) {
+            if ($pops) {
+                if ($pops->status === 'true') {
+                    // ถ้ามีและ status = true → ลบ
                     $pops->delete();
-                    $status_pop = false;
-            } else {
+                    $status_pop = 'false';
 
-               $pops = UserProfilePop::create([
-                    'profile_id' => $profileID,
-                    'profile_id_pop' => $authProfileID,
-                    'status' => true,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
-                $status_pop = true;
+                    return response()->json([
+                        'message' => 'Pop removed successfully.',
+                        'statusPop' => $status_pop
+                    ], 200);
+                }
             }
 
-            if (empty($status_pop)) {
-                return response()->json([
-                    'controller profilePop() status pop null',
-                    'statusPop' => $status_pop
-                ], 404);
-            }
+            // ถ้าไม่มี record หรือ status != true → สร้างใหม่
+            $pops = UserProfilePop::create([
+                'profile_id' => $profileID,
+                'profile_id_pop' => $authProfileID,
+                'status' => 'true',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+            $status_pop = 'true';
 
             return response()->json([
-                'message' => 'controller profilePop() success.',
+                'message' => 'Pop created successfully.',
                 'pops' => $pops,
                 'statusPop' => $status_pop
             ], 201);
-
         } catch (\Exception $error) {
             return response()->json([
                 'message' => "controller profilePop() error",

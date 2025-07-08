@@ -133,48 +133,65 @@ export const useStoreUserProfile = defineStore("storeUserProfile", {
       }
     },
 
-    async storeProfileFollowers(profileID, profileIDfollowers) {
+    // Profile Followers
+    async storeProfileFollowers(profileID, authProfileID) {
       try {
-        const res = await axiosAPI.post(
-          `/api/followers/${postUserID}/${authUserID}`,
-          {}, // ถ้าไม่มี body ให้ส่งเป็น {} ไป
+        const response = await fetch(
+          `/api/profile/followers/${profileID}/${authProfileID}`,
           {
+            method: "POST",
             headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
               "Content-Type": "application/json",
+              authorization: `Bearer ${localStorage.getItem("token")}`,
             },
           }
         );
-        if (res.error) {
-          console.log("api followers error", res);
+
+        if ([200, 201].includes(response.status)) {
+          const data = await response.json();
+          console.log("store profile followers success", data.statusFollowers);
+          return data.statusFollowers; // ส่งสถานะกลับไป
+        } else {
+          const errorText = await response.text();
+          console.error(
+            "store profile followers failed",
+            response.status,
+            errorText
+          );
+          return false;
         }
-        posts.value = await apiGetPosts();
       } catch (error) {
-        console.error("function followers error", error);
+        console.error("store profile followers error", error);
+        return false;
       }
     },
 
-    async storeProfilePop(profileID, profileIDpop) {
+    // Profile Pop
+    async storeProfilePop(profileID, authProfileID) {
       try {
-        const res = await axiosAPI.post(
-          `/api/pop_like/${postUserID}/${authUserID}`,
-          {},
+        const response = await fetch(
+          `/api/profile/pop/${profileID}/${authProfileID}`,
           {
+            method: "POST",
             headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
               "Content-Type": "application/json",
+              authorization: `Bearer ${localStorage.getItem("token")}`,
             },
           }
         );
-        if (res.error) {
-          console.log("api pop like error", res);
+
+        if ([200, 201].includes(response.status)) {
+          const data = await response.json();
+          console.log("store profile pop success", data.statusPop);
+          return data.statusPop; // ส่งสถานะกลับไป
+        } else {
+          const errorText = await response.text();
+          console.error("store profile pop failed", response.status, errorText);
+          return false;
         }
-
-        console.log("api pop like success", res);
-
-        posts.value = await apiGetPosts();
       } catch (error) {
-        console.error("function pop like error", error);
+        console.error("store profile pop error", error);
+        return false;
       }
     },
   },
