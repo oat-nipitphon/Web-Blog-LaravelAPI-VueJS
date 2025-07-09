@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('user_wallets', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('cascade');
             $table->double('point')->nullable();
-            $table->enum('status', ['active', 'disable', 'under_maintenance'])->default('active');
+            $table->enum('status', ['active', 'disable', 'null'])->default('null');
             $table->timestamps();
         });
     }

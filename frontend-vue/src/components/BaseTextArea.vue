@@ -4,6 +4,9 @@ defineProps({
   label: { type: String, default: "" },
   placeholder: { type: String, default: "" },
   modelValue: [String, Number],
+  rows: { type: Number, required: ''},
+  cols: { type: Number, required: ''},
+
 });
 
 defineEmits(["update:modelValue", "blur"]);
@@ -18,6 +21,8 @@ defineEmits(["update:modelValue", "blur"]);
       :id="id"
       :placeholder="placeholder"
       class="w-full p-2 border border-gray-300 rounded"
+      :rows="rows" 
+      :cols="cols"
       :value="modelValue"
       @input="$emit('update:modelValue', $event.target.value)"
       @blur="$emit('blur', $event)"

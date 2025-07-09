@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('post_comments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('post_id')->constrained('posts')->onDelete('cascade');
-            $table->foreignId('profile_id')->constrained('user_profiles')->onDelete('cascade');
+            $table->foreignId('post_id')->nullable()->constrained('posts')->onDelete('cascade');
+            $table->foreignId('profile_id')->nullable();
             $table->string('comment')->nullable();
             $table->enum('status', ['null', 'edit', 'ban', 'active'])->default('null');
             $table->timestamps();

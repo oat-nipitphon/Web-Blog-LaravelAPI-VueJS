@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('videos', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('profile_id')->constrained('user_profiles')->onDelete('cascade');
-            $table->foreignId('post_id')->constrained('posts')->onDelete('cascade');
+            $table->foreignId('post_id')->nullable()->constrained('posts')->onDelete('cascade');
+            $table->foreignId('profile_id')->nullable();
             $table->binary('video_data')->nullable();
             $table->string('video_path')->nullable();
             $table->string('video_name')->nullable();

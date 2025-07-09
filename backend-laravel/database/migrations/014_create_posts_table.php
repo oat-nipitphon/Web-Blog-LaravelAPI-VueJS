@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('posts', function (Blueprint $table) {
             $table->id();
             $table->foreignId('profile_id')->constrained('user_profiles')->onDelete('cascade');
-            $table->foreignId('type_id')->constrained('post_types')->onDelete('cascade');
-            $table->string('title');
-            $table->string('content');
+            $table->foreignId('type_id')->nullable();
+            $table->text('title');
+            $table->text('content');
             $table->string('refer')->nullable();
             $table->enum('status', ['active', 'store', 'disable', 'null'])->default('active');
             $table->timestamps();

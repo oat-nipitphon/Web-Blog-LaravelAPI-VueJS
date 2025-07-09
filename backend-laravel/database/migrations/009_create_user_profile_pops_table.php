@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('user_profile_pops', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('profile_id')->constrained('user_profiles')->onDelete('cascade');
-            $table->foreignId('profile_id_pop')->constrained('user_profiles')->onDelete('cascade');
+            $table->foreignId('profile_id')->nullable();
+            $table->foreignId('profile_id_pop')->nullable();
             $table->enum('status', ['null', 'true', 'false'])->default('null');
             $table->timestamps();
         });

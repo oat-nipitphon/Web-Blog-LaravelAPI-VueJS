@@ -19,13 +19,15 @@
     <!-- Content -->
     <div class="mt-3">
       <BaseLabel for-id="labelPostContent" text="Content" />
-      <!-- <BaseTextArea
+      <BaseTextArea
         id="postContent"
         type="text"
         placeholder="input content ..."
         v-model="form.content"
-      /> -->
-      <EditorPrimeVue v-model="content" style="height: 300px" :modules="modules" />
+        rows="5"
+        cols="60"
+      />
+      <!-- <EditorPrimeVue v-model="content" style="height: 300px" :modules="modules" /> -->
     </div>
 
     <!-- Refer -->

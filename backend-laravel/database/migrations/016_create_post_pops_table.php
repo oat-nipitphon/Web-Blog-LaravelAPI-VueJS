@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('post_pops', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('post_id')->constrained('posts')->onDelete('cascade');
-            $table->foreignId('profile_id')->constrained('user_profiles')->onDelete('cascade');
-            $table->enum('status', ['null', 'like', 'disLike'])->default('null');
+            $table->foreignId('post_id')->nullable()->constrained('posts')->onDelete('cascade');
+            $table->foreignId('profile_id')->nullable();
+            $table->enum('status', ['null', 'true', 'false'])->default('null');
             $table->timestamps();
         });
     }

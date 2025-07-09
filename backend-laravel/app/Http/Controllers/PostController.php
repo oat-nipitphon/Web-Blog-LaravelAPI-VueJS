@@ -20,100 +20,103 @@ use Illuminate\Support\Facades\Validator;
 
 class PostController extends Controller
 {
+
+    // Bonus: Helper null-safe function
+    function safe($object, $default = null)
+    {
+        return $object ?? $default;
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
         try {
+
             $posts = Post::with([
-                'post_type',
-                'post_images',
-                'post_pops',
-                'user_profiles.users.user_status',
-                'user_profiles.profile_image',
-                'user_profiles.profile_pops',
-                'user_profiles.profile_followers',
-            ])
-                ->where('status', 'active')
-                ->whereHas('user_profiles.users.user_status', function ($query) {
-                    $query->whereIn('name', ['admin', 'user']);
-                })
-                ->orderBy('updated_at', 'desc')
-                ->get()
-                ->map(function ($post) {
-                    return [
+            'post_type',
+            'post_images',
+            'post_pops',
+            'user_profiles.users.user_status',
+            'user_profiles.profile_image',
+            'user_profiles.profile_pops',
+            'user_profiles.profile_followers',
+        ])
+        ->where('status', 'active')
+        ->whereHas('user_profiles.users.user_status', function ($query) {
+            $query->whereIn('name', ['admin', 'user']);
+        })
+        ->orderBy('updated_at', 'desc')
+        ->get()
+        ->map(function ($post) {
+            return [
+                'postID' => safe($post->id),
+                'postTitle' => safe($post->title),
+                'postContent' => safe($post->content),
+                'postRefer' => safe($post->refer),
+                'postStatus' => safe($post->status),
+                'postCreatedAT' => safe($post->created_at),
+                'postUpdatedAT' => safe($post->updated_at),
 
-                        'postID' => optional($post)->id,
-                        'postTitle' => optional($post)->title,
-                        'postContent' => optional($post)->content,
-                        'postRefer' => optional($post)->refer,
-                        'postStatus' => optional($post)->status,
-                        'postCreatedAT' => optional($post)->created_at,
-                        'postUpdatedAT' => optional($post)->updated_at,
+                'postType' => safe($post->post_type) ? [
+                    'typeID' => safe($post->post_type->id),
+                    'typeName' => safe($post->post_type->name),
+                ] : null,
 
+                'postImage' => $post->post_images->map(fn($image) => [
+                    'imageID' => safe($image->id),
+                    'imageData' => safe($image->image_data),
+                ]),
 
-                        'postType' => [
-                            'typeID' => optional($post->post_type)->id,
-                            'typeName' => optional($post->post_type)->name,
-                        ],
+                'postPops' => $post->post_pops->map(fn($pop) => [
+                    'popID' => safe($pop->id),
+                    'popPostID' => safe($pop->post_id),
+                    'popProfileID' => safe($pop->profile_id),
+                    'popStatus' => safe($pop->status),
+                ]),
 
-                        'postImage' => $post->post_images->map(fn($image) => [
-                            'imageID' => optional($image)->id,
-                            'imageData' => optional($image)->image_data
-                        ]),
+                'userProfile' => safe($post->user_profiles) ? [
+                    'profileID' => safe($post->user_profiles->id),
+                    'titleName' => safe($post->user_profiles->title_name),
+                    'firstName' => safe($post->user_profiles->first_name),
+                    'lastName' => safe($post->user_profiles->last_name),
+                    'nickName' => safe($post->user_profiles->nick_name),
+                    'birthDay' => safe($post->user_profiles->birth_day),
 
-                        'postPops' => $post->post_pops->map(fn($pop) => [
-                            'popID' => optional($pop)->id,
-                            'popPostID' => optional($pop)->post_id,
-                            'popProfileID' => optional($pop)->profile_id,
-                            'popStatus' => optional($pop)->status
-                        ]),
+                    'image' => safe($post->user_profiles->profile_image) ? [
+                        'id' => safe($post->user_profiles->profile_image->id),
+                        'imageData' => safe($post->user_profiles->profile_image->image_data),
+                    ] : null,
 
-                        'userProfile' => [
-                            'profileID' => optional($post->user_profiles)->id,
-                            'titleName' => optional($post->user_profiles)->title_name,
-                            'firstName' => optional($post->user_profiles)->first_name,
-                            'lastName' => optional($post->user_profiles)->last_name,
-                            'nickName' => optional($post->user_profiles)->nick_name,
-                            'birthDay' => optional($post->user_profiles)->birth_day,
+                    'followers' => $post->user_profiles->profile_followers->map(fn($row) => [
+                        'id' => safe($row->id),
+                        'profile_id' => safe($row->profile_id),
+                        'profile_id_followers' => safe($row->profile_id_followers),
+                        'status' => safe($row->status),
+                    ]),
 
-                            'image' => $post->user_profiles->profile_image ? [
-                                'id' => optional($post->user_profiles->profile_image)->id,
-                                'imageData' => optional($post->user_profiles->profile_image)->image_data,
-                            ] : null,
+                    'pops' => $post->user_profiles->profile_pops->map(fn($row) => [
+                        'id' => safe($row->id),
+                        'profile_id' => safe($row->profile_id),
+                        'profile_id_pop' => safe($row->profile_id_pop),
+                        'status' => safe($row->status),
+                    ]),
+                ] : null,
 
-                            'followers' => $post->user_profiles->profile_followers ?
-                                $post->user_profiles->profile_followers->map(fn($row) => [
-                                    'id' => optional($row)->id,
-                                    'profile_id' => optional($row)->profile_id,
-                                    'profile_id_followers' => optional($row)->profile_id_followers,
-                                    'status' => optional($row)->status,
-                                ]) : null,
+                'user' => safe($post->user_profiles->users) ? [
+                    'userID' => safe($post->user_profiles->users->id),
+                    'username' => safe($post->user_profiles->users->username),
+                    'name' => safe($post->user_profiles->users->name),
+                    'email' => safe($post->user_profiles->users->email),
 
-                            'pops' => $post->user_profiles->profile_pops ?
-                                $post->user_profiles->profile_pops->map(fn($row) => [
-                                    'id' => optional($row)->id,
-                                    'profile_id' => optional($row)->profile_id,
-                                    'profile_id_pop' => optional($row)->profile_id_pop,
-                                    'status' => optional($row)->status,
-                                ]) : null,
-
-                        ],
-
-                        'user' => [
-                            'userID' => optional($post->user_profiles->users)->id,
-                            'username' => optional($post->user_profiles->users)->username,
-                            'name' => optional($post->user_profiles->users)->name,
-                            'email' => optional($post->user_profiles->users)->email,
-
-                            'userStatus' => [
-                                'statusID' => optional($post->user_profiles->users->user_status)->id,
-                                'statusName' => optional($post->user_profiles->users->user_status)->name,
-                            ],
-                        ]
-                    ];
-                });
+                    'userStatus' => safe($post->user_profiles->users->user_status) ? [
+                        'statusID' => safe($post->user_profiles->users->user_status->id),
+                        'statusName' => safe($post->user_profiles->users->user_status->name),
+                    ] : null,
+                ] : null,
+            ];
+        });
 
             if (!$posts) {
                 return response()->json([

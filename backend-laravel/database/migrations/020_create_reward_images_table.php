@@ -14,7 +14,7 @@ return new class extends Migration
     {
         Schema::create('reward_images', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('reward_id')->constrained('rewards')->onDelete('cascade');
+            $table->foreignId('reward_id')->nullable()->constrained('rewards')->onDelete('cascade');
             $table->binary('image_data')->nullable();
             $table->enum('status', ['active', 'disable', 'comming_zone'])->default('active');
             $table->timestamps();

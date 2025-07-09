@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('rewards', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('status_id')->constrained('reward_status')->onDelete('cascade');
-            $table->string('name');
+            $table->foreignId('status_id')->nullable();
+            $table->text('name');
             $table->double('point');
             $table->float('amount')->nullable();
             $table->binary('icon')->nullable();

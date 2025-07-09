@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('office_files', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('profile_id')->constrained('user_profiles')->onDelete('cascade');
-            $table->foreignId('post_id')->constrained('posts')->onDelete('cascade');
+            $table->foreignId('post_id')->nullable()->constrained('posts')->onDelete('cascade');
+            $table->foreignId('profile_id')->nullable();
             $table->binary('file_data')->nullable();
             $table->string('file_path')->nullable();
             $table->string('file_name')->nullable();

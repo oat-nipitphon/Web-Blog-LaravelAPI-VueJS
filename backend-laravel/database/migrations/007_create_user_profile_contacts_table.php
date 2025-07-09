@@ -14,10 +14,10 @@ return new class extends Migration
     {
         Schema::create('user_profile_contacts', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('profile_id')->constrained('user_profiles')->onDelete('cascade');
-            $table->string('name')->nullable();
-            $table->string('url')->nullable();
-            $table->string('detail')->nullable();
+            $table->foreignId('profile_id')->nullable()->constrained('user_profiles')->onDelete('cascade');
+            $table->text('name')->nullable();
+            $table->text('url')->nullable();
+            $table->text('detail')->nullable();
             $table->binary('image_data')->nullable();
             $table->enum('status', ['active', 'disable'])->default('active')->nullable();
             $table->timestamps();

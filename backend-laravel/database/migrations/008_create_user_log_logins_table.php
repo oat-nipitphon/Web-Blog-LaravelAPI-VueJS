@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('user_log_logins', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->enum('status', ['offline', 'online'])->default('offline');
+            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('cascade');
+            $table->enum('status', ['null', 'offline', 'online'])->default('null');
             $table->dateTime('time_in')->nullable();
             $table->dateTime('time_out')->nullable();
             $table->float('time_total_login')->nullable();

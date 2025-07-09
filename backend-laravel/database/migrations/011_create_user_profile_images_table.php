@@ -14,7 +14,7 @@ return new class extends Migration
     {
         Schema::create('user_profile_images', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('profile_id')->constrained('user_profiles')->onDelete('cascade');
+            $table->foreignId('profile_id')->nullable()->constrained('user_profiles')->onDelete('cascade');
             $table->binary('image_data')->nullable();
             $table->enum('status', ['active', 'disable'])->default('active');
             $table->timestamps();
