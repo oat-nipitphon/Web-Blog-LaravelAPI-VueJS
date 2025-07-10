@@ -30,18 +30,11 @@ class Post extends Model
         'updated_at'
     ];
 
-     public function user_profiles(): BelongsTo
-    {
-        return $this->belongsTo(UserProfile::class, 'profile_id', 'id')
-                    ->withDefault();
-    }
+
 
     public function post_type(): BelongsTo
     {
-        return $this->belongsTo(PostType::class, 'type_id', 'id')
-                    ->withDefault([
-                        'name' => 'Unknown Type'
-                    ]);
+        return $this->belongsTo(PostType::class, 'type_id', 'id')->withDefault();
     }
 
     public function post_images(): HasMany
@@ -72,6 +65,12 @@ class Post extends Model
     public function post_videos(): HasMany
     {
         return $this->hasMany(Video::class, 'post_id', 'id');
+    }
+
+
+         public function user_profiles(): BelongsTo
+    {
+        return $this->belongsTo(UserProfile::class, 'profile_id', 'id');
     }
 
 }

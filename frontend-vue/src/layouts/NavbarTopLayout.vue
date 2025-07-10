@@ -29,9 +29,9 @@
                 :key="item.title"
                 @click="handleNavigation(item)"
                 :class="[
-                  item.name === 'SignOut'
-                    ? 'bg-red-500 hover:bg-red-700 text-white'
-                    : $route.name === item.name
+                  // item.name === 'SignOut'
+                  //   ? 'bg-red-500 hover:bg-red-700 text-white'
+                  $route.name === item.name
                     ? 'bg-blue-600 text-white'
                     : 'text-gray-700 hover:bg-gray-700 hover:text-white',
                   'block rounded-md px-3 py-2 text-base font-medium',
@@ -109,9 +109,9 @@
                     <span
                       @click="handleNavigation(item)"
                       :class="[
-                        item.name === 'SignOut'
-                          ? 'bg-red-500 hover:bg-red-700 text-white'
-                          : $route.name === item.name
+                        // item.name === 'SignOut'
+                        //   ? 'bg-red-500 hover:bg-red-700 text-white'
+                        $route.name === item.name
                           ? 'bg-blue-600 text-white'
                           : 'text-gray-700 hover:bg-gray-700 hover:text-white',
                         'block rounded-md px-3 py-2 text-base font-medium',
@@ -183,7 +183,7 @@
           :class="[
             // item.name === 'SignOut'
             //   ? 'bg-red-500 hover:bg-red-700 text-white'
-              $route.name === item.name
+            $route.name === item.name
               ? 'bg-blue-600 text-white'
               : 'text-gray-700 hover:bg-gray-700 hover:text-white',
             'block rounded-md px-3 py-2 text-base font-medium',
