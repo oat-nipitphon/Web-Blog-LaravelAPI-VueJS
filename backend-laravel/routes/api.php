@@ -69,7 +69,7 @@ Route::prefix('/')->group(function () {
 
     route::prefix('/profile')->group(function () {
         Route::post('/followers/{profileID}/{authProfileID}', [UserProfileFollowersController::class, 'profileFollowers']);
-    Route::post('/pop/{profileID}/{authProfileID}', [UserProfilePopController::class, 'profilePop']);
+        Route::post('/pop/{profileID}/{authProfileID}', [UserProfilePopController::class, 'profilePop']);
     });
 
     // --------------------------------------- User Profile ------------------------------------------------ //
