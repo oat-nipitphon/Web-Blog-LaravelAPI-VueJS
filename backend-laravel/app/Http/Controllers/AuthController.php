@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Auth;
-use Carbon\Carbon;
+use Illuminate\Validation\Rules\Password;
+
 use App\Models\User;
 use App\Models\UserProfile;
 use App\Models\UserLogLogin;
@@ -35,10 +35,28 @@ class AuthController extends Controller
         try {
 
             $validate = $request->validate([
-                'email' => 'required|string|email|max:255|unique:users',
-                'username' => 'required|string|max:255|unique:users',
-                'password' => 'required|integer|min:3',
-                'statusID' => 'required|integer',
+                'email' => 'required|string|email|max:255|unique:users,email',
+                'username' => [
+                    'required',
+                    'string',
+                    'min:4',
+                    'max:30',
+                    'unique:users,username'
+                ],
+                'password' => [
+                    'required',
+                    'string',
+                    Password::min(3)
+                        // ->letters() // ต้องมี ตัวอักษร (a-z A-Z)
+                        ->numbers() // ต้องมี ตัวเลข
+                        // ->symbols() // ต้องมี สัญลักษณ์พิเศษ
+                        ->uncompromised()
+                ],
+                'statusID' => ['required', 'integer'],
+            ], [
+                'password.*' => 'Password must be at least 8 characters and include letters, numbers, and symbols.',
+                'email.unique' => 'This email is already registered.',
+                'username.unique' => 'This username is already taken.',
             ]);
 
             $user = User::create([
@@ -95,8 +113,11 @@ class AuthController extends Controller
         try {
 
             $request->validate([
-                'emailUsername' => 'required|string',
-                'password' => 'required|string',
+                'emailUsername' => 'required|string|min:3|max:255',
+                'password' => 'required|string|min:3|max:255',
+            ], [
+                'emailUsername.required' => 'กรุณากรอก Email หรือ Username',
+                'password.required' => 'กรุณากรอกรหัสผ่าน',
             ]);
 
             $user = User::where('email', $request->emailUsername)
