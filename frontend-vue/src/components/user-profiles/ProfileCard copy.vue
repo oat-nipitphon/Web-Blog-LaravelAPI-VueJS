@@ -43,15 +43,7 @@
                     <div class="grid grid-cols-3">
                       <div class="flex justify-center">
                         <svg
-                          v-if="
-                            props?.profile?.followers.some(
-                              (followers) =>
-                                followers?.profile_id_followers ===
-                                  authProfileID &&
-                                (followers.status === 'true' ||
-                                  followers.status === true)
-                            )
-                          "
+                          v-if="onCheckProfileStatus.isFollowers"
                           xmlns="http://www.w3.org/2000/svg"
                           fill="currentColor"
                           class="bi bi-bell-fill text-yellow-300 w-[30px] h-[30px]"
@@ -75,7 +67,7 @@
                       </div>
                       <div class="flex justify-center">
                         <p class="m-auto mt-auto text-gray-700 text-md-2xl">
-                          {{ onSumFollowersProfile }}
+                          <span>👥 {{ onCheckProfileStatus.isFollowersCount }} Followers</span>
                         </p>
                       </div>
                       <div class="flex justify-center m-auto">ติดตาม</div>
@@ -98,13 +90,7 @@
                     <div class="grid grid-cols-3">
                       <div class="flex justify-center">
                         <svg
-                          v-if="
-                            props?.profile?.pops.some(
-                              (pop) =>
-                                pop.profile_id_pop === authProfileID &&
-                                (pop.status === 'true' || pop.status === true)
-                            )
-                          "
+                          v-if="onCheckProfileStatus.isPop"
                           xmlns="http://www.w3.org/2000/svg"
                           fill="currentColor"
                           class="bi bi-heart-fill text-red-600 w-[30px] h-[30px]"
@@ -130,7 +116,7 @@
                       </div>
                       <div class="flex justify-center">
                         <p class="m-auto mt-auto text-gray-700 text-md-2xl">
-                          {{ onSumCountPopProfile }}
+                          <span>⭐ {{ onCheckProfileStatus.isPopsCount }} Pops</span>
                         </p>
                       </div>
                       <div class="flex justify-center m-auto">ถูกใจ</div>
@@ -175,6 +161,16 @@ const props = defineProps({
     type: Function,
     default: true,
   },
+  onCheckProfileStatus: {
+    type: Object,
+    default: () => ({
+        isFollowers: false,
+        isFollowersCount: 0,
+        isPop: false,
+        isPopsCount: 0,
+    }),
+  },
+
 });
 
 const onFullName = computed(
@@ -186,33 +182,5 @@ const onFullName = computed(
     props.profile.lastName
 );
 
-const onSumCountPopProfile = computed(
-  () =>
-    props.profile.pops.filter(
-      (row) => row.status === "true" || row.status === true
-    ).length || 0
-);
 
-const onSumFollowersProfile = computed(
-  () =>
-    props.profile.followers.filter(
-      (row) => row.status === "true" || row.status === true
-    ).length || 0
-);
-
-// const onCheckFollowers = computed(() =>
-//   props?.profile?.followers.some(
-//     (f) =>
-//       f?.profile_id_followers === authStore?.users?.userProfile?.id &&
-//       f.status === true
-//   )
-// );
-
-// const onCheckFollowers = computed(() => {
-//   return (
-//   props?.profile?.pops.some(
-//     (pop) => pop?.profile_id_pop ===
-//   ) || false
-//   )
-// });
 </script>
