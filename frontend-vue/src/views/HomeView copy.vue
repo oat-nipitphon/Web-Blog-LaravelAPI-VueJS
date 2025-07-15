@@ -31,8 +31,8 @@ import { useAuthStore } from "@/stores/auth";
 import { usePostStore } from "@/stores/post";
 import { useStoreUserProfile } from "@/stores/user-profile";
 
-import ProfileCard from "@/components/user-profiles/ProfileCard.vue";
-import CardReportPost from "@/components/posts/CardReportPost.vue";
+import ProfileCard from "@/components/user-profiles/CardProfile.vue";
+import CardReportPost from "@/components/posts/CardReportPosts.vue";
 
 const router = useRouter();
 

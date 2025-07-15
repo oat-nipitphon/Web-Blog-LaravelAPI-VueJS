@@ -30,7 +30,7 @@
         </div>
       </div>
       <div class="flex justify-end items-end mt-2">
-        <event-dropdown-button
+        <card-dropdown-event
           :post="post"
           :on-store-post="onStorePost"
           :on-edit-post="onEditPost"
@@ -77,7 +77,7 @@ import { usePostStore } from "@/stores/post";
 import imagePostDefault from "@/assets/images/keyboard.jpg";
 import { ChevronDownIcon } from "@heroicons/vue/20/solid";
 
-import EventDropdownButton from "@/components/posts/EventDropdownButton.vue";
+import CardDropdownEvent from "@/components/posts/CardDropdownEvent.vue";
 import CardEventPop from "@/components/posts/CardEventPop.vue";
 
 const router = useRouter();
