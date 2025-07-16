@@ -2,32 +2,11 @@
   <div class="p-6 bg-gray-50 min-h-screen">
     <PageHeader title="Manager Reward" />
 
-    <!-- Chart + Recent Transactions -->
-    <div class="grid md:grid-cols-2 gap-6 mb-5 mt-5">
-      <div class="bg-white p-4 rounded-xl shadow">
-        <h2 class="text-lg font-semibold mb-2">สถิติการแลก (เดือนนี้)</h2>
-        <ChartRewardsMonthly />
-      </div>
-      <div class="bg-white p-4 rounded-xl shadow">
-        <h2 class="text-lg font-semibold mb-2">รายการล่าสุด</h2>
-        <ul class="divide-y">
-          <li v-for="n in 3" :key="n" class="py-2 text-sm flex justify-between">
-            <span>ผู้ใช้ #{{ n }} แลกรางวัล</span>
-            <span class="text-blue-600 font-semibold">+100 pts</span>
-          </li>
-        </ul>
-      </div>
-    </div>
-
     <!-- Summary Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-      <div class="bg-white p-4 rounded-xl shadow text-center">
-        <p class="text-sm text-gray-500">ผู้ใช้ทั้งหมด</p>
-        <p class="text-2xl font-bold">250</p>
-      </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-8">
       <div class="bg-white p-4 rounded-xl shadow text-center">
         <p class="text-sm text-gray-500">ของรางวัล</p>
-        <p class="text-2xl font-bold">30</p>
+        <p class="text-2xl font-bold">{{ checkCountRewards }}</p>
       </div>
       <div class="bg-white p-4 rounded-xl shadow text-center">
         <p class="text-sm text-gray-500">แต้มที่แลก</p>
@@ -38,22 +17,22 @@
         <p class="text-2xl font-bold text-blue-600">12</p>
       </div>
     </div>
-    <div class="flex justify-start items-start mb-5 mt-5 ml-5">
-      <RouterLink
-        class="inline-flex justify-center items-center px-4 py-2 bg-blue-500 text-white border rounded-md shadow text-sm font-medium hover:bg-gray-50"
-        :to="{
-          name: 'CreateRewardView',
-        }"
-      >
-        New reward
-      </RouterLink>
-    </div>
+
     <!-- Table Report Rewards -->
-    <div class="overflow-x-auto bg-white rounded-xl shadow">
+    <div class="bg-white w-full rounded-lg">
       <table class="w-full text-sm text-gray-700">
         <thead class="bg-gray-100 text-xs uppercase">
           <tr>
-            <th class="text-center px-4 py-3 font-semibold">#</th>
+            <th class="text-center px-4 py-3 font-semibold">
+              <RouterLink
+                class="inline-flex justify-center items-center px-4 py-2 bg-blue-500 text-white border rounded-md shadow text-sm font-bold hover:bg-gray-50"
+                :to="{
+                  name: 'CreateRewardView',
+                }"
+              >
+                +
+              </RouterLink>
+            </th>
             <th class="text-center px-4 py-3 font-semibold">Image</th>
             <th class="text-left px-4 py-3 font-semibold">Name</th>
             <th
@@ -189,11 +168,28 @@
         </tbody>
       </table>
     </div>
+    <!-- Chart + Recent Transactions -->
+    <div class="grid md:grid-cols-2 gap-6 mb-5 mt-5">
+      <div class="bg-white p-4 rounded-xl shadow">
+        <h2 class="text-lg font-semibold mb-2">สถิติการแลก (เดือนนี้)</h2>
+        <ChartRewardsMonthly />
+      </div>
+      <div class="bg-white p-4 rounded-xl shadow">
+        <h2 class="text-lg font-semibold mb-2">รายการล่าสุด</h2>
+        <ul class="divide-y">
+          <li v-for="n in 3" :key="n" class="py-2 text-sm flex justify-between">
+            <span>ผู้ใช้ #{{ n }} แลกรางวัล</span>
+            <span class="text-blue-600 font-semibold">+100 pts</span>
+          </li>
+        </ul>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import Swal from "sweetalert2";
+import { ref, onMounted, computed } from "vue";
 import { RouterLink, useRouter } from "vue-router";
 import { storeToRefs } from "pinia";
 import { useRewardStore } from "@/stores/reward";
@@ -246,14 +242,11 @@ const onDeleteReward = async (rewardID) => {
   }
 };
 
-onMounted(async () => {
-  await rewardStore.storeGetRewards();
-  console.log("manager report reward view", rewards);
+const checkCountRewards = computed(() => {
+ return rewards.value?.length || 0;
 });
 
 const toggleStatus = async (rewardID, status) => {
-  // const rewardID = reward.id;
-  // const status = reward.status;
   try {
     const response = await fetch(
       `/api/admin/rewards/updateStatusReward/${rewardID}`,
@@ -269,16 +262,19 @@ const toggleStatus = async (rewardID, status) => {
         }),
       }
     );
-
-    const data = await response.json();
-
-    if (response.status !== 200) {
+    
+    if (![200, 201].includes(response.status)) {
       console.error("function update status reward false ", response.error);
+      return;
     }
-
-    console.log("function update status reward success ", data.reward.status);
+    Swal.fire("Success", "update status success", "success");
+    return;
   } catch (error) {
     console.error("function toggle status error", error);
   }
 };
+
+onMounted(async () => {
+  await storeGetRewards();
+});
 </script>

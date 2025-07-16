@@ -116,7 +116,7 @@ const onDeletePost = async (postID) => {
 
 const onEventPostPop = async (postID, profileID, status) => {
   await storeEventPostPop(postID, profileID, status);
-  await storeGetPosts();
+  
 };
 
 const formatDateTime = (dateTime) => {

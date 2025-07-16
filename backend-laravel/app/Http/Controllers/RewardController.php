@@ -171,7 +171,7 @@ class RewardController extends Controller
 
             $reward_image = RewardImage::where('reward_id', $reward->id)->first();
 
-            if (!empty($reward_image)) {
+            if (!$reward_image) {
                 if ($request->hasFile('image_file')) {
                     $image_file = $request->file('image_file');
                     $image_data = file_get_contents($image_file->getRealPath());
@@ -192,9 +192,9 @@ class RewardController extends Controller
 
             return response()->json([
                 'message' => 'reward update() success',
-                'reward' => $reward,
-                'imageDataBase64' => $image_data_base64
+                'reward' => $reward
             ], 201);
+
         } catch (\Exception $error) {
             return response()->json([
                 'message' => 'reward update() function error',

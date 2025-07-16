@@ -147,7 +147,6 @@ export const useRewardStore = defineStore("rewardStore", {
         }
 
         const data = response.data;
-        Swal.fire("Updated!", data.reward, "success");
         return true;
 
       } catch (error) {

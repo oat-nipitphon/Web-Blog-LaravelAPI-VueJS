@@ -26,17 +26,32 @@
       <div class="flex flex-col space-y-4 p-5">
         <div class="mt-2">
           <BaseLabel for-id="labelName" text="Name" />
-          <BaseInput type="text" id="name" v-model="form.name" placeholder="Reward name..." />
+          <BaseInput
+            type="text"
+            id="name"
+            v-model="form.name"
+            placeholder="Reward name..."
+          />
         </div>
 
         <div class="mt-2">
           <BaseLabel for-id="labelPoint" text="Point" />
-          <BaseInput type="number" id="point" v-model="form.point" placeholder="999" />
+          <BaseInput
+            type="number"
+            id="point"
+            v-model="form.point"
+            placeholder="999"
+          />
         </div>
 
         <div class="mt-2">
           <BaseLabel for-id="labelAmount" text="Amount" />
-          <BaseInput type="number" id="amount" v-model="form.amount" placeholder="1234..." />
+          <BaseInput
+            type="number"
+            id="amount"
+            v-model="form.amount"
+            placeholder="1234..."
+          />
         </div>
 
         <div class="mt-2">
@@ -57,7 +72,9 @@
             @click="onUpdate"
           >
             <span class="absolute inset-0 border border-blue-600"></span>
-            <span class="block border border-blue-600 bg-blue-600 px-12 py-3 transition-transform group-hover:-translate-x-1 group-hover:-translate-y-1">
+            <span
+              class="block border border-blue-600 bg-blue-600 px-12 py-3 transition-transform group-hover:-translate-x-1 group-hover:-translate-y-1"
+            >
               Save
             </span>
           </button>
@@ -68,7 +85,9 @@
             @click="onCancel"
           >
             <span class="absolute inset-0 border border-red-600"></span>
-            <span class="block border border-red-600 bg-red-600 px-12 py-3 transition-transform group-hover:-translate-x-1 group-hover:-translate-y-1">
+            <span
+              class="block border border-red-600 bg-red-600 px-12 py-3 transition-transform group-hover:-translate-x-1 group-hover:-translate-y-1"
+            >
               Cancel
             </span>
           </button>
@@ -79,6 +98,7 @@
 </template>
 
 <script setup>
+import Swal from "sweetalert2";
 import { ref, reactive, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useRewardStore } from "@/stores/reward";
@@ -93,7 +113,8 @@ const reward = ref({});
 const imageFile = ref(null);
 const imageUrl = ref(null);
 
-const { storeGetRewardStatus, storeGetReward, storeUpdateReward } = useRewardStore();
+const { storeGetRewardStatus, storeGetReward, storeUpdateReward } =
+  useRewardStore();
 
 const form = reactive({
   name: "",
@@ -108,7 +129,7 @@ const onSelectFileImage = (event) => {
     imageFile.value = file;
     const reader = new FileReader();
     reader.onload = () => {
-      imageUrl.value = reader.result.split(",")[1]; // base64 only
+      imageUrl.value = reader.result.split(",")[1];
     };
     reader.readAsDataURL(file);
   }
@@ -131,7 +152,6 @@ onMounted(async () => {
 });
 
 const onUpdate = async () => {
-  
   const id = reward.value.id;
   const formData = new FormData();
   formData.append("name", form.name);
@@ -142,17 +162,26 @@ const onUpdate = async () => {
   if (imageFile.value) {
     formData.append("image_file", imageFile.value);
   } else if (imageUrl.value && !imageUrl.value.startsWith("http")) {
-    // ถ้าเป็น base64 เดิม
     const res = await fetch("data:image/png;base64," + imageUrl.value);
     const blob = await res.blob();
     const filename = reward.value.reward_images?.[0]?.image_name || "image.png";
     const file = new File([blob], filename, { type: blob.type });
     formData.append("image_file", file);
   }
-console.log('function update ', reward.value.id);
+
   const success = await storeUpdateReward(id, formData);
   if (success) {
-    router.push({ name: "ManagerReportRewardsView" });
+    Swal.fire({
+      title: "Success",
+      text: "update reward successfully.",
+      icon: "success",
+      timer: 1200,
+    }).then(() => {
+      Swal.close();
+      router.push({
+        name: "ManagerReportRewardView",
+      });
+    });
   }
 };
 
