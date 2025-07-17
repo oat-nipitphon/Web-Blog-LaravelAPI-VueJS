@@ -1,8 +1,7 @@
 <template>
-  <div class="mb-auto">
-    <Menu as="div" class="relative inline-block text-left mr-5 mt-auto mb-auto">
+    <Menu as="div" class="m-auto font-bold">
       <div>
-        <MenuButton class="inline-flex text-gray-700 hover:text-blue-600">
+        <MenuButton class="inline-flex text-gray-900 hover:text-red-500">
           <svg
             aria-hidden="true"
             xmlns="http://www.w3.org/2000/svg"
@@ -76,7 +75,6 @@
         </MenuItems>
       </transition>
     </Menu>
-  </div>
 </template>
 <script setup>
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";

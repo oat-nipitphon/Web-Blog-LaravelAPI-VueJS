@@ -1,14 +1,13 @@
 <template>
   <div
     v-if="storePosts"
-    class="grid max-w-screen-xl mx-auto px-4 gap-5 m-2 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+    class="grid max-w-screen-xl mx-auto px-4 gap-5 m-2 grid-cols-1 sm:grid-cols-1 md:grid-cols-2"
   >
     <div
       class="aspect-square w-full p-2 rounded-lg shadow-lg transition hover:shadow-xl bg-white dark:bg-gray-800 dark:border dark:border-gray-700"
       v-for="post in storePosts"
       :key="post.id"
     >
-      <card-profile :user="post?.user" :profile="post?.userProfile" />
       <card-report-posts :post="post" />
     </div>
 

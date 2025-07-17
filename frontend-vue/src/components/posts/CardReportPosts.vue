@@ -1,9 +1,13 @@
 <template>
   <!-- transition hover:shadow-lg m-auto dark:bg-gray-800 dark:border-gray-700  p-2 rounded-lg shadow-lg -->
   <article class="w-max-full p-3">
-    <!-- Post image Header -->
-    <div class="bg-white border rounded-lg shadow-md p-2">
-      <div v-for="(image, index) in post?.postImage" :key="index">
+    <div class="bg-white border rounded-lg shadow-md p-2 group relative block">
+      <div
+        v-for="(image, index) in post?.postImage"
+        :key="index"
+        class="relative"
+      >
+        <!-- รูปภาพ -->
         <img
           :src="
             image?.imageData
@@ -11,8 +15,20 @@
               : `${imagePostDefault}`
           "
           alt=""
-          class="h-56 w-full object-cover"
+          class="h-56 w-full object-cover rounded-lg"
         />
+
+        <!-- Dropdown -->
+        <div class="flex justify-end items-end">
+          <div class="absolute top-2 bg-white rounded-md shadow-lg">
+            <card-dropdown-event
+              :post="post"
+              :on-store-post="onStorePost"
+              :on-edit-post="onEditPost"
+              :on-delete-post="onDeletePost"
+            />
+          </div>
+        </div>
       </div>
     </div>
 
@@ -29,14 +45,8 @@
           </p>
         </div>
       </div>
-      <div class="flex justify-end items-end mt-2">
-        <card-dropdown-event
-          :post="post"
-          :on-store-post="onStorePost"
-          :on-edit-post="onEditPost"
-          :on-delete-post="onDeletePost"
-        />
-      </div>
+
+      <!-- Grid Cols 2 -->
     </div>
 
     <!-- Post Content -->
@@ -44,9 +54,7 @@
       <p class="line-clamp-3 text-md/relaxed text-gray-500 mt-1 mb-3">
         {{ post?.postContent }}
       </p>
-      <p class="text-md/relaxed text-blue-500 font-bold">
-        See move..
-      </p>
+      <p class="text-md/relaxed text-blue-500 font-bold">See move..</p>
     </div>
 
     <!-- Post Event Pop -->
@@ -116,7 +124,6 @@ const onDeletePost = async (postID) => {
 
 const onEventPostPop = async (postID, profileID, status) => {
   await storeEventPostPop(postID, profileID, status);
-  
 };
 
 const formatDateTime = (dateTime) => {

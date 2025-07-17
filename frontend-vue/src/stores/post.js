@@ -19,7 +19,6 @@ export const usePostStore = defineStore("postStore", {
           const data = await response.json();
           this.postType = data.postType;
         }
-
       } catch (error) {
         console.error("store get post type function error ", error);
       }
@@ -39,7 +38,6 @@ export const usePostStore = defineStore("postStore", {
         }
         const data = await response.json();
         this.storePosts = data.posts;
-        
       } catch (error) {
         console.error("store get post type function error ", error);
       }
@@ -109,7 +107,7 @@ export const usePostStore = defineStore("postStore", {
 
         if (response.status === 200) {
           const data = await response.json();
-          console.log('store get post show ', data.post);
+          console.log("store get post show ", data.post);
           return data.post;
         }
         console.log("store response get post show false ", response);
@@ -295,7 +293,7 @@ export const usePostStore = defineStore("postStore", {
         }
 
         const data = await response.json();
-        console.log('store get post', data);
+        console.log("store get post", data);
         return data.posts;
       } catch (error) {
         console.error("store get posts recover function api error ", error);
@@ -324,14 +322,12 @@ export const usePostStore = defineStore("postStore", {
           });
 
           if (response.status !== 200 || response.status !== 201) {
-            console.error('storeConfirmRecoverPost false ', response.error);
+            console.error("storeConfirmRecoverPost false ", response.error);
           }
 
           const data = await res.json();
-          
-          console.log('store confirm recover post success ', data.posts);
 
-
+          console.log("store confirm recover post success ", data.posts);
         } catch (error) {
           console.error(
             "store confirm recover post function api error ",
@@ -366,6 +362,5 @@ export const usePostStore = defineStore("postStore", {
         console.error("store post recover delete function api error ", error);
       }
     },
-
   },
 });

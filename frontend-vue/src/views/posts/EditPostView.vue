@@ -162,6 +162,49 @@ const formUpdate = ref({
 
 const { storeGetPostShow, storeUpdatePost } = usePostStore();
 
+const onUpdate = async () => {
+  if (!formUpdate.value.title.trim()) {
+    Swal.fire("กรุณากรอก Title", "", "warning");
+    return;
+  }
+
+  if (!formUpdate.value.content.trim()) {
+    Swal.fire("กรุณากรอก Content", "", "warning");
+    return;
+  }
+
+  if (!formUpdate.value.typeID && !formUpdate.value.newType.trim()) {
+    Swal.fire("กรุณาเลือกหรือเพิ่ม Type", "", "warning");
+    return;
+  }
+
+  if (!FileImageUploadCover.value) {
+    Swal.fire("กรุณาอัปโหลดรูปภาพ", "", "warning");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("profile_id", authAuth.users.userProfile.id);
+  formData.append("post_id", formUpdate.value.postID);
+  formData.append("title", formUpdate.value.title);
+  formData.append("content", formUpdate.value.content);
+  formData.append("refer", formUpdate.value.refer);
+  formData.append("type_id", formUpdate.value.typeID);
+  formData.append("new_type", formUpdate.value.newType);
+
+  if (FileImageUploadCover.value) {
+    formData.append("image_file", FileImageUploadCover.value);
+  } else {
+    const response = await fetch(imageDefault);
+    const blob = await response.blob();
+    const file = new File([blob], "default-image.jpg", { type: "image/jpeg" });
+    formData.append("image_file", file);
+  }
+
+  const postID = formUpdate.value.postID;
+  await storeUpdatePost(postID, formData);
+};
+
 const onSelectType = () => {
   if (formUpdate.value.typeID === "new") {
     isSelectType.value = false;
@@ -235,32 +278,6 @@ watch(
   },
   { immediate: true }
 );
-
-const onUpdate = async () => {
-
-  const formData = new FormData();
-  formData.append("profile_id", authAuth.users.userProfile.id);
-  formData.append("post_id", formUpdate.value.postID);
-  formData.append("title", formUpdate.value.title);
-  formData.append("content", formUpdate.value.content);
-  formData.append("refer", formUpdate.value.refer);
-  formData.append("type_id", formUpdate.value.typeID);
-  formData.append("new_type", formUpdate.value.newType);
-
-  if (FileImageUploadCover.value) {
-    formData.append("image_file", FileImageUploadCover.value);
-  } else {
-    const response = await fetch(imageDefault);
-    const blob = await response.blob();
-    const file = new File([blob], "default-image.jpg", { type: "image/jpeg" });
-    formData.append("image_file", file);
-  }
-
-  const postID = formUpdate.value.postID;
-  await storeUpdatePost(postID, formData);
-
-};
-
 </script>
 <style scoped>
 .ibox-image-post {
