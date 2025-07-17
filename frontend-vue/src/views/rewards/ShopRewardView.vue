@@ -2,117 +2,64 @@
   <div
     class="bg-white rounded-2xl shadow-xl p-8 max-w-6xl mx-auto mt-10 space-y-6"
   >
-    <!-- Wallet Point -->
-    <div class="grid md:grid-cols-2 gap-6 border-b border-gray-200 pb-6">
-      <div class="flex justify-between items-center">
+    <!-- Wallet Summary -->
+    <div class="grid grid-cols-3">
+      <div class="flex justify-center items-center">
         <p class="text-gray-700 text-lg">Wallet Point:</p>
-        <p class="font-bold text-blue-700 text-lg">
-          {{ form.point }}
+        <p class="font-bold text-blue-700 text-lg ml-5">
           {{ remainingPoint }}
-          <span class="text-sm font-normal text-gray-500">Point</span>
         </p>
       </div>
-
-      <div class="flex justify-between items-center">
+      <div class="flex justify-center items-center">
         <p class="text-gray-700 text-lg">Items:</p>
-        <p class="font-bold text-red-600 text-lg">{{ countItems }}</p>
+        <p class="font-bold text-red-600 text-lg ml-5">{{ countItems }}</p>
       </div>
-    </div>
-
-    <!-- Sum Total Point Use And Pemaining Point -->
-    <div class="grid md:grid-cols-2 gap-6 border-b border-gray-200 pb-6">
-      <div class="flex justify-between items-center">
+      <div class="flex justify-center items-center">
         <p class="text-gray-700 text-lg">Use Point:</p>
-        <p class="font-bold text-rose-600 text-lg">
+        <p class="font-bold text-rose-600 text-lg ml-5">
           {{ sumTotalPoint }}
-          <span class="text-sm font-normal text-gray-500">Point</span>
-        </p>
-      </div>
-
-      <div class="flex justify-between items-center">
-        <p class="text-gray-700 text-lg">PemainigPoint:</p>
-        <p class="font-bold text-green-600 text-lg">
-          {{ remainingPoint }}
-          <span class="text-sm font-normal text-gray-500">Point</span>
         </p>
       </div>
     </div>
 
-    <!-- Button Confirmd Items Selectd -->
-    <div class="flex flex-col md:flex-row justify-end gap-4">
+    <!-- Action Buttons -->
+    <div class="grid grid-cols-2 gap-4">
       <button
         type="button"
         :disabled="sumTotalPoint <= 0 || countItems === 0"
         @click="onConfirmedSelectdItems"
-        class="w-full md:w-auto px-6 py-2 rounded-xl text-white font-semibold transition shadow-md"
+        class="w-full text-white font-bold py-2 px-4 rounded transition"
         :class="{
           'bg-gray-400 cursor-not-allowed':
             sumTotalPoint <= 0 || countItems === 0,
           'bg-blue-600 hover:bg-blue-700': sumTotalPoint > 0 && countItems > 0,
         }"
       >
-        Confirm Selectd Items
+        Confirm
       </button>
 
       <button
         type="button"
         :disabled="countItems === 0"
         @click="onResetCartItem"
-        class="w-full md:w-auto px-6 py-2 rounded-xl text-white font-semibold transition shadow-md"
+        class="w-full text-white font-bold py-2 px-4 rounded transition"
         :class="{
           'bg-gray-400 cursor-not-allowed': countItems === 0,
           'bg-red-600 hover:bg-red-700': countItems > 0,
         }"
       >
-        Reset Cart Item
+        Reset
       </button>
     </div>
 
-    <!-- Report Reward -->
-    <div class="bg-gray-50 p-6 rounded-lg shadow-inner">
-      <h3 class="text-lg font-semibold text-gray-700 mb-4">Rewards</h3>
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        <div
-          v-for="(reward, index) in rewards"
-          :key="index"
-          class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm"
-        >
-          <p class="flex justify-center items-center p-2 m-auto">
-            <img
-              v-if="reward?.reward_images[0]?.image_data !== null"
-              :src="
-                'data:image/png;base64,' + reward?.reward_images[0]?.image_data
-              "
-              class="size-40 m-auto p-2 rounded-md"
-              alt=""
-            />
-            <img
-              v-else
-              src="../../assets/images/keyboard.jpg"
-              class="size-40 m-auto p-2 rounded-md"
-              alt=""
-            />
-          </p>
-          <p class="text-gray-800 font-semibold text-center">
-            {{ reward.name }}
-          </p>
-          <p class="text-sm text-gray-500 text-center">
-            Point: {{ reward.point }}
-          </p>
-          <div class="grid grid-cols-2">
-            <div class="flex justify-center m-2 p-2">
-              Amount: {{ reward.amount }}
-            </div>
-            <div class="flex justify-center m-2 p-2">
-              <button
-                @click="addToCart(reward)"
-                class="text-blue-600 hover:underline"
-              >
-                Add
-              </button>
-            </div>
-          </div>
-        </div>
+    <!-- Reward Items -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-6">
+      <div
+        v-for="(reward, index) in rewards"
+        :key="index"
+        class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm"
+      >
+        <CardReportReward :reward="reward" :onAddCart="addToCart" />
       </div>
     </div>
   </div>
@@ -128,16 +75,19 @@ import { useRewardStore } from "@/stores/reward";
 import { useRewardCartStore } from "@/stores/reward-cart";
 import { useWalletStore } from "@/stores/wallet";
 
+import CardReportReward from "@/components/rewards/CardReportReward.vue";
+
 const authStore = useAuthStore();
 const rewardStore = useRewardStore();
 const rewardCartStore = useRewardCartStore();
+const walletStore = useWalletStore();
 
 const { users } = storeToRefs(authStore);
 const { rewards } = storeToRefs(rewardStore);
 const { storeGetRewards } = rewardStore;
 const { cartItems, countItems, sumTotalPoint } = storeToRefs(rewardCartStore);
 
-const { storeConfirmSelectdItems } = useWalletStore();
+const { storeConfirmSelectdItems } = walletStore;
 
 const form = reactive({
   walletID: users.value?.wallet?.id,
@@ -149,18 +99,38 @@ const remainingPoint = computed(() => {
   return form.point - sumTotalPoint.value;
 });
 
+// 🟢 โหลด rewards เมื่อ mount
 onMounted(async () => {
   await storeGetRewards();
 });
 
+// 🟢 Add ของไป Cart และลดจำนวนคงเหลือ
 const addToCart = (reward) => {
-  rewardCartStore.addItems(reward);
+  if (reward.amount <= 0) {
+    Swal.fire("สินค้าหมด", "ไม่สามารถเพิ่มลงตะกร้าได้", "warning");
+    return;
+  }
+
+  rewardCartStore.addToCart(reward);
+
+  const target = rewards.value.find((r) => r.id === reward.id);
+  if (target && target.amount > 0) {
+    target.amount -= 1;
+  }
 };
 
+// 🟢 Reset Cart และคืนจำนวนคงเหลือ
 const onResetCartItem = () => {
+  cartItems.value.forEach((item) => {
+    const target = rewards.value.find((r) => r.id === item.id);
+    if (target) {
+      target.amount += item.qty; // คืนของ
+    }
+  });
   rewardCartStore.resetCart();
 };
 
+// 🟢 ยืนยันรายการใน Cart
 const onConfirmedSelectdItems = async () => {
   const payload = {
     wallet_id: form.walletID,
@@ -168,25 +138,33 @@ const onConfirmedSelectdItems = async () => {
     items: cartItems.value,
   };
 
-  // const formData = new FormData();
-  // formData.append("wallet_id", form.walletID);
-  // formData.append("point", remainingPoint.value);
-  // formData.append("items", JSON.stringify(cartItems.value));
+  const result = await Swal.fire({
+    title: "Confirm Redeem?",
+    text: "ยืนยันการแลกของรางวัลหรือไม่?",
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Yes, confirm it!",
+    cancelButtonText: "Cancel",
+  });
+
+  if (!result.isConfirmed) return;
 
   const success = await storeConfirmSelectdItems(payload);
 
   if (success) {
-    console.log(success);
     Swal.fire({
-      title: "Confirmed success",
-      text: "confirmed selectd items cart successfully.",
+      title: "Success",
+      text: "ยืนยันการแลกของรางวัลสำเร็จ!",
       icon: "success",
       timer: 1200,
     }).then(() => {
-      Swal.close();
-      window.location.reload();
-      return;
+      rewardCartStore.resetCart();
+      storeGetRewards(); // Refresh จำนวน reward ใหม่
     });
+  } else {
+    Swal.fire("Error", "เกิดข้อผิดพลาดในการแลกของรางวัล", "error");
   }
 };
 </script>

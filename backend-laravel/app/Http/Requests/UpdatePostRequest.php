@@ -32,4 +32,7 @@ class UpdatePostRequest extends FormRequest
             'image_file' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ];
     }
+
+
+
 }
