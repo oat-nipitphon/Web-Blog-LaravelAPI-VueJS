@@ -76,8 +76,10 @@ Route::prefix('/')->group(function () {
 
     // --------------------------------------- Post ------------------------------------------------ //
     Route::get('/get_post_types', function () {
-        $postTypes = PostType::all();
-        return response()->json($postTypes, 200);
+        $post_types = PostType::all();
+        return response()->json([
+            'postTypes' => $post_types
+        ], 200);
     });
     Route::apiResource('/posts', PostController::class);
     Route::prefix('/posts')->group(function () {

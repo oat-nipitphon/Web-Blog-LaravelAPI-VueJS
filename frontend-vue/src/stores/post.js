@@ -5,20 +5,21 @@ export const usePostStore = defineStore("postStore", {
   state: () => ({
     storePost: [],
     storePosts: [],
-    postType: [],
+    postTypes: [],
     errors: {},
   }),
   actions: {
     async storeGetPostType() {
       try {
-        const response = await fetch(`/api/get_post_type`, {
+        const response = await fetch(`/api/get_post_types`, {
           method: "GET",
         });
 
-        if (response.status === 200) {
-          const data = await response.json();
-          this.postType = data.postType;
-        }
+        if (![200].includes(response.status)) return;
+
+        const data = await response.json();
+        this.postTypes = data.postTypes;
+        console.log("store get post type", this.postTypes);
       } catch (error) {
         console.error("store get post type function error ", error);
       }
@@ -44,6 +45,7 @@ export const usePostStore = defineStore("postStore", {
     },
 
     async storeCreatePost(formData) {
+
       const result = await Swal.fire({
         title: "Confirm post creation!",
         text: "Do you want to confirm the creation of the post?",
@@ -58,6 +60,7 @@ export const usePostStore = defineStore("postStore", {
       if (!result.isConfirmed) return;
 
       try {
+
         const response = await axiosAPI.post("/api/posts", formData, {
           headers: {
             "Content-Type": "multipart/form-data",
@@ -65,31 +68,25 @@ export const usePostStore = defineStore("postStore", {
           },
         });
 
-        const isSuccess = response.status === 200 || response.status === 201;
+        const data = await response.json();
 
-        await Swal.fire({
-          title: isSuccess ? "Successfully" : "Failed",
-          text: isSuccess
-            ? "Your post has been created successfully."
-            : "Failed to create the post.",
-          icon: isSuccess ? "success" : "error",
-          timer: 1500,
-          timerProgressBar: true,
-          showConfirmButton: false,
-        });
-
-        if (isSuccess) {
+        if (![200, 201].includes(response.status)) {
           Swal.fire({
-            title: "Success",
-            text: "Your created post successflly.",
-            icon: "success",
-            timer: 1200,
+            title: isSuccess ? "Successfully" : "Failed",
+            text: isSuccess
+              ? "Your post has been created successfully."
+              : "Failed to create the post.",
+            icon: isSuccess ? "success" : "error",
+            showCancelButton: true
           }).then(() => {
-            this.router.push({ name: "HomeView" });
+            Swal.close();
+            return false;
           });
         }
 
-        console.log("store response created post false ", response);
+        console.log("store create post success", data.post);
+        return true;
+
       } catch (error) {
         console.error("store response created post function error ", error);
       }

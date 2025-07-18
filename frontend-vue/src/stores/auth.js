@@ -7,12 +7,13 @@ export const useAuthStore = defineStore("authStore", {
     errors: {},
   }),
   actions: {
+
+    // Function Start Authorization Login
     async storeAuth() {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        return;
-      }
       try {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+
         const response = await fetch(`/api/user`, {
           method: "GET",
           headers: {
@@ -21,19 +22,20 @@ export const useAuthStore = defineStore("authStore", {
           },
         });
 
-        if (response.status === 401 || response.status === 500) {
+        if ((![200].includes(response.status))) {
           this.users = null;
-          console.log("store auth ", this.users);
           return;
         }
 
         const data = await response.json();
         this.users = data.users;
+        console.log("store authorization start success", this.users);
       } catch (error) {
         console.error("store function auth store error:", error);
       }
     },
 
+    // Function Register
     async storeRegister(formData) {
       const result = await Swal.fire({
         title: "Confirm register",
@@ -88,9 +90,10 @@ export const useAuthStore = defineStore("authStore", {
       }
     },
 
+    // Function Login
     async storeLogin(formData) {
       try {
-        const res = await fetch("/api/login", {
+        const response = await fetch("/api/login", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -98,39 +101,36 @@ export const useAuthStore = defineStore("authStore", {
           body: JSON.stringify(formData),
         });
 
-        const data = await res.json();
-
-        if (res.ok) {
-          localStorage.setItem("token", data.token);
-          await Swal.fire({
-            title: "Login successful",
-            icon: "success",
-            timer: 1200,
-            timerProgressBar: true,
-            showConfirmButton: false,
-          });
-          this.router.push({ name: "HomeView" });
-        } else {
-          await Swal.fire({
+        if (![201, 200].includes(response.status)) {
+          Swal.fire({
             title: "Login failed",
-            text: data.message || "Invalid credentials",
+            text: "Invalid credentials",
             icon: "error",
-            timer: 1500,
-            timerProgressBar: true,
-            showConfirmButton: false,
+            showCancelButton: true,
+          }).then(() => {
+            this.router.push({ name: "index" });
           });
-          this.router.push({ name: "index" });
+          return;
         }
+
+        const data = await response.json();
+        const token = localStorage.setItem("token", data.token);
+        Swal.fire({
+          title: "Login successful",
+          icon: "success",
+          timer: 1200,
+          timerProgressBar: true,
+          showConfirmButton: false,
+        }).then((token) => {
+          if (!token) return;
+          this.router.push({ name: "HomeView" });
+        });
       } catch (error) {
         console.error("store login api function error", error);
-        await Swal.fire({
-          title: "Error",
-          text: "Unable to login. Please try again later.",
-          icon: "error",
-        });
       }
     },
 
+    // Function Logout
     async storeLogout() {
       try {
         const response = await fetch("/api/logout", {
@@ -158,10 +158,10 @@ export const useAuthStore = defineStore("authStore", {
           localStorage.removeItem("token");
           this.router.push({ name: "IndexView" });
         });
-
       } catch (error) {
         console.error("store function api logout error", error);
       }
     },
+
   },
 });

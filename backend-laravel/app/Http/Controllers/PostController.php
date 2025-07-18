@@ -206,8 +206,10 @@ class PostController extends Controller
             }
 
             return response()->json([
-                'message' => 'Post created successfully.'
+                'message' => 'Post created successfully.',
+                'post' => $post
             ], 201);
+
         } catch (\Exception $error) {
             return response()->json([
                 'message' => "An error occurred while creating the post.",
