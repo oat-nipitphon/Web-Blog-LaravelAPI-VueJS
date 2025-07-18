@@ -8,11 +8,10 @@
       v-for="post in storePosts"
       :key="post.id"
     >
+      <card-profile :user="post?.user" :profile="post?.userProfile" />
       <card-report-posts :post="post" />
     </div>
-
   </div>
-
 
   <div
     v-else

@@ -32,7 +32,7 @@
       </div>
     </div>
 
-    <!-- <div class="grid grid-cols-[auto_10%]">
+    <div class="grid grid-cols-[auto_10%]">
       <div class="flex justify-start items-start">
         <div class="grid grid-rows-2 mt-2">
           <h3
@@ -41,41 +41,12 @@
             {{ post?.postTitle }}
           </h3>
           <p class="font-medium text-gray-600 mr-2 px-3 py-1.5">
-            {{ formatDateTime(post?.postCreatedAT) }}
+            {{ formatDateTime.formatDate(post?.postCreatedAT) }}
           </p>
         </div>
       </div>
-    </div> -->
+    </div>
 
-    <article
-      class="rounded-[10px] border border-gray-200 bg-white px-4 pt-12 pb-4"
-    >
-      <time datetime="2022-10-10" class="block text-xs text-gray-500">
-        {{ formatDateTime.formatDate(post?.postCreatedAT) }}
-      </time>
-
-      <a href="#">
-        <h3 class="mt-0.5 text-lg font-medium text-gray-900">
-          How to center an element using JavaScript and jQuery
-        </h3>
-      </a>
-
-      <div class="mt-4 flex flex-wrap gap-1">
-        <span
-          class="rounded-full bg-purple-100 px-2.5 py-0.5 text-xs whitespace-nowrap text-purple-600"
-        >
-          Snippet
-        </span>
-
-        <span
-          class="rounded-full bg-purple-100 px-2.5 py-0.5 text-xs whitespace-nowrap text-purple-600"
-        >
-          JavaScript
-        </span>
-      </div>
-    </article>
-
-    <!-- Post Content -->
     <div class="rounded-lg shadow-md p-2">
       <p class="line-clamp-3 text-md/relaxed text-gray-500 mt-1 mb-3">
         {{ post?.postContent }}
@@ -83,7 +54,6 @@
       <p class="text-md/relaxed text-blue-500 font-bold">See move..</p>
     </div>
 
-    <!-- Post Event Pop -->
     <div class="mt-3 p-3">
       <card-event-pop
         :post="post"
@@ -91,6 +61,7 @@
         :on-event-post-pop="onEventPostPop"
       />
     </div>
+
   </article>
 </template>
 
@@ -109,10 +80,11 @@ import { useAuthStore } from "@/stores/auth";
 import { usePostStore } from "@/stores/post";
 
 import imagePostDefault from "@/assets/images/keyboard.jpg";
-import { ChevronDownIcon } from "@heroicons/vue/20/solid";
 
 import CardDropdownEvent from "@/components/posts/CardDropdownEvent.vue";
 import CardEventPop from "@/components/posts/CardEventPop.vue";
+
+import CardProfile from "@/components/user-profiles/CardProfile.vue";
 
 const router = useRouter();
 const authStore = useAuthStore();
