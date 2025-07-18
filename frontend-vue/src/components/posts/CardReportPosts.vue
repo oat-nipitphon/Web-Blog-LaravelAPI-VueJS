@@ -32,7 +32,7 @@
       </div>
     </div>
 
-    <div class="grid grid-cols-[auto_10%]">
+    <!-- <div class="grid grid-cols-[auto_10%]">
       <div class="flex justify-start items-start">
         <div class="grid grid-rows-2 mt-2">
           <h3
@@ -45,9 +45,35 @@
           </p>
         </div>
       </div>
+    </div> -->
 
-      <!-- Grid Cols 2 -->
-    </div>
+    <article
+      class="rounded-[10px] border border-gray-200 bg-white px-4 pt-12 pb-4"
+    >
+      <time datetime="2022-10-10" class="block text-xs text-gray-500">
+        {{ formatDateTime.formatDate(post?.postCreatedAT) }}
+      </time>
+
+      <a href="#">
+        <h3 class="mt-0.5 text-lg font-medium text-gray-900">
+          How to center an element using JavaScript and jQuery
+        </h3>
+      </a>
+
+      <div class="mt-4 flex flex-wrap gap-1">
+        <span
+          class="rounded-full bg-purple-100 px-2.5 py-0.5 text-xs whitespace-nowrap text-purple-600"
+        >
+          Snippet
+        </span>
+
+        <span
+          class="rounded-full bg-purple-100 px-2.5 py-0.5 text-xs whitespace-nowrap text-purple-600"
+        >
+          JavaScript
+        </span>
+      </div>
+    </article>
 
     <!-- Post Content -->
     <div class="rounded-lg shadow-md p-2">
@@ -126,34 +152,40 @@ const onEventPostPop = async (postID, profileID, status) => {
   await storeEventPostPop(postID, profileID, status);
 };
 
-const formatDateTime = (dateTime) => {
-  if (!dateTime) return "-";
+const formatDateTime = {
+  formatDate(dateTime) {
+    if (!dateTime) return;
+    const date = new Date(dateTime);
+    const year = date.getFullYear() + 543;
+    const month = date.getMonth();
+    const day = date.getDate();
 
-  const date = new Date(dateTime);
+    const thaiMonths = [
+      "มกราคม",
+      "กุมภาพันธ์",
+      "มีนาคม",
+      "เมษายน",
+      "พฤษภาคม",
+      "มิถุนายน",
+      "กรกฎาคม",
+      "สิงหาคม",
+      "กันยายน",
+      "ตุลาคม",
+      "พฤศจิกายน",
+      "ธันวาคม",
+    ];
 
-  const year = date.getFullYear() + 543;
-  const month = date.getMonth();
-  const day = date.getDate();
+    return `${day} ${thaiMonths[month]} ${year}`;
+  },
+  formatTime(dateTime) {
+    if (!dateTime) return;
 
-  const hour = date.getHours().toString().padStart(2, "0");
-  const minute = date.getMinutes().toString().padStart(2, "0");
-  const second = date.getSeconds().toString().padStart(2, "0");
+    const date = new Date(dateTime);
+    const hour = date.getHours().toString().padStart(2, "0");
+    const minute = date.getMinutes().toString().padStart(2, "0");
+    const second = date.getSeconds().toString().padStart(2, "0");
 
-  const thaiMonths = [
-    "มกราคม",
-    "กุมภาพันธ์",
-    "มีนาคม",
-    "เมษายน",
-    "พฤษภาคม",
-    "มิถุนายน",
-    "กรกฎาคม",
-    "สิงหาคม",
-    "กันยายน",
-    "ตุลาคม",
-    "พฤศจิกายน",
-    "ธันวาคม",
-  ];
-
-  return `${day} ${thaiMonths[month]} ${year} เวลา ${hour}:${minute}:${second} น.`;
+    return `เวลา ${hour}:${minute}:${second} น.`;
+  },
 };
 </script>

@@ -111,7 +111,6 @@ import { useRouter } from "vue-router";
 import { storeToRefs } from "pinia";
 import { useAuthStore } from "@/stores/auth";
 import { usePostStore } from "@/stores/post";
-import { SimpleEditor } from "@/components/tiptap-templates/simple/simple-editor";
 
 import Swal from "sweetalert2";
 import axiosAPI from "@/services/axiosAPI";
@@ -122,7 +121,6 @@ import BaseInput from "@/components/BaseInput.vue";
 import BaseSelect from "@/components/BaseSelect.vue";
 import BaseTextArea from "@/components/BaseTextArea.vue";
 import BaseInputFileImageCover from "@/components/FileImageUploadCover.vue";
-import TiptapEditor from "@/components/posts/TiptapEditor.vue";
 
 const router = useRouter();
 const authAuth = useAuthStore();
