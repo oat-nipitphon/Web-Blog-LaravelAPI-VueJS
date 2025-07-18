@@ -24,10 +24,10 @@
         type="text"
         placeholder="input content ..."
         v-model="form.content"
-        rows="5"
-        cols="60"
+        :rows="5"
+        :cols="60"
       />
-      <!-- <EditorPrimeVue v-model="content" style="height: 300px" :modules="modules" /> -->
+
     </div>
 
     <!-- Refer -->
@@ -191,6 +191,27 @@ const onSelectAgain = () => {
 };
 
 const onCreatePost = async () => {
+
+    if (!form.value.title.trim()) {
+    Swal.fire("กรุณากรอก Title", "", "warning");
+    return;
+  }
+
+  if (!form.value.content.trim()) {
+    Swal.fire("กรุณากรอก Content", "", "warning");
+    return;
+  }
+
+  if (!form.value.typeID && !form.value.newType.trim()) {
+    Swal.fire("กรุณาเลือกหรือเพิ่ม Type", "", "warning");
+    return;
+  }
+
+  if (!FileImageUploadCover.value) {
+    Swal.fire("กรุณาอัปโหลดรูปภาพ", "", "warning");
+    return;
+  }
+
   const formData = new FormData();
 
   formData.append("profile_id", authAuth.users.userProfile.id);
