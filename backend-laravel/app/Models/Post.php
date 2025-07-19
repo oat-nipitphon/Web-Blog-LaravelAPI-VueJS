@@ -42,6 +42,11 @@ class Post extends Model
         return $this->hasMany(PostImage::class, 'post_id', 'id');
     }
 
+    public function post_image(): HasOne
+    {
+        return $this->hasone(PostImage::class, 'post_id', 'id');
+    }
+
     public function post_pops(): HasMany
     {
         return $this->hasMany(PostPop::class, 'post_id', 'id');

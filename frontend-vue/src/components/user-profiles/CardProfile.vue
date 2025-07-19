@@ -14,7 +14,7 @@
           />
           <img
             v-else
-            src="../assets/images/keyboard.jpg"
+            src="@/assets/images/keyboard.jpg"
             alt="Default"
             class="w-24 h-24 rounded-full border-4 border-gray-400 shadow-lg transition-transform duration-500 hover:rotate-6 hover:scale-105"
           />

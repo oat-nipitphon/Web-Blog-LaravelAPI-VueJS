@@ -82,6 +82,7 @@ Route::prefix('/')->group(function () {
         ], 200);
     });
     Route::apiResource('/posts', PostController::class);
+    Route::get('/post/show-detail/{id}', [ PostController::class, 'getPostShowDetail']);
     Route::prefix('/posts')->group(function () {
         Route::apiResource('/stores', PostStoreController::class);
         Route::get('/stores_report/{profileID}', [PostStoreController::class, 'storeReportPosts']);

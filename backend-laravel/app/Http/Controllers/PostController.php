@@ -209,7 +209,6 @@ class PostController extends Controller
                 'message' => 'Post created successfully.',
                 'post' => $post
             ], 201);
-
         } catch (\Exception $error) {
             return response()->json([
                 'message' => "An error occurred while creating the post.",
@@ -224,41 +223,30 @@ class PostController extends Controller
     public function show(string $id)
     {
         try {
-
-
             $post = Post::with([
                 'post_type',
+                'post_pops',
                 'post_images',
                 'user_profiles',
             ])
                 ->findOrFail($id);
 
             $post = [
+
                 'postID' => $post->id,
                 'title' => $post->title,
                 'content' => $post->content,
                 'refer' => $post->refer,
-
                 'postType' => [
                     'id' => $post->post_type->id,
                     'name' => $post->post_type->name,
                 ],
-
                 'postImage' => $post->post_images ? $post->post_images->map(function ($image) {
                     return [
                         'id' => $image->id,
                         'imageData' => $image->image_data,
                     ];
                 }) : null,
-
-                'userProfiles' => $post->user_profiles = [
-                    'id' => $post->user_profiles->id,
-                    'titleName' => $post->user_profiles->title_name,
-                    'firstName' => $post->user_profiles->first_name,
-                    'lastName' => $post->user_profiles->last_name,
-                    'nickName' => $post->user_profiles->nick_name,
-                    'birthDay' => $post->user_profiles->birth_day,
-                ],
 
             ];
 
@@ -280,6 +268,74 @@ class PostController extends Controller
             ], 500);
         }
     }
+
+    // Get Show Detail Post View
+    public function getPostShowDetail(string $id)
+    {
+        try {
+            $post = Post::with([
+                'post_type',
+                'post_pops',
+                'post_image',
+                'user_profiles.users.user_status',
+            ])->findOrFail($id);
+
+            $post = [
+                'postID' => $post->id,
+                'title' => $post->title,
+                'content' => $post->content,
+                'refer' => $post->refer,
+                'createdAT' => $post->created_at,
+                'updatedAT' => $post->updated_at,
+                'postType' => [
+                    'typeID' => $post->post_type->id,
+                    'name' => $post->post_type->name,
+                ],
+                'postImage' => $post->post_image ? $post->post_image = [
+                    'imageID' => $post->post_image->id,
+                    'imageData' => $post->post_image->image_data,
+                ] : null,
+                'userProfiles' => [
+                    'profileID' => $post->user_profiles->id,
+                    'titleName' => $post->user_profiles->title_name,
+                    'firstName' => $post->user_profiles->first_name,
+                    'lastName' => $post->user_profiles->last_name,
+                    'nickName' => $post->user_profiles->nick_name,
+                    'birthDay' => $post->user_profiles->birth_day,
+                    'users' => $post->user_profiles->users ? [
+                        'userID' => optional($post->user_profiles->users)->id,
+                        'username' => optional($post->user_profiles->users)->username,
+                        'email' => optional($post->user_profiles->users)->email,
+                        'statusID' => optional($post->user_profiles->users)->status_id,
+                        'status' => [
+                            'id' => optional($post->user_profiles->users->user_status)->id,
+                            'name' => optional($post->user_profiles->users->user_status)->name,
+                        ],
+                    ] : null,
+                ],
+                'postPops' => $post->post_pops ? $post->post_pops->map(function ($pop) {
+                    return [
+                        'popID' => optional($pop)->id,
+                        'postID' => optional($pop)->post_id,
+                        'profileID' => optional($pop)->profile_id,
+                        'status' => optional($pop)->status,
+                    ];
+                }) : null,
+            ];
+
+            return response()->json([
+                'message' => "api controller post function show require success.",
+                'post' => $post,
+            ], 200);
+        } catch (\Exception $error) {
+            return response()->json([
+                'message' => "api controller post function show error",
+                'error' => $error->getMessage(),
+            ], 500);
+        }
+    }
+
+
 
     /**
      * Update the specified resource in storage.

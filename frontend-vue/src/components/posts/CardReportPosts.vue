@@ -51,7 +51,18 @@
       <p class="line-clamp-3 text-md/relaxed text-gray-500 mt-1 mb-3">
         {{ post?.postContent }}
       </p>
-      <p class="text-md/relaxed text-blue-500 font-bold">See move..</p>
+      <p class="text-md/relaxed text-blue-500 font-bold">
+        <RouterLink
+          :to="{
+            name: 'ShowDetailPostView',
+            params: {
+              id: post?.postID,
+            },
+          }"
+        >
+          See move..
+        </RouterLink>
+      </p>
     </div>
 
     <div class="mt-3 p-3">
@@ -61,7 +72,6 @@
         :on-event-post-pop="onEventPostPop"
       />
     </div>
-
   </article>
 </template>
 
@@ -74,7 +84,7 @@ defineProps({
 });
 
 import { ref } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, RouterLink } from "vue-router";
 import { storeToRefs } from "pinia";
 import { useAuthStore } from "@/stores/auth";
 import { usePostStore } from "@/stores/post";

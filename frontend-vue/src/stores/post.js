@@ -3,6 +3,7 @@ import Swal from "sweetalert2";
 import axiosAPI from "@/services/axiosAPI";
 export const usePostStore = defineStore("postStore", {
   state: () => ({
+    post: [],
     storePost: [],
     storePosts: [],
     postTypes: [],
@@ -108,6 +109,27 @@ export const usePostStore = defineStore("postStore", {
           return data.post;
         }
         console.log("store response get post show false ", response);
+      } catch (error) {
+        console.error("store response get posts function error ", error);
+      }
+    },
+
+     async storeGetPostShowDetail(id) {
+      try {
+        const response = await fetch(`/api/post/show-detail/${id}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+
+        if (![200].includes(response.status)) return;
+        
+        const data = await response.json();
+        console.log('store get post show detail ', data.post);
+        this.post = data.post;
+
       } catch (error) {
         console.error("store response get posts function error ", error);
       }

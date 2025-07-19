@@ -8,6 +8,7 @@ import DashboardProfileView from "@/views/user-profiles/DashboardProfileView.vue
 
 import CreatePostView from "@/views/posts/CreatePostView.vue";
 import EditPostView from "@/views/posts/EditPostView.vue";
+import ShowDetailPostView from "@/views/posts/ShowDetailPostView.vue";
 
 import StorePostsView from "@/views/posts/StorePostsView.vue";
 import ShopRewardView from "@/views/rewards/ShopRewardView.vue";
@@ -62,6 +63,12 @@ const router = createRouter({
       path: "/posts/:id",
       name: "EditPostView",
       component: EditPostView,
+      meta: { auth: true },
+    },
+    {
+      path: "/post/show-detail/:id",
+      name: "ShowDetailPostView",
+      component: ShowDetailPostView,
       meta: { auth: true },
     },
     // ************************************ End Post ************************************
