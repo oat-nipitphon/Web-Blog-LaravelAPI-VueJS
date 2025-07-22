@@ -49,12 +49,12 @@ class UserProfilePopController extends Controller
         //
     }
 
-    public function profilePop(Request $request, string $profileID, string $authProfileID)
+    public function profilePop(Request $request, string $profileID, string $profileIDEvent)
     {
         try {
             // ตรวจสอบว่ามี record อยู่หรือไม่
             $pops = UserProfilePop::where('profile_id', $profileID)
-                ->where('profile_id_pop', $authProfileID)
+                ->where('profile_id_pop', $profileIDEvent)
                 ->first();
 
             $status_pop = 'null';
@@ -75,7 +75,7 @@ class UserProfilePopController extends Controller
             // ถ้าไม่มี record หรือ status != true → สร้างใหม่
             $pops = UserProfilePop::create([
                 'profile_id' => $profileID,
-                'profile_id_pop' => $authProfileID,
+                'profile_id_pop' => $profileIDEvent,
                 'status' => 'true',
                 'created_at' => now(),
                 'updated_at' => now(),

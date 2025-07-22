@@ -133,7 +133,9 @@ const updatePostPops = (newStatus) => {
 };
 
 const likeCount = computed(
-  () => props.post.postPops.filter((pop) => pop.popStatus === "like").length
+  () => props.post.postPops.filter(
+    (pop) => pop.popStatus === "like"
+  ).length
 );
 
 const dislikeCount = computed(

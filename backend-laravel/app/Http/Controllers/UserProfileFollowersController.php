@@ -49,12 +49,12 @@ class UserProfileFollowersController extends Controller
         //
     }
 
-    public function profileFollowers(Request $request, string $profileID, string $authProfileID)
+    public function profileFollowers(Request $request, string $profileID, string $profileIDEvent)
     {
         try {
             // ตรวจสอบว่ามี record อยู่หรือไม่
             $followers = UserProfileFollowers::where('profile_id', $profileID)
-                ->where('profile_id_followers', $authProfileID)
+                ->where('profile_id_followers', $profileIDEvent)
                 ->first();
 
             $status_followers = 'null';
@@ -75,7 +75,7 @@ class UserProfileFollowersController extends Controller
             // ถ้าไม่มี record หรือ status != true → สร้างใหม่
             $followers = UserProfileFollowers::create([
                 'profile_id' => $profileID,
-                'profile_id_followers' => $authProfileID,
+                'profile_id_followers' => $profileIDEvent,
                 'status' => 'true',
                 'created_at' => now(),
                 'updated_at' => now(),

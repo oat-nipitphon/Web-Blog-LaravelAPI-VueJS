@@ -68,8 +68,8 @@ Route::prefix('/')->group(function () {
     Route::post('/user_profiles/upload_image', [UserProfileController::class, 'uploadImageProfile']);
 
     route::prefix('/profile')->group(function () {
-        Route::post('/followers/{profileID}/{authProfileID}', [UserProfileFollowersController::class, 'profileFollowers']);
-        Route::post('/pop/{profileID}/{authProfileID}', [UserProfilePopController::class, 'profilePop']);
+        Route::post('/followers/{profileID}/{profileIDEvent}', [UserProfileFollowersController::class, 'profileFollowers']);
+        Route::post('/pop/{profileID}/{profileIDEvent}', [UserProfilePopController::class, 'profilePop']);
     });
 
     // --------------------------------------- User Profile ------------------------------------------------ //

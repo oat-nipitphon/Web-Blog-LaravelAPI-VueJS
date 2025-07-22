@@ -134,10 +134,10 @@ export const useStoreUserProfile = defineStore("storeUserProfile", {
     },
 
     // Profile Followers
-    async storeProfileFollowers(profileID, authProfileID) {
+    async storeProfileFollowers(profileID, profileIDEvent) {
       try {
         const response = await fetch(
-          `/api/profile/followers/${profileID}/${authProfileID}`,
+          `/api/profile/followers/${profileID}/${profileIDEvent}`,
           {
             method: "POST",
             headers: {
@@ -147,19 +147,13 @@ export const useStoreUserProfile = defineStore("storeUserProfile", {
           }
         );
 
-        if ([200, 201].includes(response.status)) {
-          const data = await response.json();
-          console.log("store profile followers success", data.statusFollowers);
-          return data.statusFollowers; // ส่งสถานะกลับไป
-        } else {
-          const errorText = await response.text();
-          console.error(
-            "store profile followers failed",
-            response.status,
-            errorText
-          );
+        if (![200, 201].includes(response.status)) {
+          console.error("store profile follower false ", response.error);
           return false;
         }
+
+        const data = await response.json();
+        return true;
       } catch (error) {
         console.error("store profile followers error", error);
         return false;
@@ -167,10 +161,10 @@ export const useStoreUserProfile = defineStore("storeUserProfile", {
     },
 
     // Profile Pop
-    async storeProfilePop(profileID, authProfileID) {
+    async storeProfilePop(profileID, profileIDEvent) {
       try {
         const response = await fetch(
-          `/api/profile/pop/${profileID}/${authProfileID}`,
+          `/api/profile/pop/${profileID}/${profileIDEvent}`,
           {
             method: "POST",
             headers: {
@@ -180,15 +174,17 @@ export const useStoreUserProfile = defineStore("storeUserProfile", {
           }
         );
 
-        if ([200, 201].includes(response.status)) {
-          const data = await response.json();
-          console.log("store profile pop success", data.statusPop);
-          return data.statusPop; // ส่งสถานะกลับไป
-        } else {
-          const errorText = await response.text();
-          console.error("store profile pop failed", response.status, errorText);
+        if (![200, 201].includes(response.status)) {
+          console.error(
+            "store profile pop failed",
+            response.status,
+            response.text
+          );
           return false;
         }
+        const data = await response.json();
+        return true;
+
       } catch (error) {
         console.error("store profile pop error", error);
         return false;

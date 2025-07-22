@@ -3,54 +3,65 @@
     <div class="grid grid-cols-2 gap-4">
       <!-- Follower Button -->
       <button
-        class="flex items-center justify-center gap-2 w-full px-4 py-2 bg-yellow-400 text-white rounded-full shadow-md hover:bg-yellow-500 active:scale-95 transition duration-200"
-        @click="onFollower(props.profile.profileID, profileIDEvent)"
+        class="flex items-center justify-center"
+        @click="props.onFollower(props.profile.profileID, profileIDEvent)"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          fill="currentColor"
-          class="w-5 h-5 text-white"
-          viewBox="0 0 16 16"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          :class="{
+            'size-6': true,
+            'bg-yellow-500': isFollowing,
+            'bg-gray-800': !isFollowing,
+          }"
         >
           <path
-            d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2m.995-14.901a1 1 0 1 0-1.99 0A5 5 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"
           />
         </svg>
-        <span class="text-sm font-semibold">ติดตาม</span>
       </button>
+      <span class="text-sm font-semibold"
+        >จำนวนผู้ติดตาม {{ countFollowers }}</span
+      >
 
       <!-- Pop Button -->
       <button
-        class="flex items-center justify-center gap-2 w-full px-4 py-2 bg-pink-500 text-white rounded-full shadow-md hover:bg-pink-600 active:scale-95 transition duration-200"
-        @click="onPop(props.profile.profileID, profileIDEvent)"
+        class="flex items-center justify-center"
+        @click="props.onPop(props.profile.profileID, profileIDEvent)"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="currentColor"
-          class="w-5 h-5 text-white"
           viewBox="0 0 16 16"
+          :class="[
+            isPoping === true ? 'text-red-500' : 'text-gray-800'
+          ]"
         >
           <path
             fill-rule="evenodd"
             d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"
           />
         </svg>
-        <span class="text-sm font-semibold">ถูกใจ</span>
       </button>
+      <span class="text-sm font-semibold">จำนวนผู้ถูกใจ {{ countPops }}</span>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, reactive, watch, onMounted } from "vue";
 import { storeToRefs } from "pinia";
 import { useAuthStore } from "@/stores/auth";
 const authStore = useAuthStore();
 const { users } = storeToRefs(authStore);
 
 const profileIDEvent = ref(null);
-profileIDEvent.value = authStore.users.userProfile.id;
-console.log("card event follower pop", profileIDEvent);
+profileIDEvent.value = authStore.users.userProfile.id ?? null;
 const props = defineProps({
   profile: {
     type: Object,
@@ -62,11 +73,39 @@ const props = defineProps({
   },
   onFollower: {
     type: Function,
-    required: null,
+    required: true,
   },
   onPop: {
     type: Function,
-    required: null,
+    required: true,
   },
 });
+
+const isFollowing = computed(() =>
+  props.profile.followers.some(
+    (f) =>
+      f.profile_id_followers === profileIDEvent &&
+      (f.status === "true" || f.status === true)
+  )
+);
+const countFollowers = computed(
+  () =>
+    props.profile?.followers?.filter(
+      (f) => f.status === true || f.status === "true"
+    ).length
+);
+
+const isPoping = computed(() =>
+  props.profile?.pops.some(
+    (p) =>
+      p.profile_id_pop === profileIDEvent &&
+      (p.status === "true" || p.status === true)
+  )
+);
+console.log('is pop', isPoping)
+const countPops = computed(
+  () =>
+    props.profile?.pops?.filter((p) => p.status === true || p.status === "true")
+      .length
+);
 </script>

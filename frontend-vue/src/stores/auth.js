@@ -29,7 +29,7 @@ export const useAuthStore = defineStore("authStore", {
 
         const data = await response.json();
         this.users = data.users;
-        console.log("store authorization start success", this.users);
+       
       } catch (error) {
         console.error("store function auth store error:", error);
       }
