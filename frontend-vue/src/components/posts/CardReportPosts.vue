@@ -9,13 +9,13 @@
       >
         <!-- รูปภาพ -->
         <img
+          class="w-full h-45 object-cover rounded-sm"
           :src="
             image?.imageData
               ? 'data:image/png;base64,' + image?.imageData
-              : `${imagePostDefault}`
+              : imagePostDefault
           "
-          alt=""
-          class="h-56 w-full object-cover rounded-lg"
+          alt="PostImage"
         />
 
         <!-- Dropdown -->
@@ -31,23 +31,19 @@
         </div>
       </div>
     </div>
-
-    <div class="grid grid-cols-[auto_10%]">
-      <div class="flex justify-start items-start">
-        <div class="grid grid-rows-2 mt-2">
+    <!-- px-8 pt-8 pb-3 sm:px-10 sm:pt-10 sm:pb-0 -->
+    <div class="grid grid-cols-2 pt-8 px-2 pl-2 pb-2 sm:px-10 sm:pt-10 sm:pb-0">
           <h3
-            class="relative z-10 rounded-full px-3 py-1.5 font-medium text-gray-800"
+            class="mt-2 text-lg font-bold tracking-tight text-gray-950 max-lg:text-center"
           >
-            {{ post?.postTitle }}
+            {{ post.postTitle }}
           </h3>
-          <p class="font-medium text-gray-600 mr-2 px-3 py-1.5">
+          <p class="font-medium text-gray-500 mt-3">
             {{ formatDateTime.formatDate(post?.postCreatedAT) }}
           </p>
-        </div>
-      </div>
-    </div>
 
-    <div class="rounded-lg shadow-md p-2">
+    </div>
+    <div class="pt-2 px-2 pl-2 pb-2 sm:px-10 sm:pt-10 sm:pb-0">
       <p class="line-clamp-3 text-md/relaxed text-gray-500 mt-1 mb-3">
         {{ post?.postContent }}
       </p>
@@ -65,12 +61,8 @@
       </p>
     </div>
 
-    <div class="mt-3 p-3">
-      <card-event-pop
-        :post="post"
-        :authProfileID="authStore.users?.userProfile?.id"
-        :on-event-post-pop="onEventPostPop"
-      />
+    <div class="flex">
+      <card-profile :user="post?.user" :profile="post?.userProfile" />
     </div>
   </article>
 </template>

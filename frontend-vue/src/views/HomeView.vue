@@ -8,7 +8,6 @@
       v-for="post in storePosts"
       :key="post.id"
     >
-      <card-profile :user="post?.user" :profile="post?.userProfile" />
       <card-report-posts :post="post" />
     </div>
   </div>
@@ -28,6 +27,7 @@ import { storeToRefs } from "pinia";
 import { usePostStore } from "@/stores/post";
 import CardProfile from "@/components/user-profiles/CardProfile.vue";
 import CardReportPosts from "@/components/posts/CardReportPosts.vue";
+import TailwindGridBox from "@/components/TailwindGridBox.vue";
 
 const router = useRouter();
 
