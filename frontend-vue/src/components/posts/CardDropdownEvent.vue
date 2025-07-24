@@ -60,7 +60,7 @@
             </MenuItem>
             <MenuItem v-slot="{ active }">
               <span
-                @click="storeDeletePost(post?.postID)"
+                @click="onDeletePost(post?.postID)"
                 :class="[
                   active
                     ? 'bg-gray-100 text-gray-900 outline-hidden hover:bg-blue-500 hover:text-white font-bold'

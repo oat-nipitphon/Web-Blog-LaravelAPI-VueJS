@@ -1,6 +1,5 @@
 <template>
   <div class="bg-white rounded-xl shadow-lg mt-5 max-w-5xl m-auto p-10">
-
     <div class="m-auto">
       <PageHeader title="Create post" />
     </div>
@@ -17,7 +16,7 @@
 
     <div class="mt-3">
       <BaseLabel for-id="labelPostContent" text="Content" />
-      <!-- Editor Create Content -->
+      <BaseTextArea id="postContent" v-model="form.content" />
     </div>
 
     <div class="mt-3">
@@ -200,22 +199,27 @@ const onCreatePost = async () => {
 
   const success = await storeCreatePost(formData);
 
-  if (success !== true) return;
+  if (success) {
+    Swal.fire({
+      title: "Success",
+      text: "Your created post successflly.",
+      icon: "success",
+      timer: 1200,
+    }).then(() => {
+      this.router.push({ name: "HomeView" });
+      return;
+    });
+  }
 
   Swal.fire({
-    title: "Success",
-    text: "Your created post successflly.",
+    title: "False!",
+    text: "Your created post false.",
     icon: "success",
     timer: 1200,
   }).then(() => {
-    this.router.push({ name: "HomeView" });
+    Swal.close();
     return;
   });
-
-  // Check data require form data
-  // for (const [key, value] of formData.entries()) {
-  //   console.log(`${key}:`, value);
-  // }
 };
 
 const onCancel = () => {

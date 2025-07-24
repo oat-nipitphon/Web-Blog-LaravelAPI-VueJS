@@ -39,6 +39,7 @@ class PostController extends Controller
                 'post_images',
                 'post_pops',
                 'user_profiles.users.user_status',
+                'user_profiles.users.check_status_login',
                 'user_profiles.profile_image',
                 'user_profiles.profile_pops',
                 'user_profiles.profile_followers',
@@ -114,6 +115,13 @@ class PostController extends Controller
                                 'statusID' => safe($post->user_profiles->users->user_status->id),
                                 'statusName' => safe($post->user_profiles->users->user_status->name),
                             ] : null,
+
+                            'statusLogin' => $post->user_profiles->users->check_status_login ? [
+                                'id' => optional($post->user_profiles->users->check_status_login)->id,
+                                'status' => optional($post->user_profiles->users->check_status_login)->status,
+                                'timeLogout' => optional($post->user_profiles->users->check_status_login)->updated_at
+                            ] : null,
+
                         ] : null,
                     ];
                 });

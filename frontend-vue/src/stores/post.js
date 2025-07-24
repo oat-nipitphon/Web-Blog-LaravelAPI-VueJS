@@ -68,24 +68,11 @@ export const usePostStore = defineStore("postStore", {
             authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
+  
+        const data = response.json();
 
-        const data = await response.json();
+        if (![200, 201].includes(response.status) || !data.ok) return false;
 
-        if (![200, 201].includes(response.status)) {
-          Swal.fire({
-            title: isSuccess ? "Successfully" : "Failed",
-            text: isSuccess
-              ? "Your post has been created successfully."
-              : "Failed to create the post.",
-            icon: isSuccess ? "success" : "error",
-            showCancelButton: true
-          }).then(() => {
-            Swal.close();
-            return false;
-          });
-        }
-
-        console.log("store create post success", data.post);
         return true;
 
       } catch (error) {

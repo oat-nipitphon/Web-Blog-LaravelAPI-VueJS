@@ -5,11 +5,11 @@
       <div
         v-for="(image, index) in post?.postImage"
         :key="index"
-        class="relative"
+        class="relative "
       >
         <!-- รูปภาพ -->
         <img
-          class="w-full h-45 object-cover rounded-sm"
+          class="w-full h-45 rounded-sm transition-transform duration-300 hover:scale-105 object-cover"
           :src="
             image?.imageData
               ? 'data:image/png;base64,' + image?.imageData
@@ -53,11 +53,11 @@
       </div>
       <div class="flex justify-between">
         <div class="m-auto">
-                  <card-event-pop
-          :on-event-post-pop="onEventPostPop"
-          :post="post"
-          :auth-profile-i-d="authStore.users?.userProfile?.id"
-        />
+          <card-event-pop
+            :on-event-post-pop="onEventPostPop"
+            :post="post"
+            :auth-profile-i-d="authStore.users?.userProfile?.id"
+          />
         </div>
       </div>
     </div>
@@ -79,8 +79,9 @@
       </p>
     </div>
 
-    <div class="flex">
+    <div class="grid grid-cols-2 mt-2">
       <card-profile :user="post?.user" :profile="post?.userProfile" />
+      <div></div>
     </div>
   </article>
 </template>

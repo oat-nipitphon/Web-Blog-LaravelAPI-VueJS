@@ -1,32 +1,31 @@
 <template>
-  <div class="flex items-center gap-4 p-4 bg-white rounded-xl shadow-md">
-    <!-- Profile Image -->
-    <img
-      :src="
-        profile?.image?.imageData
-          ? 'data:image/png;base64,' + profile.image.imageData
-          : ImageDefault
-      "
-      alt="Profile"
-      class="w-16 h-16 rounded-full border-2 border-gray-300 shadow-lg transition-transform duration-300 hover:scale-105 object-cover"
-    />
-
-    <!-- User Info & Actions -->
-    <div class="flex flex-col flex-1">
-      <!-- Email -->
-      <p class="text-lg font-semibold text-gray-700 mb-2">
-        {{ user?.email }}
-      </p>
-
-      <!-- Actions -->
-      <div class="flex gap-2">
-        <card-event-follower :profile="profile" :on-follower="onFollower" />
-        <card-event-pop :profile="profile" :on-pop="onPop" />
-      </div>
+  <div class="w-full grid grid-cols-[auto_70%]">
+    <div class="flex justify-center items-center">
+      <img
+        :src="
+          profile?.image?.imageData
+            ? 'data:image/png;base64,' + profile.image.imageData
+            : ImageDefault
+        "
+        alt="Profile"
+        :class="[
+          user?.statusLogin?.status === 'online'
+          ? 'border-blue-600 m-auto size-17 rounded-md border-3'
+          : 'border-red-500 m-auto size-17 rounded-md border-3'
+        ]"
+      />
     </div>
+   <div class="grid grid-rows-2">
+    <div class="p-2 font-medium text-md text-gray-600 ml-3">
+      {{ user?.email }}
+    </div>
+     <div class="grid grid-cols-2 ml-3">
+      <card-event-follower :profile="profile" :on-follower="onFollower" />
+      <card-event-pop :profile="profile" :on-pop="onPop" />
+    </div>
+   </div>
   </div>
 </template>
-
 
 <script setup>
 import { computed, onMounted } from "vue";
