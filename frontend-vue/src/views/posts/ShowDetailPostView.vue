@@ -1,6 +1,6 @@
 <template>
   <div
-    class="max-w-2xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden transition hover:shadow-2xl duration-300"
+    class="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden transition hover:shadow-2xl duration-300"
     v-if="post"
   >
     <!-- Image -->

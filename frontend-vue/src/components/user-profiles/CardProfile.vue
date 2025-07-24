@@ -1,23 +1,32 @@
 <template>
-  <div v-if="user && profile" class="">
-    <div class="flex">
-      <img
-        :src="
-          profile?.image?.imageData
-            ? 'data:image/png;base64,' + profile.image.imageData
-            : ImageDefault
-        "
-        alt="Profile"
-        class="rounded-full shadow-lg size-15 object-cover"
-      />
-      <p class="text-md font-medium text-gray-500 ml-5">
+  <div class="flex items-center gap-4 p-4 bg-white rounded-xl shadow-md">
+    <!-- Profile Image -->
+    <img
+      :src="
+        profile?.image?.imageData
+          ? 'data:image/png;base64,' + profile.image.imageData
+          : ImageDefault
+      "
+      alt="Profile"
+      class="w-16 h-16 rounded-full border-2 border-gray-300 shadow-lg transition-transform duration-300 hover:scale-105 object-cover"
+    />
+
+    <!-- User Info & Actions -->
+    <div class="flex flex-col flex-1">
+      <!-- Email -->
+      <p class="text-lg font-semibold text-gray-700 mb-2">
         {{ user?.email }}
       </p>
-             <!-- <card-event-follower :profile="profile" :on-follower="onFollower" /> -->
-        <!-- <card-event-pop :profile="profile" :on-pop="onPop" /> -->
+
+      <!-- Actions -->
+      <div class="flex gap-2">
+        <card-event-follower :profile="profile" :on-follower="onFollower" />
+        <card-event-pop :profile="profile" :on-pop="onPop" />
+      </div>
     </div>
   </div>
 </template>
+
 
 <script setup>
 import { computed, onMounted } from "vue";

@@ -18,30 +18,48 @@
           alt="PostImage"
         />
 
-        <!-- Dropdown -->
-        <div class="flex justify-end items-end">
-          <div class="absolute top-2 bg-white rounded-md shadow-lg">
-            <card-dropdown-event
-              :post="post"
-              :on-store-post="onStorePost"
-              :on-edit-post="onEditPost"
-              :on-delete-post="onDeletePost"
-            />
+        <div class="grid grid-cols-2">
+          <div class="flex justify-start items-start">
+            <div
+              class="absolute top-2 rounded-full shadow-lg bg-blue-400 px-2 ml-2"
+            >
+              <span class="text-sm font-medium text-white">
+                {{ post?.postType?.typeName }}
+              </span>
+            </div>
+          </div>
+          <div class="flex justify-end items-end">
+            <div class="absolute top-2 bg-white rounded-md shadow-lg">
+              <card-dropdown-event
+                :post="post"
+                :on-store-post="onStorePost"
+                :on-edit-post="onEditPost"
+                :on-delete-post="onDeletePost"
+              />
+            </div>
           </div>
         </div>
       </div>
     </div>
-    <!-- px-8 pt-8 pb-3 sm:px-10 sm:pt-10 sm:pb-0 -->
-    <div class="grid grid-cols-2 pt-8 px-2 pl-2 pb-2 sm:px-10 sm:pt-10 sm:pb-0">
-          <h3
-            class="mt-2 text-lg font-bold tracking-tight text-gray-950 max-lg:text-center"
-          >
-            {{ post.postTitle }}
-          </h3>
-          <p class="font-medium text-gray-500 mt-3">
-            {{ formatDateTime.formatDate(post?.postCreatedAT) }}
-          </p>
-
+    <div class="grid grid-cols-2">
+      <!-- px-8 pt-8 pb-3 sm:px-10 sm:pt-10 sm:pb-0 -->
+      <div class="grid grid-row">
+        <h3 class="text-lg font-bold text-gray-800 tracking-tight mt-3">
+          {{ post.postTitle }}
+        </h3>
+        <p class="text-gray-500 p-1 ml-2">
+          {{ formatDateTime.formatDate(post?.postCreatedAT) }}
+        </p>
+      </div>
+      <div class="flex justify-between">
+        <div class="m-auto">
+                  <card-event-pop
+          :on-event-post-pop="onEventPostPop"
+          :post="post"
+          :auth-profile-i-d="authStore.users?.userProfile?.id"
+        />
+        </div>
+      </div>
     </div>
     <div class="pt-2 px-2 pl-2 pb-2 sm:px-10 sm:pt-10 sm:pb-0">
       <p class="line-clamp-3 text-md/relaxed text-gray-500 mt-1 mb-3">
